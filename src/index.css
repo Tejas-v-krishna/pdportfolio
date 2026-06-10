@@ -1,0 +1,74 @@
+@import url('https://api.fontshare.com/v2/css?f[]=pilcrow-rounded@300,400,500,600,700&f[]=bonny@500,600,700,800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-base: #F9F6EE;
+  --color-text-dark: #111111;
+  --color-text-light: #FFFFFF;
+  --color-accent-green: #111111;
+  --color-card-bg: #FFFFFF;
+  
+  --color-postit-yellow: #FFEBA5;
+  --color-postit-blue: #BCE2FC;
+  --color-postit-purple: #E1CFFC;
+  --color-postit-orange: #FFDAC1;
+
+  --font-display: "Bonny", serif;
+  --font-body: "Pilcrow Rounded", sans-serif;
+  --font-handwriting: "Bonny", serif;
+  --font-bonny: "Bonny", serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-base);
+    color: var(--color-text-dark);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background-color: var(--color-accent-green);
+    color: var(--color-base);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+  }
+}
+
+/* Lenis smooth scrolling styles */
+html.lenis {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 25s linear infinite;
+}
+
+.animate-spin-slow-reverse {
+  animation: spin-slow 30s linear infinite reverse;
+}
+
