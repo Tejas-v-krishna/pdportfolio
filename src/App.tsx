@@ -22,6 +22,7 @@ function ScrollToTop() {
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [readyToAnimate, setReadyToAnimate] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -51,7 +52,12 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      {loading && <Preloader onComplete={() => setLoading(false)} />}
+      {loading && (
+        <Preloader 
+          onExitStart={() => setReadyToAnimate(true)} 
+          onComplete={() => setLoading(false)} 
+        />
+      )}
       <div className="relative min-h-screen selection:bg-[var(--color-text-dark)] selection:text-[var(--color-base)] flex flex-col">
         
         {/* Global Navigation */}
@@ -60,7 +66,7 @@ function App() {
         {/* Page Routes */}
         <div className="flex-grow">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home isLoading={!readyToAnimate} />} />
             <Route path="/play" element={<Play />} />
             <Route path="/about" element={<About />} />
             <Route path="/notes" element={<Notes />} />

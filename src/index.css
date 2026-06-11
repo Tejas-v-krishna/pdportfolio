@@ -1,11 +1,12 @@
-@import url('https://api.fontshare.com/v2/css?f[]=pilcrow-rounded@300,400,500,600,700&f[]=bonny@500,600,700,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Viaoda+Libre&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=pilcrow-rounded@300,400,500,600,700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --color-base: #F9F6EE;
-  --color-text-dark: #111111;
+  --color-text-dark: #2F3D2B;
   --color-text-light: #FFFFFF;
-  --color-accent-green: #111111;
+  --color-accent-green: #3B4E36;
   --color-card-bg: #FFFFFF;
   
   --color-postit-yellow: #FFEBA5;
@@ -13,10 +14,10 @@
   --color-postit-purple: #E1CFFC;
   --color-postit-orange: #FFDAC1;
 
-  --font-display: "Bonny", serif;
-  --font-body: "Pilcrow Rounded", sans-serif;
-  --font-handwriting: "Bonny", serif;
-  --font-bonny: "Bonny", serif;
+  --font-display: "Viaoda Libre", serif;
+  --font-body: "Viaoda Libre", serif;
+  --font-handwriting: "Viaoda Libre", serif;
+  --font-bonny: "Viaoda Libre", serif;
 }
 
 @layer base {
@@ -70,5 +71,21 @@ html.lenis {
 
 .animate-spin-slow-reverse {
   animation: spin-slow 30s linear infinite reverse;
+}
+
+@keyframes ellipse-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-ellipse-appear {
+  opacity: 0;
+  animation: ellipse-appear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 

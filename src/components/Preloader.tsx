@@ -3,9 +3,10 @@ import gsap from 'gsap';
 
 interface PreloaderProps {
   onComplete: () => void;
+  onExitStart?: () => void;
 }
 
-export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
+export const Preloader: React.FC<PreloaderProps> = ({ onComplete, onExitStart }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLDivElement>(null);
@@ -45,7 +46,10 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
       yPercent: -100,
       duration: 1.8,
       ease: 'expo.inOut',
-      delay: 0.8 // Duration of display before exit
+      delay: 1.1, // Duration of display before exit
+      onStart: () => {
+        if (onExitStart) onExitStart();
+      }
     });
 
     return () => {

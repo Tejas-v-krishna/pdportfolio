@@ -1,4 +1,5 @@
 import React from 'react';
+import { Magnetic } from '../components/Magnetic';
 
 export const Contact: React.FC = () => {
   return (
@@ -31,15 +32,21 @@ export const Contact: React.FC = () => {
         </div>
 
         <div className="md:w-1/3 flex flex-col gap-4 relative z-10 justify-end">
-          <a href="mailto:tejas@example.com" className="w-full text-center bg-[var(--color-text-dark)] text-white font-medium py-3 px-6 rounded-full hover:opacity-90 transition-opacity shadow-sm">
-            Email Me
-          </a>
-          <a href="https://linkedin.com/in/tejas-v-krishna" target="_blank" rel="noreferrer" className="w-full text-center bg-white text-[var(--color-text-dark)] font-medium py-3 px-6 rounded-full hover:bg-gray-50 transition-colors shadow-sm border border-gray-200">
-            LinkedIn
-          </a>
-          <a href="#" className="w-full text-center bg-white text-[var(--color-text-dark)] font-medium py-3 px-6 rounded-full hover:bg-gray-50 transition-colors shadow-sm border border-gray-200">
-            Read my Resume
-          </a>
+          <Magnetic className="w-full">
+            <a href="mailto:tejas@example.com" className="w-full text-center bg-[var(--color-text-dark)] text-white font-medium py-3 px-6 rounded-full hover:opacity-90 transition-opacity shadow-sm">
+              Email Me
+            </a>
+          </Magnetic>
+          <Magnetic className="w-full">
+            <a href="https://linkedin.com/in/tejas-v-krishna" target="_blank" rel="noreferrer" className="w-full text-center bg-white text-[var(--color-text-dark)] font-medium py-3 px-6 rounded-full hover:bg-gray-50 transition-colors shadow-sm border border-gray-200">
+              LinkedIn
+            </a>
+          </Magnetic>
+          <Magnetic className="w-full">
+            <a href="#" className="w-full text-center bg-white text-[var(--color-text-dark)] font-medium py-3 px-6 rounded-full hover:bg-gray-50 transition-colors shadow-sm border border-gray-200">
+              Read my Resume
+            </a>
+          </Magnetic>
         </div>
 
       </div>

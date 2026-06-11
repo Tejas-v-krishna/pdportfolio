@@ -1,4 +1,5 @@
 import React from 'react';
+import { Magnetic } from '../components/Magnetic';
 
 export const Philosophy: React.FC = () => {
   return (
@@ -27,9 +28,11 @@ export const Philosophy: React.FC = () => {
             <p className="mb-6">
               I believe that great products aren't just designed in Figma—they're shaped by how they feel when you finally interact with them in the browser. 
             </p>
-            <a href="#about" className="inline-flex items-center gap-2 bg-[var(--color-text-dark)] text-white px-5 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
-              More about me ↗
-            </a>
+            <Magnetic>
+              <a href="#about" className="inline-flex items-center gap-2 bg-[var(--color-text-dark)] text-white px-5 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
+                More about me ↗
+              </a>
+            </Magnetic>
           </div>
 
         </div>
