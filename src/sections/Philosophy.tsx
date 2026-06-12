@@ -4,10 +4,10 @@ import { Magnetic } from '../components/Magnetic';
 export const Philosophy: React.FC = () => {
   return (
     <section id="philosophy" className="px-6 sm:px-12 md:px-16 lg:px-20 w-full mb-20">
-      <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col gap-8">
+      <div className="skew-on-scroll bg-white rounded-3xl p-8 sm:p-12 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col gap-8">
         
         {/* Top Text */}
-        <div className="font-mono text-xs uppercase tracking-widest opacity-50 font-semibold text-[var(--color-text-dark)]">
+        <div className="font-body text-xs uppercase tracking-[0.2em] opacity-50 font-semibold text-[var(--color-text-dark)]">
           My philosophy
         </div>
 

@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { NavBar } from './components/NavBar';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
@@ -8,6 +10,9 @@ import { Play } from './pages/Play';
 import { About } from './pages/About';
 import { Notes } from './pages/Notes';
 import { Preloader } from './components/Preloader';
+import { SmoothCursor } from './components/SmoothCursor';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Helper component to scroll to top on route change
 function ScrollToTop() {
@@ -24,6 +29,14 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [readyToAnimate, setReadyToAnimate] = useState(false);
 
+  const handleTransitionStart = useCallback(() => {
+    setReadyToAnimate(true);
+  }, []);
+
+  const handleComplete = useCallback(() => {
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
     if (loading) return;
 
@@ -38,13 +51,36 @@ function App() {
       touchMultiplier: 2,
     });
 
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
+    // Expose Lenis globally
+    (window as any).lenis = lenis;
+
+    // Sync ScrollTrigger with Lenis
+    lenis.on('scroll', ScrollTrigger.update);
+
+    // Sync Lenis RAF with GSAP ticker (prevents pin jittering/stuttering)
+    const tick = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
+
+    // Velocity-based skew scroll effect (matching neundex.com style)
+    lenis.on('scroll', (e: any) => {
+      const velocity = e.velocity || 0;
+      // Clamp skew to a maximum of -8deg / 8deg to keep it clean and elegant
+      const targetSkew = gsap.utils.clamp(-8, 8, velocity * 0.08);
+
+      gsap.to('.skew-on-scroll', {
+        skewY: targetSkew,
+        ease: 'power3.out',
+        duration: 0.45,
+        overwrite: 'auto'
+      });
+    });
 
     return () => {
+      (window as any).lenis = null;
+      gsap.ticker.remove(tick);
       lenis.destroy();
     };
   }, [loading]);
@@ -52,12 +88,14 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <SmoothCursor />
       {loading && (
         <Preloader 
-          onExitStart={() => setReadyToAnimate(true)} 
-          onComplete={() => setLoading(false)} 
+          onTransitionStart={handleTransitionStart}
+          onComplete={handleComplete} 
         />
       )}
+
       <div className="relative min-h-screen selection:bg-[var(--color-text-dark)] selection:text-[var(--color-base)] flex flex-col">
         
         {/* Global Navigation */}

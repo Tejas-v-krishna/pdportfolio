@@ -6,7 +6,7 @@ export const About: React.FC = () => {
       <section className="px-6 sm:px-12 md:px-16 lg:px-20 w-full flex flex-col gap-8">
         
         {/* Bio Block */}
-        <div className="bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-16">
+        <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-16">
           <div className="md:w-2/3">
             <h1 className="font-display font-bold text-4xl sm:text-6xl text-[var(--color-text-dark)] leading-tight mb-8">
               Design is how I think.<br />
@@ -44,7 +44,7 @@ export const About: React.FC = () => {
         </div>
 
         {/* My Journey */}
-        <div className="bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100">
+        <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100">
           <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-4">My journey</h2>
           <p className="text-lg opacity-80 mb-12 max-w-2xl">
             Some highlights of my career so far.
@@ -96,7 +96,7 @@ export const About: React.FC = () => {
         </div>
 
         {/* Outside Work */}
-        <div className="bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-16">
+        <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-16">
           <div className="md:w-1/2">
             <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-8">What I do outside of work.</h2>
             <h4 className="font-display font-bold text-xl mb-4">I invest a lot in community.</h4>
@@ -119,7 +119,7 @@ export const About: React.FC = () => {
         </div>
 
         {/* Let's talk CTA */}
-        <div className="bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center text-center">
+        <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center text-center">
           <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-6 max-w-2xl">
             Let's talk if you're building something that makes life a little better.
           </h2>

@@ -63,7 +63,7 @@ export const Notes: React.FC = () => {
           {/* List */}
           <div className="flex flex-col gap-12">
             {notesData.map((note, idx) => (
-              <div key={idx} className="flex flex-col">
+              <div key={idx} className="skew-on-scroll flex flex-col">
                 
                 {/* Eyebrow */}
                 <div className="font-mono text-xs tracking-widest uppercase opacity-50 mb-2">

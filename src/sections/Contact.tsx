@@ -14,7 +14,7 @@ export const Contact: React.FC = () => {
       </div>
 
       {/* Yellow Letter Card */}
-      <div className="w-full bg-[#FFFBEB] rounded-[2rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-[#FDE68A] flex flex-col md:flex-row gap-12 relative overflow-hidden">
+      <div className="skew-on-scroll w-full bg-[#FFFBEB] rounded-[2rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-[#FDE68A] flex flex-col md:flex-row gap-12 relative overflow-hidden">
         
         {/* Subtle texture/lines for notepad feel */}
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(transparent 95%, #000 100%)', backgroundSize: '100% 2rem' }} />
@@ -27,7 +27,7 @@ export const Contact: React.FC = () => {
 
           <div className="font-handwriting text-2xl text-[var(--color-text-dark)] opacity-90">
             Cheers,<br />
-            Tejas
+            Tejjxuu.ui
           </div>
         </div>
 
@@ -53,7 +53,7 @@ export const Contact: React.FC = () => {
 
       {/* Footer */}
       <div className="mt-20 flex flex-col sm:flex-row items-center justify-between w-full opacity-50 text-xs font-medium">
-        <div>© 2026 Tejas V Krishna</div>
+        <div>© 2026 Tejjxuu.ui</div>
         <div className="flex gap-4 mt-4 sm:mt-0">
           <a href="#" className="hover:underline">LinkedIn</a>
           <a href="#" className="hover:underline">Twitter</a>

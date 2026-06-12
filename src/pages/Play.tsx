@@ -73,7 +73,7 @@ export const Play: React.FC = () => {
             {playProjects.map((project, idx) => (
               <div 
                 key={idx} 
-                className={`relative rounded-3xl overflow-hidden group cursor-pointer border border-gray-100 ${project.wide ? 'md:col-span-2' : 'col-span-1'} ${idx === 2 || idx === 3 || idx === 4 ? 'row-span-2' : 'row-span-1'}`}
+                className={`skew-on-scroll relative rounded-3xl overflow-hidden group cursor-pointer border border-gray-100 ${project.wide ? 'md:col-span-2' : 'col-span-1'} ${idx === 2 || idx === 3 || idx === 4 ? 'row-span-2' : 'row-span-1'}`}
               >
                 <img src={project.img} alt={project.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 

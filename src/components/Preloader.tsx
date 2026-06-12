@@ -2,14 +2,20 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 
 interface PreloaderProps {
+  onTransitionStart: () => void;
   onComplete: () => void;
-  onExitStart?: () => void;
 }
 
-export const Preloader: React.FC<PreloaderProps> = ({ onComplete, onExitStart }) => {
+export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onComplete }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLDivElement>(null);
+
+  // Capture current props in a ref to avoid recreating the timeline when callbacks change
+  const callbacksRef = useRef({ onTransitionStart, onComplete });
+  useEffect(() => {
+    callbacksRef.current = { onTransitionStart, onComplete };
+  }, [onTransitionStart, onComplete]);
 
   useEffect(() => {
     // Disable scrolling while loading
@@ -19,43 +25,46 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete, onExitStart })
       onComplete: () => {
         // Re-enable scrolling
         document.body.style.overflow = '';
-        onComplete();
+        callbacksRef.current.onComplete();
       }
     });
 
-    // Initial state
-    gsap.set(".preloader-logo-line", { opacity: 0, y: 40 });
-    gsap.set(subRef.current, { opacity: 0, y: 15 });
+    // Initial state (blurred and GPU accelerated to prevent text wobbling)
+    gsap.set(".preloader-logo-line", { opacity: 0, filter: 'blur(25px)', force3D: true });
+    gsap.set(subRef.current, { opacity: 0, filter: 'blur(12px)', force3D: true });
 
-    // Animation sequence
+    // Animation sequence (blur-in focus transition)
     tl.to(".preloader-logo-line", {
       opacity: 1,
-      y: 0,
-      duration: 1.6,
-      ease: 'power4.out',
-      stagger: 0.18,
-      delay: 0.4
+      filter: 'blur(0px)',
+      duration: 1.8,
+      ease: 'power3.out',
+      stagger: 0.2,
+      delay: 0.4,
+      force3D: true
     })
     .to(subRef.current, {
-      opacity: 0.5,
-      y: 0,
-      duration: 1.2,
-      ease: 'power4.out'
-    }, '-=1.0')
+      opacity: 0.55,
+      filter: 'blur(0px)',
+      duration: 1.4,
+      ease: 'power3.out',
+      force3D: true
+    }, '-=1.2')
     .to(containerRef.current, {
       yPercent: -100,
       duration: 1.8,
       ease: 'expo.inOut',
       delay: 1.1, // Duration of display before exit
       onStart: () => {
-        if (onExitStart) onExitStart();
+        callbacksRef.current.onTransitionStart();
       }
     });
 
     return () => {
+      tl.kill();
       document.body.style.overflow = '';
     };
-  }, [onComplete]);
+  }, []); // Run exactly once on mount to prevent any timeline resets
 
   return (
     <div 
@@ -65,18 +74,15 @@ export const Preloader: React.FC<PreloaderProps> = ({ onComplete, onExitStart })
       <div className="flex flex-col items-center text-center px-4">
         
         {/* Logo */}
-        <div ref={logoRef} className="mb-4">
-          <span className="preloader-logo-line font-display font-bold text-3xl sm:text-4xl leading-[0.9] text-white lowercase tracking-tight block">
-            tejas.
-          </span>
-          <span className="preloader-logo-line font-display font-bold text-3xl sm:text-4xl leading-[0.9] text-white lowercase tracking-tight block mt-0.5">
-            designs
+        <div ref={logoRef} className="mb-8">
+          <span className="preloader-logo-line font-display font-bold text-6xl sm:text-7xl md:text-8xl leading-[0.85] text-white lowercase tracking-tight block">
+            tejjxuu.ui
           </span>
         </div>
 
         {/* Subtitle */}
         <div ref={subRef}>
-          <span className="font-body text-xs text-white opacity-50 tracking-widest uppercase font-mono">
+          <span className="font-body text-sm sm:text-base text-white opacity-55 tracking-[0.2em] sm:tracking-[0.25em] uppercase">
             Product designer
           </span>
         </div>

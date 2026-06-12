@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
@@ -8,82 +9,25 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const SelectedWork: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const panelsContainerRef = useRef<HTMLDivElement>(null);
+  const pinContainerRef = useRef<HTMLDivElement>(null);
+  const scrollTriggerRef = useRef<any>(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+  const [activeProjectIdx, setActiveProjectIdx] = useState(0);
 
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
-
-      // Desktop Only Horizontal Scroll Animation
-      mm.add("(min-width: 768px)", () => {
-        const panels = gsap.utils.toArray<HTMLElement>('.panel');
-        if (!panelsContainerRef.current) return;
-
-        // Horizontal scroll animation
-        const horizontalScrollTween = gsap.to(panelsContainerRef.current, {
-          x: () => -(panelsContainerRef.current!.scrollWidth - window.innerWidth),
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            pin: true,
-            scrub: 1,
-            start: "top top",
-            end: () => `+=${panelsContainerRef.current!.scrollWidth - window.innerWidth}`,
-            invalidateOnRefresh: true,
-            snap: {
-              snapTo: 1 / (panels.length - 1),
-              duration: 0.5,
-              delay: 0.08,
-              ease: "power1.inOut"
-            }
-          }
-        });
-
-        // Parallax scroll on the project preview image and watermark
-        panels.forEach((panel) => {
-          const img = panel.querySelector('.bg-img');
-          if (img) {
-            gsap.fromTo(img, 
-              { xPercent: -12 },
-              { 
-                xPercent: 12, 
-                ease: "none",
-                scrollTrigger: {
-                  trigger: panel,
-                  containerAnimation: horizontalScrollTween,
-                  start: "left right",
-                  end: "right left",
-                  scrub: true
-                }
-              }
-            );
-          }
-
-          const watermark = panel.querySelector('.watermark-txt');
-          if (watermark) {
-            gsap.fromTo(watermark,
-              { xPercent: 15 },
-              {
-                xPercent: -15,
-                ease: "none",
-                scrollTrigger: {
-                  trigger: panel,
-                  containerAnimation: horizontalScrollTween,
-                  start: "left right",
-                  end: "right left",
-                  scrub: true
-                }
-              }
-            );
-          }
-        });
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
+  const scrollToProject = (idx: number) => {
+    const st = scrollTriggerRef.current;
+    if (!st) return;
+    const start = st.start;
+    const end = st.end;
+    const targetScroll = start + (idx / projects.length) * (end - start) + 15;
+    
+    if ((window as any).lenis) {
+      (window as any).lenis.scrollTo(targetScroll, { duration: 1.2 });
+    } else {
+      window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+    }
+  };
 
   const projects = [
     {
@@ -115,49 +59,228 @@ export const SelectedWork: React.FC = () => {
     }
   ];
 
+  const animateImageEntry = (img: HTMLElement) => {
+    gsap.fromTo(
+      img,
+      {
+        scale: 1.25,
+        clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
+        opacity: 0,
+      },
+      {
+        scale: 1,
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+        opacity: 1,
+        duration: 1,
+        ease: "power2.inOut",
+      }
+    );
+
+    const innerImg = img.querySelector("img");
+    if (innerImg) {
+      gsap.fromTo(
+        innerImg,
+        {
+          filter: "contrast(2) brightness(10)",
+        },
+        {
+          filter: "contrast(1) brightness(1)",
+          duration: 1,
+          ease: "power2.inOut",
+        }
+      );
+    }
+  };
+
+  const animateImageExitForward = (img: HTMLElement) => {
+    gsap.to(img, {
+      scale: 0.5,
+      opacity: 0,
+      duration: 1,
+      ease: "power2.inOut",
+    });
+  };
+
+  const animateImageExitReverse = (img: HTMLElement) => {
+    gsap.to(img, {
+      scale: 1.25,
+      clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
+      duration: 1,
+      ease: "power2.inOut",
+    });
+
+    const innerImg = img.querySelector("img");
+    if (innerImg) {
+      gsap.to(innerImg, {
+        filter: "contrast(2) brightness(10)",
+        duration: 1,
+        ease: "power2.inOut",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!containerRef.current || !pinContainerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia();
+
+      // Desktop Only Pinned Multi-Image Canvas
+      mm.add("(min-width: 768px)", () => {
+        const images = gsap.utils.toArray<HTMLElement>('.img');
+        const textBlocks = gsap.utils.toArray<HTMLElement>('.work-text-block');
+
+        if (images.length === 0) return;
+
+        // Start by animating the first image and text block
+        animateImageEntry(images[0]);
+        gsap.to(textBlocks[0], { opacity: 1, y: 0, duration: 1, ease: "power2.out" });
+
+        // Hide other text blocks initially
+        textBlocks.slice(1).forEach((block) => {
+          gsap.set(block, { opacity: 0, y: 30 });
+        });
+
+        let lastCycle = 0;
+
+        scrollTriggerRef.current = ScrollTrigger.create({
+          trigger: containerRef.current,
+          start: "top top",
+          end: () => `+=${window.innerHeight * 3}`, // 3 screens scroll length
+          pin: pinContainerRef.current,
+          pinSpacing: true,
+          scrub: 0.1,
+          onUpdate: (self) => {
+            const totalProgress = self.progress * images.length;
+            const currentCycle = Math.floor(totalProgress);
+            const cycleProgress = (totalProgress % 1) * 100;
+
+            if (currentCycle < images.length) {
+              const currentImage = images[currentCycle];
+              if (currentImage) {
+                const scale = 1 - (0.25 * cycleProgress) / 100;
+                gsap.to(currentImage, {
+                  scale: scale,
+                  duration: 0.1,
+                  overwrite: "auto",
+                });
+              }
+
+              if (currentCycle !== lastCycle) {
+                setActiveProjectIdx(currentCycle);
+                if (self.direction > 0) {
+                  // Scroll down (Forward)
+                  if (lastCycle < images.length) {
+                    animateImageExitForward(images[lastCycle]);
+                    gsap.to(textBlocks[lastCycle], { 
+                      opacity: 0, 
+                      y: -30, 
+                      duration: 0.8, 
+                      ease: "power2.inOut",
+                      onComplete: () => {
+                        gsap.set(textBlocks[lastCycle], { pointerEvents: 'none' });
+                      }
+                    });
+                  }
+                  if (currentCycle < images.length) {
+                    animateImageEntry(images[currentCycle]);
+                    gsap.set(textBlocks[currentCycle], { pointerEvents: 'auto' });
+                    gsap.fromTo(textBlocks[currentCycle],
+                      { opacity: 0, y: 30 },
+                      { opacity: 1, y: 0, duration: 1, ease: "power2.inOut" }
+                    );
+                    // Animate background color transition
+                    gsap.to(containerRef.current, {
+                      backgroundColor: projects[currentCycle].bgColorCode,
+                      duration: 0.8,
+                      ease: "power2.out"
+                    });
+                  }
+                } else {
+                  // Scroll up (Backward)
+                  if (currentCycle < images.length) {
+                    animateImageEntry(images[currentCycle]);
+                    gsap.set(textBlocks[currentCycle], { pointerEvents: 'auto' });
+                    gsap.fromTo(textBlocks[currentCycle],
+                      { opacity: 0, y: -30 },
+                      { opacity: 1, y: 0, duration: 1, ease: "power2.inOut" }
+                    );
+                    // Animate background color transition
+                    gsap.to(containerRef.current, {
+                      backgroundColor: projects[currentCycle].bgColorCode,
+                      duration: 0.8,
+                      ease: "power2.out"
+                    });
+                  }
+                  if (lastCycle < images.length) {
+                    animateImageExitReverse(images[lastCycle]);
+                    gsap.to(textBlocks[lastCycle], { 
+                      opacity: 0, 
+                      y: 30, 
+                      duration: 0.8, 
+                      ease: "power2.inOut",
+                      onComplete: () => {
+                        gsap.set(textBlocks[lastCycle], { pointerEvents: 'none' });
+                      }
+                    });
+                  }
+                }
+                lastCycle = currentCycle;
+              }
+            }
+          },
+        });
+      });
+
+    }, containerRef);
+
+    return () => {
+      scrollTriggerRef.current = null;
+      ctx.revert();
+    };
+  }, []);
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
+    if (link === '#') {
+      e.preventDefault();
+      return;
+    }
+    if (link.startsWith('/')) {
+      e.preventDefault();
+      navigate(link);
+    }
+  };
+
   return (
     <section 
       ref={containerRef} 
       id="work" 
-      className="relative w-full bg-[var(--color-base)] overflow-x-hidden"
+      className="relative w-full overflow-hidden transition-colors duration-500"
+      style={{ backgroundColor: projects[0].bgColorCode }}
     >
-      {/* Mobile Title Section */}
-      <div className="px-6 py-12 md:hidden">
-        <h2 className="font-display font-bold text-4xl text-[var(--color-text-dark)] mb-2">
-          Some recent work
-        </h2>
-        <p className="opacity-70 text-sm">Case studies · shipped products</p>
-      </div>
-
-      {/* Projects List Container */}
-      <div 
-        ref={panelsContainerRef}
-        className="flex flex-col md:flex-row md:h-screen w-full md:w-max"
-      >
-        {projects.map((project, idx) => (
-          <div 
-            key={idx} 
-            className="panel flex-shrink-0 w-full md:w-screen md:h-screen overflow-hidden relative flex items-center"
-            style={{ 
-              backgroundColor: project.bgColorCode,
-            }}
-          >
-            
-            {/* Giant Magazine Watermark (Desktop Only) */}
-            <div className="watermark-txt hidden md:block absolute right-[-5%] top-1/2 -translate-y-1/2 text-[24vw] font-display font-black text-[var(--color-text-dark)]/[0.02] select-none pointer-events-none tracking-tighter leading-none z-0">
-              0{idx + 1}
-            </div>
-
-            {/* Main Content Layout Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center w-full max-w-7xl mx-auto px-6 md:px-24 lg:px-28 py-12 md:py-24 relative z-10">
-              
-              {/* Left Side Content */}
-              <div className="text-block md:col-span-5 flex flex-col justify-center order-2 md:order-1">
-                
-                {/* Floating index count for desktop */}
+      {/* Desktop Pinned Gallery Layout */}
+      <div ref={pinContainerRef} className="hidden md:flex md:h-screen w-full items-center relative z-10">
+        
+        {/* Left Column: Text Stack */}
+        <div className="w-[45%] h-full pl-12 md:pl-24 lg:pl-28 flex flex-col justify-center relative">
+          <div className="absolute top-16 left-12 md:left-24 lg:left-28 font-body text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-text-dark)] opacity-40 select-none">
+            Selected Work
+          </div>
+          
+          <div className="relative w-full h-[400px]">
+            {projects.map((project, idx) => (
+              <div 
+                key={idx} 
+                className="work-text-block absolute inset-0 flex flex-col justify-center"
+                style={{ 
+                  opacity: idx === 0 ? 1 : 0,
+                  transform: idx === 0 ? 'translateY(0px)' : 'translateY(30px)',
+                  pointerEvents: idx === 0 ? 'auto' : 'none' 
+                }}
+              >
+                {/* index count */}
                 <span 
-                  className="hidden md:inline-block font-mono text-xs font-semibold uppercase tracking-widest mb-6"
-                  style={{ color: project.accentColor }}
+                  className="font-body text-xs font-semibold uppercase tracking-[0.2em] mb-4 block text-black"
                 >
                   CASE STUDY 0{idx + 1}
                 </span>
@@ -188,6 +311,7 @@ export const SelectedWork: React.FC = () => {
                 <Magnetic>
                   <a 
                     href={project.link} 
+                    onClick={(e) => handleLinkClick(e, project.link)}
                     className="inline-flex items-center gap-2 text-white px-7 py-3.5 rounded-full text-sm font-semibold hover:opacity-90 transition-all duration-300 w-fit shadow-lg shadow-black/5 group/btn"
                     style={{ backgroundColor: 'var(--color-text-dark)' }}
                   >
@@ -195,35 +319,115 @@ export const SelectedWork: React.FC = () => {
                     <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1" />
                   </a>
                 </Magnetic>
+              </div>
+            ))}
+          </div>
+        </div>
 
+        {/* Right Column: Image Stack */}
+        <div className="w-[55%] h-full relative flex items-center justify-center">
+          <div className="relative w-full h-full">
+            {projects.map((project, idx) => (
+              <div 
+                key={idx} 
+                className="img absolute rounded-[2.5rem] overflow-hidden border border-black/[0.04] shadow-[0_20px_50px_rgba(0,0,0,0.08)] bg-black/[0.02]"
+                style={{
+                  clipPath: idx === 0 ? "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" : "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
+                  opacity: idx === 0 ? 1 : 0,
+                }}
+              >
+                <img 
+                  src={project.image} 
+                  alt={project.title} 
+                  className="w-full h-full object-cover" 
+                  style={{
+                    filter: idx === 0 ? "contrast(1) brightness(1)" : "contrast(2) brightness(10)"
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Floating Progress Bar Sidebar */}
+        <div className="absolute right-6 sm:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 border border-black/10 bg-white/20 backdrop-blur-md rounded-2xl p-3.5 transition-all duration-300 hover:bg-white/65 hover:shadow-lg group/bar select-none w-11 hover:w-56 overflow-hidden">
+          {projects.map((project, idx) => (
+            <button
+              key={idx}
+              onClick={() => scrollToProject(idx)}
+              className="flex items-center justify-between w-full cursor-pointer focus:outline-none text-left"
+            >
+              {/* Label */}
+              <span 
+                className="text-[10px] font-body font-bold tracking-widest uppercase transition-all duration-300 opacity-0 group-hover/bar:opacity-75 max-w-0 group-hover/bar:max-w-[150px] overflow-hidden whitespace-nowrap flex-grow group-hover/bar:pr-3"
+                style={{ color: 'var(--color-text-dark)' }}
+              >
+                {project.title}
+              </span>
+              
+              {/* Dot Wrapper (to ensure dots stay perfectly aligned in a column) */}
+              <div className="w-4 h-4 flex items-center justify-center shrink-0">
+                {/* Dot */}
+                <div 
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    activeProjectIdx === idx 
+                      ? 'scale-125' 
+                      : 'bg-black/20 hover:bg-black/50 hover:scale-110'
+                  }`}
+                  style={{ 
+                    backgroundColor: activeProjectIdx === idx ? '#000000' : undefined 
+                  }}
+                />
+              </div>
+            </button>
+          ))}
+        </div>
+
+      </div>
+
+      {/* Mobile Vertical Layout */}
+      <div className="md:hidden w-full px-6 py-12 flex flex-col gap-16">
+        <div>
+          <h2 className="font-display font-bold text-4xl text-[var(--color-text-dark)] mb-2">
+            Selected Work
+          </h2>
+          <p className="opacity-70 text-sm">Case studies · shipped products</p>
+        </div>
+        
+        <div className="flex flex-col gap-16">
+          {projects.map((project, idx) => (
+            <div 
+              key={idx} 
+              className="flex flex-col gap-6 rounded-[2rem] p-6 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100"
+              style={{ backgroundColor: project.bgColorCode }}
+            >
+              <span className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-black">
+                0{idx + 1} CASE STUDY
+              </span>
+              
+              <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-md">
+                <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
               </div>
 
-              {/* Right Side Image Frame */}
-              <div className="md:col-span-7 order-1 md:order-2">
+              <div>
+                <h3 className="font-display font-bold text-2xl mb-3 text-[var(--color-text-dark)]">{project.title}</h3>
+                <p className="opacity-80 text-sm leading-relaxed mb-6">{project.description}</p>
+                
                 <a 
                   href={project.link} 
-                  className="group relative block w-full aspect-[4/3] bg-black/[0.02] rounded-[1.8rem] md:rounded-[2.8rem] overflow-hidden border border-black/[0.04] shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)]"
+                  onClick={(e) => handleLinkClick(e, project.link)}
+                  className="inline-flex items-center gap-1.5 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-md"
+                  style={{ backgroundColor: 'var(--color-text-dark)' }}
                 >
-                  <div className="absolute inset-0 bg-[var(--color-text-dark)] opacity-0 group-hover:opacity-10 transition-opacity duration-300 z-10" />
-                  
-                  <img 
-                    src={project.image} 
-                    alt={project.title} 
-                    className="bg-img w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] md:absolute md:inset-0 md:scale-[1.15]" 
-                  />
-                  
-                  <div className="absolute bottom-6 left-6 z-20 bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-full text-xs font-semibold text-[var(--color-text-dark)] opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md flex items-center gap-1.5">
-                    <span>View case study</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </div>
+                  <span>Read case study</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
                 </a>
               </div>
-
             </div>
-
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+
     </section>
   );
 };
