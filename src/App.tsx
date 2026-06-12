@@ -64,20 +64,6 @@ function App() {
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
-    // Velocity-based skew scroll effect (matching neundex.com style)
-    lenis.on('scroll', (e: any) => {
-      const velocity = e.velocity || 0;
-      // Clamp skew to a maximum of -8deg / 8deg to keep it clean and elegant
-      const targetSkew = gsap.utils.clamp(-8, 8, velocity * 0.08);
-
-      gsap.to('.skew-on-scroll', {
-        skewY: targetSkew,
-        ease: 'power3.out',
-        duration: 0.45,
-        overwrite: 'auto'
-      });
-    });
-
     return () => {
       (window as any).lenis = null;
       gsap.ticker.remove(tick);
