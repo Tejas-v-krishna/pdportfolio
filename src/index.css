@@ -57,10 +57,10 @@
   --color-accent-green: #000000;
   --color-card-bg: #FFFFFF;
   
-  --color-postit-yellow: #FFEBA5;
-  --color-postit-blue: #BCE2FC;
-  --color-postit-purple: #E1CFFC;
-  --color-postit-orange: #FFDAC1;
+  --color-postit-yellow: #A1A1AA; /* Zinc-400 */
+  --color-postit-blue: #D4D4D8;   /* Zinc-300 */
+  --color-postit-purple: #18181B; /* Zinc-900 */
+  --color-postit-orange: #71717A; /* Zinc-500 */
 
   --font-display: "CDOvuer", sans-serif;
   --font-body: "Nohemi", sans-serif;

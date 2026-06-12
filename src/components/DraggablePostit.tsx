@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'motion/react';
 
-export type PostitColor = 'yellow' | 'blue' | 'purple' | 'orange';
+export type PostitColor = 'white' | 'light-grey' | 'mid-grey' | 'black';
 export type DoodleType = 'star' | 'smiley' | 'wireframe' | 'lightning';
 
 interface DraggablePostitProps {
@@ -31,29 +31,29 @@ export const DraggablePostit: React.FC<DraggablePostitProps> = ({
 
   // Color mapping
   const colorClasses = {
-    yellow: {
-      bg: '#FFEBA5',
-      border: 'border-yellow-200/50',
-      text: '#4A3B00',
-      marker: '#5C4A00',
+    white: {
+      bg: '#FFFFFF',
+      border: 'border-gray-200',
+      text: '#171717',
+      marker: '#404040',
     },
-    blue: {
-      bg: '#BCE2FC',
-      border: 'border-blue-200/50',
-      text: '#0C2D48',
-      marker: '#144673',
+    'light-grey': {
+      bg: '#F4F5F7',
+      border: 'border-gray-300/40',
+      text: '#2D3748',
+      marker: '#4A5568',
     },
-    purple: {
-      bg: '#E1CFFC',
-      border: 'border-purple-200/50',
-      text: '#2D1454',
-      marker: '#451F80',
+    'mid-grey': {
+      bg: '#E2E8F0',
+      border: 'border-gray-400/30',
+      text: '#1A202C',
+      marker: '#2D3748',
     },
-    orange: {
-      bg: '#FFDAC1',
-      border: 'border-orange-200/50',
-      text: '#5B2B05',
-      marker: '#87410B',
+    black: {
+      bg: '#18181B',
+      border: 'border-zinc-800',
+      text: '#FAFAFA',
+      marker: '#D4D4D8',
     }
   };
 

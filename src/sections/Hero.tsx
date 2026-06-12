@@ -149,7 +149,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       {/* 2. Interactive/Draggable Post-it Notes in Background */}
       <DraggablePostit
         text="Design is how it works."
-        color="yellow"
+        color="white"
         doodleType="smiley"
         defaultPosition={{ x: 4, y: 14 }}
         defaultRotation={-6}
@@ -157,7 +157,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       />
       <DraggablePostit
         text="Interactive & playful."
-        color="blue"
+        color="light-grey"
         doodleType="star"
         defaultPosition={{ x: 82, y: 12 }}
         defaultRotation={8}
@@ -165,7 +165,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       />
       <DraggablePostit
         text="Double click to flip me! ⚡"
-        color="orange"
+        color="black"
         doodleType="lightning"
         defaultPosition={{ x: 79, y: 58 }}
         defaultRotation={-10}
@@ -173,7 +173,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       />
       <DraggablePostit
         text="Kerala, IN 🌴"
-        color="purple"
+        color="mid-grey"
         doodleType="wireframe"
         defaultPosition={{ x: 6, y: 65 }}
         defaultRotation={5}
@@ -192,40 +192,44 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
         
         {/* Headline */}
         <h1 ref={headingRef} className="opacity-0 font-display text-[2.2rem] sm:text-[3.5rem] md:text-[4.8rem] lg:text-[6rem] xl:text-[6.6rem] leading-[1.12] text-[var(--color-text-dark)] tracking-tight max-w-7xl w-full">
-          I{' '}
-          <Link 
-            to="/about" 
-            className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group" 
-            style={{ animationDelay: '0.4s' }}
-          >
-            {/* Self-Drawing Circle Scribble around avatar */}
-            <Scribble 
-              type="circle" 
-              className="absolute -inset-[15%] w-[130%] h-[130%] text-[var(--color-postit-blue)] pointer-events-none opacity-60 z-0" 
-            />
-            {/* Ellipse Container */}
-            <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 z-10">
-              <img 
-                src={tejasProfile} 
-                alt="Tejas Profile" 
-                className="w-full h-full object-cover" 
-                style={{ transform: "scale(1.4)", willChange: "transform" }}
-              />
-              {/* Overlay Text */}
-              <span className="absolute inset-0 bg-white/85 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
-                <span className="text-[var(--color-text-dark)] text-[0.15em] tracking-tight font-medium leading-none whitespace-nowrap">
-                  about
+          <span className="md:block md:overflow-hidden md:py-1">
+            <span className="line-item inline-block md:block">
+              I{' '}
+              <Link 
+                to="/about" 
+                className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group z-20" 
+                style={{ animationDelay: '0.4s' }}
+              >
+                {/* Self-Drawing Circle Scribble around avatar */}
+                <Scribble 
+                  type="circle" 
+                  className="absolute -inset-[15%] w-[130%] h-[130%] text-zinc-300 pointer-events-none opacity-60 z-0" 
+                />
+                {/* Ellipse Container */}
+                <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 z-10">
+                  <img 
+                    src={tejasProfile} 
+                    alt="Tejas Profile" 
+                    className="w-full h-full object-cover" 
+                    style={{ transform: "scale(1.4)", willChange: "transform" }}
+                  />
+                  {/* Overlay Text */}
+                  <span className="absolute inset-0 bg-white/85 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
+                    <span className="text-[var(--color-text-dark)] text-[0.15em] tracking-tight font-medium leading-none whitespace-nowrap">
+                      about
+                    </span>
+                  </span>
                 </span>
+              </Link>{' '}
+              create{' '}
+              <span className="relative inline-block px-1 z-10">
+                living, breathing
+                <Scribble 
+                  type="underline" 
+                  className="absolute -bottom-2 sm:-bottom-3 left-0 w-full text-zinc-400 h-3 sm:h-4 pointer-events-none opacity-80" 
+                />
               </span>
             </span>
-          </Link>{' '}
-          create{' '}
-          <span className="relative inline-block px-1">
-            living, breathing
-            <Scribble 
-              type="underline" 
-              className="absolute -bottom-2 sm:-bottom-3 left-0 w-full text-[var(--color-postit-yellow)] h-3 sm:h-4 pointer-events-none opacity-80" 
-            />
           </span>
           <br className="hidden md:inline" />
           <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=400&q=80" altText="Websites Mockup">

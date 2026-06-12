@@ -35,8 +35,8 @@ export const NavBar: React.FC = () => {
       menuButtonColor="var(--color-text-dark)"
       openMenuButtonColor="#ffffff"
       changeMenuColorOnOpen={true}
-      colors={['#FFEBA5', '#BCE2FC', '#E1CFFC']} // Yellow, Blue, Purple postit colors
-      accentColor="#FFEBA5" // Yellow postit accent hover color
+      colors={['#F4F4F5', '#E4E4E7', '#18181B']} // Grayscale layers: light-grey, mid-grey, black
+      accentColor="#A1A1AA" // Zinc-400 accent highlight color
       isFixed={true}
       cta={cta}
       footerMetadata={footerMetadata}
