@@ -37,6 +37,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
     const lines = heading.querySelectorAll('.line');
     const wrapper = heading.closest('.hero-content-wrapper');
     const ellipseImgs = heading.querySelectorAll('.animate-ellipse-appear img');
+    const stamp = heading.closest('#hero')?.querySelector('.hero-stamp');
 
     // Re-bind click event handlers on links inside the split text
     const links = heading.querySelectorAll('a');
@@ -75,6 +76,9 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
     });
     gsap.set(ellipseImgs, { scale: 1.3, force3D: true });
     gsap.set(lines, { opacity: 0, y: 80, filter: 'blur(15px)', force3D: true });
+    if (stamp) {
+      gsap.set(stamp, { opacity: 0, scale: 0.8, filter: 'blur(10px)', force3D: true });
+    }
 
     // Create reveal timeline matching preloader reveal
     const tl = gsap.timeline({ delay: 0.1 });
@@ -99,6 +103,17 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       stagger: 0.15,
       force3D: true
     }, 0.2);
+
+    if (stamp) {
+      tl.to(stamp, {
+        opacity: 0.8,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: 2.0,
+        ease: "power4.out",
+        force3D: true
+      }, 0.5);
+    }
 
     return () => {
       tl.kill();
@@ -182,6 +197,48 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
 
       </div>
 
+      {/* 5. Circular Text Stamp */}
+      <div className="hero-stamp absolute right-6 sm:right-12 md:right-16 lg:right-20 bottom-8 sm:bottom-12 md:bottom-16 z-10 select-none pointer-events-none opacity-80">
+        <div className="relative flex items-center justify-center w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40">
+          {/* Circular Text SVG */}
+          <svg
+            viewBox="0 0 200 200"
+            className="w-full h-full animate-spin-slow overflow-visible"
+          >
+            <defs>
+              <path
+                id="stampTextPath"
+                d="M 100, 100 m -68, 0 a 68,68 0 1,1 136,0 a 68,68 0 1,1 -136,0"
+              />
+            </defs>
+            <text
+              fill="var(--color-text-dark)"
+              className="font-body text-[10.5px] uppercase font-semibold"
+              style={{ letterSpacing: '4.8px' }}
+            >
+              <textPath href="#stampTextPath" startOffset="0%">
+                THOUGHTFUL DESIGN • MEANINGFUL IMPACT •
+              </textPath>
+            </text>
+          </svg>
+
+          {/* 8-pointed star in the center */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg
+              viewBox="0 0 64 64"
+              className="w-7 h-7 sm:w-9 sm:h-9 lg:w-10 lg:h-10"
+              fill="none"
+            >
+              <line x1="32" y1="14" x2="32" y2="50" stroke="var(--color-text-dark)" strokeWidth="2.5" strokeLinecap="round" />
+              <line x1="14" y1="32" x2="50" y2="32" stroke="var(--color-text-dark)" strokeWidth="2.5" strokeLinecap="round" />
+              <line x1="19.3" y1="19.3" x2="44.7" y2="44.7" stroke="var(--color-text-dark)" strokeWidth="2.5" strokeLinecap="round" />
+              <line x1="19.3" y1="44.7" x2="44.7" y2="19.3" stroke="var(--color-text-dark)" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
     </section>
   );
 };
+
