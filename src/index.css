@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap');
 @import "tailwindcss";
 
 @font-face {
@@ -63,7 +64,7 @@
 
   --font-display: "CDOvuer", sans-serif;
   --font-body: "Nohemi", sans-serif;
-  --font-handwriting: "Nohemi", sans-serif;
+  --font-handwriting: "Caveat", cursive;
   --font-bonny: "Nohemi", sans-serif;
 }
 
@@ -75,18 +76,6 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-  body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-image: url("https://assets.codepen.io/16327/noise.png");
-    opacity: 0.035;
-    pointer-events: none;
-    z-index: 9999;
   }
   ::selection {
     background-color: var(--color-accent-green);
@@ -130,38 +119,6 @@ html.lenis {
 
 .animate-spin-slow-reverse {
   animation: spin-slow 30s linear infinite reverse;
-}
-
-@keyframes float-slow {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(8%, 5%) scale(1.08);
-  }
-  100% {
-    transform: translate(-5%, 10%) scale(0.95);
-  }
-}
-
-@keyframes float-slow-reverse {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-10%, -6%) scale(0.92);
-  }
-  100% {
-    transform: translate(5%, -12%) scale(1.05);
-  }
-}
-
-.animate-float-slow {
-  animation: float-slow 20s ease-in-out infinite alternate;
-}
-
-.animate-float-slow-reverse {
-  animation: float-slow-reverse 25s ease-in-out infinite alternate;
 }
 
 @keyframes ellipse-appear {

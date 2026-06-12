@@ -5,7 +5,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CustomEase } from 'gsap/CustomEase';
 import SplitType from 'split-type';
-import { Magnetic } from '../components/Magnetic';
+import { DraggablePostit } from '../components/DraggablePostit';
+import { HoverFollowPreview } from '../components/HoverFollowPreview';
+import Scribble from '../components/Scribble';
 
 gsap.registerPlugin(ScrollTrigger, CustomEase);
 
@@ -17,7 +19,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const stampContainerRef = useRef<HTMLDivElement>(null);
   const stampSvgRef = useRef<SVGSVGElement>(null);
-  const mouseOrbRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
@@ -149,26 +151,6 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       stampContainer.addEventListener('mouseleave', handleMouseLeave);
     }
 
-    // Mouse following background orb tracking
-    const mouseOrb = mouseOrbRef.current;
-    if (mouseOrb) {
-      gsap.set(mouseOrb, { x: window.innerWidth / 2, y: window.innerHeight / 2 });
-    }
-
-    const handleWindowMouseMove = (e: MouseEvent) => {
-      if (mouseOrb) {
-        gsap.to(mouseOrb, {
-          x: e.clientX,
-          y: e.clientY,
-          duration: 1.8,
-          ease: "power2.out",
-          overwrite: "auto"
-        });
-      }
-    };
-
-    window.addEventListener('mousemove', handleWindowMouseMove);
-
     return () => {
       tl.kill();
       typeSplit.revert();
@@ -179,47 +161,16 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
         stampContainer.removeEventListener('mouseenter', handleMouseEnter);
         stampContainer.removeEventListener('mouseleave', handleMouseLeave);
       }
-      window.removeEventListener('mousemove', handleWindowMouseMove);
-      if (mouseOrb) {
-        gsap.killTweensOf(mouseOrb);
-      }
     };
   }, [isLoading, navigate]);
 
   return (
-    <section id="hero" className="relative min-h-screen py-20 px-6 sm:px-12 md:px-16 lg:px-20 w-full flex flex-col items-center justify-center overflow-hidden">
+    <section 
+      ref={heroRef}
+      id="hero" 
+      className="relative min-h-screen py-20 px-6 sm:px-12 md:px-16 lg:px-20 w-full flex flex-col items-center justify-center overflow-hidden"
+    >
       
-      {/* Dynamic Background Blob Orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Yellow Orb (Top Left, slowly drifting) */}
-        <div 
-          className="absolute w-[45vw] h-[45vw] rounded-full bg-[#FFEBA5] opacity-25 blur-[120px] animate-float-slow"
-          style={{
-            top: '-15%',
-            left: '-15%',
-          }}
-        />
-        {/* Blue Orb (Bottom Right, slowly drifting) */}
-        <div 
-          className="absolute w-[50vw] h-[50vw] rounded-full bg-[#BCE2FC] opacity-25 blur-[130px] animate-float-slow-reverse"
-          style={{
-            bottom: '-15%',
-            right: '-15%',
-          }}
-        />
-        {/* Purple Mouse-Following Orb */}
-        <div 
-          ref={mouseOrbRef}
-          className="absolute w-[35vw] h-[35vw] rounded-full bg-[#E1CFFC] opacity-20 blur-[110px]"
-          style={{
-            top: '0px',
-            left: '0px',
-            transform: 'translate(-50%, -50%)',
-            willChange: 'transform'
-          }}
-        />
-      </div>
-
       {/* 1. Background Grid Lines */}
       <div className="absolute inset-0 pointer-events-none flex justify-between z-0 px-6 sm:px-12 md:px-16 lg:px-20 w-full">
         <div className="w-px h-full bg-black/[0.03]"></div>
@@ -228,6 +179,40 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
         <div className="w-px h-full bg-black/[0.03] hidden lg:block"></div>
         <div className="w-px h-full bg-black/[0.03]"></div>
       </div>
+
+      {/* 2. Interactive/Draggable Post-it Notes in Background */}
+      <DraggablePostit
+        text="Design is how it works."
+        color="yellow"
+        doodleType="smiley"
+        defaultPosition={{ x: 4, y: 14 }}
+        defaultRotation={-6}
+        containerRef={heroRef}
+      />
+      <DraggablePostit
+        text="Interactive & playful."
+        color="blue"
+        doodleType="star"
+        defaultPosition={{ x: 82, y: 12 }}
+        defaultRotation={8}
+        containerRef={heroRef}
+      />
+      <DraggablePostit
+        text="Double click to flip me! ⚡"
+        color="orange"
+        doodleType="lightning"
+        defaultPosition={{ x: 79, y: 58 }}
+        defaultRotation={-10}
+        containerRef={heroRef}
+      />
+      <DraggablePostit
+        text="Kerala, IN 🌴"
+        color="purple"
+        doodleType="wireframe"
+        defaultPosition={{ x: 6, y: 65 }}
+        defaultRotation={5}
+        containerRef={heroRef}
+      />
 
       {/* 4. Central Headline (with wrapper for scale zoom / blur focus reveal) */}
       <div 
@@ -242,57 +227,79 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
         {/* Headline */}
         <h1 ref={headingRef} className="opacity-0 font-display text-[2.2rem] sm:text-[3.5rem] md:text-[4.8rem] lg:text-[6rem] xl:text-[6.6rem] leading-[1.12] text-[var(--color-text-dark)] tracking-tight max-w-7xl w-full">
           I{' '}
-          <Magnetic strength={0.25}>
-            <Link 
-              to="/about" 
-              className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group" 
-              style={{ animationDelay: '0.4s' }}
-            >
-              {/* Ellipse Container */}
-              <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300">
-                <img 
-                  src={tejasProfile} 
-                  alt="Tejas Profile" 
-                  className="w-full h-full object-cover" 
-                  style={{ transform: "scale(1.4)", willChange: "transform" }}
-                />
-                {/* Overlay Text */}
-                <span className="absolute inset-0 bg-white/85 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
-                  <span className="text-[var(--color-text-dark)] text-[0.15em] tracking-tight font-medium leading-none whitespace-nowrap">
-                    about
-                  </span>
+          <Link 
+            to="/about" 
+            className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group" 
+            style={{ animationDelay: '0.4s' }}
+          >
+            {/* Self-Drawing Circle Scribble around avatar */}
+            <Scribble 
+              type="circle" 
+              className="absolute -inset-[15%] w-[130%] h-[130%] text-[var(--color-postit-blue)] pointer-events-none opacity-60 z-0" 
+            />
+            {/* Ellipse Container */}
+            <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 z-10">
+              <img 
+                src={tejasProfile} 
+                alt="Tejas Profile" 
+                className="w-full h-full object-cover" 
+                style={{ transform: "scale(1.4)", willChange: "transform" }}
+              />
+              {/* Overlay Text */}
+              <span className="absolute inset-0 bg-white/85 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
+                <span className="text-[var(--color-text-dark)] text-[0.15em] tracking-tight font-medium leading-none whitespace-nowrap">
+                  about
                 </span>
               </span>
-            </Link>
-          </Magnetic>{' '}
-          create living, breathing
+            </span>
+          </Link>{' '}
+          create{' '}
+          <span className="relative inline-block px-1">
+            living, breathing
+            <Scribble 
+              type="underline" 
+              className="absolute -bottom-2 sm:-bottom-3 left-0 w-full text-[var(--color-postit-yellow)] h-3 sm:h-4 pointer-events-none opacity-80" 
+            />
+          </span>
           <br className="hidden md:inline" />
-          websites for brands{' '}
-          <Magnetic strength={0.25}>
-            <a 
-              href="#work" 
-              className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group" 
-              style={{ animationDelay: '0.8s' }}
-            >
-              {/* Ellipse Container */}
-              <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 bg-gray-100">
-                <img 
-                  src="https://placehold.co/400x250/111111/FFFFFF?text=UI/UX" 
-                  alt="Product UI Mockup" 
-                  className="w-full h-full object-cover" 
-                  style={{ transform: "scale(1.4)", willChange: "transform" }}
-                />
-                {/* Overlay Text */}
-                <span className="absolute inset-0 bg-white/85 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
-                  <span className="text-[var(--color-text-dark)] text-[0.15em] tracking-tight font-medium leading-none whitespace-nowrap">
-                    work
-                  </span>
+          <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=400&q=80" altText="Websites Mockup">
+            websites
+          </HoverFollowPreview>{' '}
+          for{' '}
+          <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1522542550221-31fd19575a2d?auto=format&fit=crop&w=400&q=80" altText="Brands Branding">
+            brands
+          </HoverFollowPreview>{' '}
+          <a 
+            href="#work" 
+            className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group" 
+            style={{ animationDelay: '0.8s' }}
+          >
+            {/* Ellipse Container */}
+            <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 bg-gray-100">
+              <img 
+                src="https://placehold.co/400x250/111111/FFFFFF?text=UI/UX" 
+                alt="Product UI Mockup" 
+                className="w-full h-full object-cover" 
+                style={{ transform: "scale(1.4)", willChange: "transform" }}
+              />
+              {/* Overlay Text */}
+              <span className="absolute inset-0 bg-white/85 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
+                <span className="text-[var(--color-text-dark)] text-[0.15em] tracking-tight font-medium leading-none whitespace-nowrap">
+                  work
                 </span>
               </span>
-            </a>
-          </Magnetic>
+            </span>
+          </a>
           <br className="hidden md:inline" />
-          that want to be felt, not just seen.
+          that want to be{' '}
+          <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80" altText="Tactile waves">
+            felt
+          </HoverFollowPreview>
+          , not just{' '}
+          <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" altText="Interactive designs">
+            seen
+          </HoverFollowPreview>
+          .
         </h1>
 
       </div>
