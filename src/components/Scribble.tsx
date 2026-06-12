@@ -49,7 +49,7 @@ const Scribble: React.FC<ScribbleProps> = ({ type, className, delay = 0, ...prop
   const getPath = () => {
     switch (type) {
       case 'underline':
-        return 'M5,20 Q50,5 95,20 T195,15';
+        return 'M5,10 Q100,35 195,10';
       case 'circle':
         return 'M50,10 C80,5 95,40 70,80 C40,110 5,80 15,40 C20,10 60,5 80,20';
       case 'arrow':

@@ -191,7 +191,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
         
         {/* Headline */}
         <h1 ref={headingRef} className="opacity-0 font-display text-[2.2rem] sm:text-[3.5rem] md:text-[4.8rem] lg:text-[6rem] xl:text-[6.6rem] leading-[1.12] text-[var(--color-text-dark)] tracking-tight max-w-7xl w-full">
-          <span className="md:block md:overflow-hidden md:py-1">
+          <span className="md:block md:overflow-hidden md:pt-1 md:pb-4">
             <span className="line-item inline-block md:block">
               I{' '}
               <Link 
