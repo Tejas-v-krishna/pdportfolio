@@ -8,9 +8,10 @@ type ScribbleType = 'underline' | 'circle' | 'arrow' | 'asterisk';
 
 interface ScribbleProps extends React.SVGProps<SVGSVGElement> {
   type: ScribbleType;
+  delay?: number;
 }
 
-const Scribble: React.FC<ScribbleProps> = ({ type, className, ...props }) => {
+const Scribble: React.FC<ScribbleProps> = ({ type, className, delay = 0, ...props }) => {
   const pathRef = useRef<SVGPathElement>(null);
 
   useEffect(() => {
@@ -30,19 +31,20 @@ const Scribble: React.FC<ScribbleProps> = ({ type, className, ...props }) => {
     if (!prefersReducedMotion) {
       ScrollTrigger.create({
         trigger: path,
-        start: 'top 85%',
+        start: 'top 95%', // Trigger slightly lower so it starts as soon as visible
         onEnter: () => {
           gsap.to(path, {
             strokeDashoffset: 0,
             duration: 1.5,
             ease: 'power2.out',
+            delay: delay,
           });
         },
       });
     } else {
       gsap.set(path, { strokeDashoffset: 0 });
     }
-  }, []);
+  }, [delay]);
 
   const getPath = () => {
     switch (type) {

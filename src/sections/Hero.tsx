@@ -203,7 +203,9 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
                 {/* Self-Drawing Circle Scribble around avatar */}
                 <Scribble 
                   type="circle" 
-                  className="absolute -inset-[15%] w-[130%] h-[130%] text-zinc-300 pointer-events-none opacity-60 z-0" 
+                  preserveAspectRatio="none"
+                  delay={0.6}
+                  className="absolute -top-[25%] -left-[18%] w-[136%] h-[150%] text-zinc-500 pointer-events-none opacity-80 z-0" 
                 />
                 {/* Ellipse Container */}
                 <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 z-10">
@@ -226,7 +228,8 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
                 living, breathing
                 <Scribble 
                   type="underline" 
-                  className="absolute -bottom-2 sm:-bottom-3 left-0 w-full text-zinc-400 h-3 sm:h-4 pointer-events-none opacity-80" 
+                  delay={0.8}
+                  className="absolute -bottom-2 sm:-bottom-3 left-0 w-full text-zinc-500 h-3 sm:h-4 pointer-events-none opacity-85" 
                 />
               </span>
             </span>

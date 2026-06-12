@@ -48,7 +48,7 @@ export const HoverFollowPreview: React.FC<HoverFollowPreviewProps> = ({
       ref={triggerRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative inline-block cursor-help font-semibold text-[var(--color-text-dark)] hover:text-gray-600 transition-colors duration-300 decoration-dotted underline underline-offset-8 decoration-black/30"
+      className="relative inline-block cursor-pointer font-semibold text-[var(--color-text-dark)]"
     >
       {children}
 
