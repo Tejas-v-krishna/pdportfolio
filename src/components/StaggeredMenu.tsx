@@ -153,20 +153,20 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   const openRef = useRef(false);
   const navigate = useNavigate();
 
-  // Mumbai time state calculation
-  const [mumbaiTime, setMumbaiTime] = useState('');
+  // Kerala time state calculation
+  const [keralaTime, setKeralaTime] = useState('');
 
   useEffect(() => {
     const updateTime = () => {
       const options: Intl.DateTimeFormatOptions = {
-        timeZone: 'Asia/Kolkata',
+        timeZone: 'Asia/Kolkata', // India Standard Time timezone covers Kerala
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
         hour12: true
       };
       const formatter = new Intl.DateTimeFormat('en-US', options);
-      setMumbaiTime(formatter.format(new Date()));
+      setKeralaTime(formatter.format(new Date()));
     };
 
     updateTime();
@@ -632,8 +632,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             
             {/* Clock Time */}
             <div className={`transition-colors duration-300 ${open ? 'text-white/60' : 'text-[var(--color-text-dark)]/60'}`}>
-              <span>MUMBAI, IN — </span>
-              <ScrambledText text={mumbaiTime} />
+              <span>KERALA, IN — </span>
+              <ScrambledText text={keralaTime} />
             </div>
           </div>
 
