@@ -22,7 +22,7 @@ export const NavBar: React.FC = () => {
 
   const footerMetadata = {
     left: '©2026 TEJJXUU.UI',
-    right: 'MUMBAI, IN'
+    right: 'KERALA, IN'
   };
 
   return (
