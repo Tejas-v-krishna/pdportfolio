@@ -622,12 +622,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
           {/* Central Live Status & Clock Widget */}
           <div className="hidden md:flex items-center gap-6 pointer-events-auto text-[11px] uppercase tracking-[0.25em] font-semibold font-body select-none">
-            {/* Status dot */}
+            {/* Status */}
             <div className={`flex items-center gap-2.5 transition-colors duration-300 ${open ? 'text-white/60' : 'text-[var(--color-text-dark)]/60'}`}>
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
               <ScrambledText text="Available for work" />
             </div>
             
