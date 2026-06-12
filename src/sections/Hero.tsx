@@ -4,7 +4,6 @@ import tejasProfile from '../assets/tejas-profile.jpg';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CustomEase } from 'gsap/CustomEase';
-import SplitType from 'split-type';
 import { DraggablePostit } from '../components/DraggablePostit';
 import { HoverFollowPreview } from '../components/HoverFollowPreview';
 import Scribble from '../components/Scribble';
@@ -34,44 +33,12 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       "M0,0 C0.29,0 0.348,0.05 0.422,0.134 0.494,0.217 0.484,0.355 0.5,0.5 0.518,0.662 0.515,0.793 0.596,0.876 0.701,0.983 0.72,0.987 1,1 "
     );
 
-    // Use split-type to split text into lines
-    const typeSplit = new SplitType(heading, {
-      types: 'lines',
-      tagName: 'span'
-    });
-
-    const lines = heading.querySelectorAll('.line');
+    const lines = heading.querySelectorAll('.line-item');
     const wrapper = heading.closest('.hero-content-wrapper');
     const ellipseImgs = heading.querySelectorAll('.animate-ellipse-appear img');
     const stamp = heading.closest('#hero')?.querySelector('.hero-stamp');
 
-    // Re-bind click event handlers on links inside the split text
-    const links = heading.querySelectorAll('a');
-    links.forEach((link) => {
-      const href = link.getAttribute('href');
-      if (href) {
-        if (href.startsWith('/')) {
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-            navigate(href);
-          });
-        } else if (href.startsWith('#')) {
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.querySelector(href);
-            if (target) {
-              if ((window as any).lenis) {
-                (window as any).lenis.scrollTo(target, { duration: 1.2 });
-              } else {
-                target.scrollIntoView({ behavior: 'smooth' });
-              }
-            }
-          });
-        }
-      }
-    });
-
-    // Make heading visible now that it is split
+    // Make heading visible
     gsap.set(heading, { opacity: 1 });
 
     // Initial states (blurred and shifted for zoom in)
@@ -153,7 +120,6 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
 
     return () => {
       tl.kill();
-      typeSplit.revert();
       if (rotationTween) {
         rotationTween.kill();
       }
