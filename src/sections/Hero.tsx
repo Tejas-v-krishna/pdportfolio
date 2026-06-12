@@ -14,6 +14,8 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const stampContainerRef = useRef<HTMLDivElement>(null);
+  const stampSvgRef = useRef<SVGSVGElement>(null);
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
@@ -115,9 +117,46 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       }, 0.5);
     }
 
+    // Continuous rotation of circular text stamp
+    let rotationTween: gsap.core.Tween | null = null;
+    const stampSvg = stampSvgRef.current;
+    const stampContainer = stampContainerRef.current;
+
+    const handleMouseEnter = () => {
+      if (rotationTween) {
+        gsap.to(rotationTween, { timeScale: 2.5, duration: 0.6, ease: "power2.out" });
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (rotationTween) {
+        gsap.to(rotationTween, { timeScale: 1.0, duration: 0.8, ease: "power2.out" });
+      }
+    };
+
+    if (stampSvg && stampContainer) {
+      rotationTween = gsap.to(stampSvg, {
+        rotation: 360,
+        duration: 25,
+        ease: "none",
+        repeat: -1,
+        transformOrigin: "50% 50%"
+      });
+
+      stampContainer.addEventListener('mouseenter', handleMouseEnter);
+      stampContainer.addEventListener('mouseleave', handleMouseLeave);
+    }
+
     return () => {
       tl.kill();
       typeSplit.revert();
+      if (rotationTween) {
+        rotationTween.kill();
+      }
+      if (stampContainer) {
+        stampContainer.removeEventListener('mouseenter', handleMouseEnter);
+        stampContainer.removeEventListener('mouseleave', handleMouseLeave);
+      }
     };
   }, [isLoading, navigate]);
 
@@ -198,12 +237,16 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       </div>
 
       {/* 5. Circular Text Stamp */}
-      <div className="hero-stamp absolute right-6 sm:right-12 md:right-16 lg:right-20 bottom-8 sm:bottom-12 md:bottom-16 z-10 select-none pointer-events-none opacity-80">
+      <div 
+        ref={stampContainerRef}
+        className="hero-stamp absolute right-6 sm:right-12 md:right-16 lg:right-20 bottom-8 sm:bottom-12 md:bottom-16 z-10 select-none pointer-events-auto cursor-pointer opacity-80"
+      >
         <div className="relative flex items-center justify-center w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40">
           {/* Circular Text SVG */}
           <svg
+            ref={stampSvgRef}
             viewBox="0 0 200 200"
-            className="w-full h-full animate-spin-slow overflow-visible"
+            className="w-full h-full overflow-visible origin-center"
           >
             <defs>
               <path
