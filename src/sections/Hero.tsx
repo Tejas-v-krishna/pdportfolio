@@ -5,7 +5,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CustomEase } from 'gsap/CustomEase';
 import { DraggablePostit } from '../components/DraggablePostit';
-import { HoverFollowPreview } from '../components/HoverFollowPreview';
 import Scribble from '../components/Scribble';
 
 gsap.registerPlugin(ScrollTrigger, CustomEase);
@@ -235,13 +234,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
             </span>
           </span>
           <br className="hidden md:inline" />
-          <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=400&q=80" altText="Websites Mockup">
-            websites
-          </HoverFollowPreview>{' '}
-          for{' '}
-          <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1522542550221-31fd19575a2d?auto=format&fit=crop&w=400&q=80" altText="Brands Branding">
-            brands
-          </HoverFollowPreview>{' '}
+          websites for brands{' '}
           <a 
             href="#work" 
             className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group" 
@@ -264,15 +257,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
             </span>
           </a>
           <br className="hidden md:inline" />
-          that want to be{' '}
-          <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80" altText="Tactile waves">
-            felt
-          </HoverFollowPreview>
-          , not just{' '}
-          <HoverFollowPreview previewSrc="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" altText="Interactive designs">
-            seen
-          </HoverFollowPreview>
-          .
+          that want to be felt, not just seen.
         </h1>
 
       </div>
