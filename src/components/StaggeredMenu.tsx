@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -45,19 +45,103 @@ export interface StaggeredMenuProps {
   footerMetadata?: StaggeredMenuFooterMetadata;
 }
 
+// 1. Reusable ScrambledText Component for Hover Decryption
+interface ScrambledTextProps {
+  text: string;
+  className?: string;
+}
+
+const ScrambledText: React.FC<ScrambledTextProps> = ({ text, className }) => {
+  const [displayText, setDisplayText] = useState(text);
+  const isAnimating = useRef(false);
+
+  useEffect(() => {
+    if (!isAnimating.current) {
+      setDisplayText(text);
+    }
+  }, [text]);
+
+  const handleHover = () => {
+    if (isAnimating.current || !text) return;
+    isAnimating.current = true;
+    
+    const chars = 'ABCDEFGHJKLMNOPQRSTUVWXYZ0123456789!@#$';
+    let frame = 0;
+    const queue = text.split('').map((char) => ({
+      from: chars[Math.floor(Math.random() * chars.length)],
+      to: char,
+      start: Math.floor(Math.random() * 4),
+      end: Math.floor(Math.random() * 10) + 10
+    }));
+
+    const tick = () => {
+      let complete = 0;
+      const output = queue.map((item) => {
+        if (frame >= item.end) {
+          complete++;
+          return item.to;
+        } else if (frame >= item.start) {
+          if (item.to === ' ' || item.to === '—' || item.to === ':') return item.to;
+          return chars[Math.floor(Math.random() * chars.length)];
+        } else {
+          return item.from;
+        }
+      }).join('');
+
+      setDisplayText(output);
+
+      if (complete === queue.length) {
+        isAnimating.current = false;
+        return;
+      }
+
+      frame++;
+      requestAnimationFrame(tick);
+    };
+
+    tick();
+  };
+
+  return (
+    <span onMouseEnter={handleHover} className={className}>
+      {displayText}
+    </span>
+  );
+};
+
+// 2. LogoText Component for Hover Split-Rolling Effect
+const LogoText = ({ isOpen }: { isOpen: boolean }) => {
+  return (
+    <span className="relative inline-flex flex-col h-[1.2em] overflow-hidden group leading-none font-display font-bold text-2xl tracking-tight transition-colors duration-300">
+      {/* Original Text */}
+      <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full">
+        tejjxuu.ui
+      </span>
+      {/* Target Roll Text */}
+      <span 
+        className={`absolute top-full left-0 block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full font-body text-[11px] tracking-[0.2em] uppercase font-semibold py-[3px] whitespace-nowrap ${
+          isOpen ? 'text-white/60' : 'text-black/50'
+        }`}
+      >
+        product.designer
+      </span>
+    </span>
+  );
+};
+
 export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   position = 'right',
-  colors = ['#FFEBA5', '#BCE2FC', '#E1CFFC'], // Matching site postit colors
+  colors = ['#FFEBA5', '#BCE2FC', '#E1CFFC'], 
   items = [],
   socialItems = [],
   displaySocials = true,
   displayItemNumbering = true,
   className,
   logoUrl,
-  menuButtonColor = '#000000', // Matches site text-dark when closed
-  openMenuButtonColor = '#ffffff', // White when open on black panel
+  menuButtonColor = '#000000', 
+  openMenuButtonColor = '#ffffff', 
   changeMenuColorOnOpen = true,
-  accentColor = '#FFEBA5', // Highlight menu items in Postit Yellow
+  accentColor = '#FFEBA5', 
   isFixed = false,
   closeOnClickAway = true,
   onMenuOpen,
@@ -68,6 +152,27 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
   const navigate = useNavigate();
+
+  // Mumbai time state calculation
+  const [mumbaiTime, setMumbaiTime] = useState('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const options: Intl.DateTimeFormatOptions = {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      };
+      const formatter = new Intl.DateTimeFormat('en-US', options);
+      setMumbaiTime(formatter.format(new Date()));
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const panelRef = useRef<HTMLDivElement | null>(null);
   const preLayersRef = useRef<HTMLDivElement | null>(null);
@@ -423,7 +528,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     };
   }, [closeOnClickAway, open, closeMenu]);
 
-  // Navigate smoothly with React Router
   const handleItemClick = (e: React.MouseEvent<HTMLAnchorElement>, it: StaggeredMenuItem) => {
     if (it.link.startsWith('http://') || it.link.startsWith('https://')) {
       closeMenu();
@@ -493,11 +597,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           className="staggered-menu-header absolute top-0 left-0 w-full flex items-center justify-between px-6 sm:px-12 md:px-16 lg:px-20 py-8 bg-transparent pointer-events-none z-[1001]"
           aria-label="Main navigation header"
         >
+          {/* Logo Container */}
           <div className="sm-logo flex items-center select-none pointer-events-auto" aria-label="Logo">
             <Link
               to="/"
               onClick={handleLogoClick}
-              className="font-display font-bold text-2xl text-[var(--color-text-dark)] tracking-tight hover:opacity-75 transition-opacity lowercase no-underline"
+              className="no-underline transition-colors duration-300"
+              style={{ color: open ? '#ffffff' : 'var(--color-text-dark)' }}
             >
               {logoUrl ? (
                 <img
@@ -509,9 +615,30 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                   height={24}
                 />
               ) : (
-                "tejjxuu.ui"
+                <LogoText isOpen={open} />
               )}
             </Link>
+          </div>
+
+          {/* Central Live Status & Clock Widget */}
+          <div className="hidden md:flex items-center gap-6 pointer-events-auto text-[11px] uppercase tracking-[0.25em] font-semibold font-body select-none">
+            {/* Status dot */}
+            <div className={`flex items-center gap-2.5 transition-colors duration-300 ${open ? 'text-white/60' : 'text-[var(--color-text-dark)]/60'}`}>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <ScrambledText text="Available for work" />
+            </div>
+            
+            {/* Separator */}
+            <span className={open ? 'text-white/20' : 'text-black/15'}>|</span>
+            
+            {/* Clock Time */}
+            <div className={`transition-colors duration-300 ${open ? 'text-white/60' : 'text-[var(--color-text-dark)]/60'}`}>
+              <span>MUMBAI, IN — </span>
+              <ScrambledText text={mumbaiTime} />
+            </div>
           </div>
 
           <button
