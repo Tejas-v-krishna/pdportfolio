@@ -204,7 +204,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
                   type="circle" 
                   preserveAspectRatio="none"
                   delay={0.6}
-                  className="absolute -top-[25%] -left-[18%] w-[136%] h-[150%] text-zinc-500 pointer-events-none opacity-80 z-0" 
+                  className="absolute -top-[22%] -left-[24%] w-[148%] h-[144%] text-zinc-500 pointer-events-none opacity-80 z-0" 
                 />
                 {/* Ellipse Container */}
                 <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 z-10">
@@ -227,6 +227,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
                 living, breathing
                 <Scribble 
                   type="underline" 
+                  preserveAspectRatio="none"
                   delay={0.8}
                   className="absolute -bottom-2 sm:-bottom-3 left-0 w-full text-zinc-500 h-3 sm:h-4 pointer-events-none opacity-85" 
                 />
