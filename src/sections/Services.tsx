@@ -134,6 +134,17 @@ export const Services: React.FC = () => {
         gsap.killTweensOf(cols, 'flexGrow');
         cols.forEach((c, i) => {
           gsap.to(c, { flexGrow: i === idx ? FLEX_EXP : FLEX_SHR, duration: 0.55, ease: 'power3.out' });
+          
+          const headline = c.querySelector<HTMLElement>('.svc-headline');
+          if (headline) {
+            gsap.to(headline, {
+              y: i === idx ? -65 : 0, // Elevate active heading to make room for paragraph
+              scale: i === idx ? 1 : 0.35, // Shrink inactive headings to prevent clipping
+              transformOrigin: "left bottom",
+              duration: 0.55,
+              ease: 'power3.out'
+            });
+          }
         });
 
         tl.timeScale(1).play();
@@ -155,7 +166,19 @@ export const Services: React.FC = () => {
       if (prevTl) { prevTl.timeScale(1.4); prevTl.reverse(); }
 
       gsap.killTweensOf(cols, 'flexGrow');
-      cols.forEach(c => gsap.to(c, { flexGrow: FLEX_EQ, duration: 0.55, ease: 'power3.out' }));
+      cols.forEach(c => {
+        gsap.to(c, { flexGrow: FLEX_EQ, duration: 0.55, ease: 'power3.out' });
+        
+        const headline = c.querySelector<HTMLElement>('.svc-headline');
+        if (headline) {
+          gsap.to(headline, {
+            y: 0,
+            scale: 1,
+            duration: 0.55,
+            ease: 'power3.out'
+          });
+        }
+      });
 
       activeIdx.current = null;
       setHoveredIdx(null);
@@ -199,7 +222,7 @@ export const Services: React.FC = () => {
             </span>
 
             {/* ── ② Default headline — bottom-left, no clip wrapper needed ── */}
-            <div style={{ position: 'absolute', bottom: PAD + 8, left: PAD, right: 0, overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', bottom: PAD + 8, left: PAD, right: 0, overflow: 'visible' }}>
               <h3
                 className="svc-headline"
                 style={{
