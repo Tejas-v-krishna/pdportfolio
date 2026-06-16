@@ -12,7 +12,7 @@ export const About: React.FC = () => {
     if (!textRef.current) return;
 
     const typeSplit = new SplitType(textRef.current, {
-      types: 'lines, chars',
+      types: 'lines,chars',
       tagName: 'span'
     });
 
