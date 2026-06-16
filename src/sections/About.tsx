@@ -21,7 +21,8 @@ export const About: React.FC = () => {
       const fadeInTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: textRef.current,
-          start: 'top 85%', // Kept at 85% so you can actually see it when scrolling down
+          start: 'top 85%',
+          toggleActions: 'play none none reverse'
         }
       });
 
