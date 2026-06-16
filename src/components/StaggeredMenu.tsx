@@ -1,6 +1,7 @@
 import React, { useCallback, useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { Link, useNavigate } from 'react-router-dom';
+import { HoverRollingText } from './HoverRollingText';
 
 export interface StaggeredMenuItem {
   label: string;
@@ -49,9 +50,10 @@ export interface StaggeredMenuProps {
 interface ScrambledTextProps {
   text: string;
   className?: string;
+  fastMode?: boolean;
 }
 
-const ScrambledText: React.FC<ScrambledTextProps> = ({ text, className }) => {
+const ScrambledText: React.FC<ScrambledTextProps> = ({ text, className, fastMode = false }) => {
   const [displayText, setDisplayText] = useState(text);
   const isAnimating = useRef(false);
 
@@ -70,8 +72,8 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({ text, className }) => {
     const queue = text.split('').map((char) => ({
       from: chars[Math.floor(Math.random() * chars.length)],
       to: char,
-      start: Math.floor(Math.random() * 4),
-      end: Math.floor(Math.random() * 10) + 10
+      start: fastMode ? 0 : Math.floor(Math.random() * 4),
+      end: fastMode ? Math.floor(Math.random() * 2) + 2 : Math.floor(Math.random() * 10) + 10
     }));
 
     const tick = () => {
@@ -112,14 +114,14 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({ text, className }) => {
 // 2. LogoText Component for Hover Split-Rolling Effect
 const LogoText = ({ isOpen }: { isOpen: boolean }) => {
   return (
-    <span className="relative inline-flex flex-col h-[1.2em] overflow-hidden group leading-none font-display font-bold text-2xl tracking-tight transition-colors duration-300">
+    <span className="relative inline-grid grid-cols-1 grid-rows-1 h-[1.2em] overflow-hidden leading-none font-display font-medium text-xl tracking-tight transition-colors duration-300">
       {/* Original Text */}
-      <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full">
+      <span className="block row-start-1 col-start-1 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full">
         tejjxuu.ui
       </span>
       {/* Target Roll Text */}
       <span 
-        className={`absolute top-full left-0 block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full font-body text-[11px] tracking-[0.2em] uppercase font-semibold py-[3px] whitespace-nowrap ${
+        className={`block row-start-1 col-start-1 translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 font-body text-[11px] tracking-[0.2em] uppercase font-medium py-[2px] whitespace-nowrap ${
           isOpen ? 'text-white/60' : 'text-black/50'
         }`}
       >
@@ -151,6 +153,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 }: StaggeredMenuProps) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
+  const [isBtnHovered, setIsBtnHovered] = useState(false);
+  const [hoveredItemIdx, setHoveredItemIdx] = useState<number | null>(null);
   const navigate = useNavigate();
 
   // Kerala time state calculation
@@ -184,12 +188,10 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
   const textInnerRef = useRef<HTMLSpanElement | null>(null);
   const textWrapRef = useRef<HTMLSpanElement | null>(null);
-  const [textLines, setTextLines] = useState<string[]>(['Menu', 'Close']);
 
   const openTlRef = useRef<gsap.core.Timeline | null>(null);
   const closeTweenRef = useRef<gsap.core.Tween | null>(null);
   const spinTweenRef = useRef<gsap.core.Timeline | null>(null);
-  const textCycleAnimRef = useRef<gsap.core.Tween | null>(null);
   const colorTweenRef = useRef<gsap.core.Tween | null>(null);
 
   const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -221,8 +223,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         gsap.set(preContainer, { xPercent: 0, opacity: 1 });
       }
 
-      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
-      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
+      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0, xPercent: -50, yPercent: -50 });
+      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90, xPercent: -50, yPercent: -50 });
       gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
 
       gsap.set(textInner, { yPercent: 0 });
@@ -405,13 +407,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
       spinTweenRef.current = gsap
         .timeline({ defaults: { ease: 'power4.out' } })
-        .to(h, { rotate: 45, duration: 0.5 }, 0)
-        .to(v, { rotate: -45, duration: 0.5 }, 0);
+        .to(h, { rotate: 45, xPercent: -50, yPercent: -50, duration: 0.5 }, 0)
+        .to(v, { rotate: -45, xPercent: -50, yPercent: -50, duration: 0.5 }, 0);
     } else {
       spinTweenRef.current = gsap
         .timeline({ defaults: { ease: 'power3.inOut' } })
-        .to(h, { rotate: 0, duration: 0.35 }, 0)
-        .to(v, { rotate: 90, duration: 0.35 }, 0)
+        .to(h, { rotate: 0, xPercent: -50, yPercent: -50, duration: 0.35 }, 0)
+        .to(v, { rotate: 90, xPercent: -50, yPercent: -50, duration: 0.35 }, 0)
         .to(icon, { rotate: 0, duration: 0.001 }, 0);
     }
   }, []);
@@ -442,37 +444,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
 
-  const animateText = useCallback((opening: boolean) => {
-    const inner = textInnerRef.current;
-    if (!inner) return;
-
-    textCycleAnimRef.current?.kill();
-
-    const currentLabel = opening ? 'Menu' : 'Close';
-    const targetLabel = opening ? 'Close' : 'Menu';
-    const cycles = 3;
-
-    const seq: string[] = [currentLabel];
-    let last = currentLabel;
-    for (let i = 0; i < cycles; i++) {
-      last = last === 'Menu' ? 'Close' : 'Menu';
-      seq.push(last);
-    }
-    if (last !== targetLabel) seq.push(targetLabel);
-    seq.push(targetLabel);
-
-    setTextLines(seq);
-    gsap.set(inner, { yPercent: 0 });
-
-    const lineCount = seq.length;
-    const finalShift = ((lineCount - 1) / lineCount) * 100;
-
-    textCycleAnimRef.current = gsap.to(inner, {
-      yPercent: -finalShift,
-      duration: 0.5 + lineCount * 0.07,
-      ease: 'power4.out'
-    });
-  }, []);
 
   const toggleMenu = useCallback(() => {
     const target = !openRef.current;
@@ -482,17 +453,14 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     if (target) {
       onMenuOpen?.();
       playOpen();
-      document.body.style.overflow = 'hidden';
     } else {
       onMenuClose?.();
       playClose();
-      document.body.style.overflow = '';
     }
 
     animateIcon(target);
     animateColor(target);
-    animateText(target);
-  }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
+  }, [playOpen, playClose, animateIcon, animateColor, onMenuOpen, onMenuClose]);
 
   const closeMenu = useCallback(() => {
     if (openRef.current) {
@@ -502,10 +470,89 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       playClose();
       animateIcon(false);
       animateColor(false);
-      animateText(false);
-      document.body.style.overflow = '';
     }
-  }, [playClose, animateIcon, animateColor, animateText, onMenuClose]);
+  }, [playClose, animateIcon, animateColor, onMenuClose]);
+
+  const handleMouseEnter = useCallback(() => {
+    setIsBtnHovered(true);
+    if (openRef.current) return;
+    const h = plusHRef.current;
+    const v = plusVRef.current;
+    if (h && v) {
+      gsap.to(h, {
+        rotate: 45,
+        xPercent: -50,
+        yPercent: -50,
+        duration: 0.3,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      });
+      gsap.to(v, {
+        rotate: -45,
+        xPercent: -50,
+        yPercent: -50,
+        duration: 0.3,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      });
+    }
+    if (toggleBtnRef.current) {
+      gsap.to(toggleBtnRef.current, { color: '#9ca3af', duration: 0.3, ease: 'power2.out' }); // Light gray
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsBtnHovered(false);
+    if (openRef.current) return;
+    const h = plusHRef.current;
+    const v = plusVRef.current;
+    if (h && v) {
+      gsap.to(h, {
+        rotate: 0,
+        xPercent: -50,
+        yPercent: -50,
+        duration: 0.3,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      });
+      gsap.to(v, {
+        rotate: 90,
+        xPercent: -50,
+        yPercent: -50,
+        duration: 0.3,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      });
+    }
+    if (toggleBtnRef.current) {
+      gsap.to(toggleBtnRef.current, { color: menuButtonColor, duration: 0.3, ease: 'power2.out' });
+    }
+  }, [menuButtonColor]);
+
+  // Centralized side-effects hook for managing page state and Lenis scroll when menu open state changes
+  React.useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      document.body.classList.add('menu-blur-active');
+      if ((window as any).lenis) {
+        (window as any).lenis.stop();
+      }
+    } else {
+      document.body.style.overflow = '';
+      document.body.classList.remove('menu-blur-active');
+      if ((window as any).lenis) {
+        (window as any).lenis.start();
+      }
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.classList.remove('menu-blur-active');
+      if ((window as any).lenis) {
+        (window as any).lenis.start();
+      }
+    };
+  }, [open]);
 
   React.useEffect(() => {
     if (!closeOnClickAway || !open) return;
@@ -524,7 +571,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = '';
     };
   }, [closeOnClickAway, open, closeMenu]);
 
@@ -602,7 +648,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             <Link
               to="/"
               onClick={handleLogoClick}
-              className="no-underline transition-colors duration-300"
+              className="no-underline transition-colors duration-300 group cursor-pointer inline-block"
               style={{ color: open ? '#ffffff' : 'var(--color-text-dark)' }}
             >
               {logoUrl ? (
@@ -620,32 +666,19 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             </Link>
           </div>
 
-          {/* Central Live Status & Clock Widget */}
-          <div className="hidden md:flex items-center gap-6 pointer-events-auto text-[11px] uppercase tracking-[0.25em] font-semibold font-body select-none">
-            {/* Status */}
-            <div className={`flex items-center gap-2.5 transition-colors duration-300 ${open ? 'text-white/60' : 'text-[var(--color-text-dark)]/60'}`}>
-              <ScrambledText text="Available for work" />
-            </div>
-            
-            {/* Separator */}
-            <span className={open ? 'text-white/20' : 'text-black/15'}>|</span>
-            
-            {/* Clock Time */}
-            <div className={`transition-colors duration-300 ${open ? 'text-white/60' : 'text-[var(--color-text-dark)]/60'}`}>
-              <span>KERALA, IN — </span>
-              <ScrambledText text={keralaTime} />
-            </div>
-          </div>
+
 
           <button
             ref={toggleBtnRef}
-            className={`sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer font-medium leading-none overflow-visible pointer-events-auto transition-colors duration-300 ${
+            className={`sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer font-medium leading-none overflow-visible pointer-events-auto transition-colors duration-300 py-4 -my-4 ${
               open ? 'text-white' : 'text-[var(--color-text-dark)]'
             }`}
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="staggered-menu-panel"
             onClick={toggleMenu}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             type="button"
           >
             <span
@@ -653,13 +686,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               className="sm-toggle-textWrap relative inline-block h-[1em] overflow-hidden whitespace-nowrap"
               aria-hidden="true"
             >
-              <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
-                {textLines.map((l, i) => (
-                  <span className="sm-toggle-line block h-[1em] leading-none" key={i}>
-                    {l}
-                  </span>
-                ))}
-              </span>
+              <HoverRollingText text={open ? 'Close' : 'Menu'} isHovered={isBtnHovered} />
             </span>
 
             <span
@@ -682,7 +709,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         <aside
           id="staggered-menu-panel"
           ref={panelRef}
-          className="staggered-menu-panel absolute top-0 right-0 h-full bg-[#000000] flex flex-col overflow-y-auto z-10 pointer-events-auto border-l border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.5)]"
+          className={`staggered-menu-panel absolute top-0 right-0 h-full bg-[#000000] flex flex-col overflow-y-auto z-10 pointer-events-auto border-l border-white/10 transition-shadow duration-300 ${
+            open ? 'shadow-[0_0_80px_rgba(0,0,0,0.5)]' : 'shadow-none'
+          }`}
           aria-hidden={!open}
         >
           <div className="sm-panel-inner flex-1 flex flex-col justify-between gap-12 sm:gap-14 h-full">
@@ -700,9 +729,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                       aria-label={it.ariaLabel}
                       data-index={idx + 1}
                       onClick={(e) => handleItemClick(e, it)}
+                      onMouseEnter={() => setHoveredItemIdx(idx)}
+                      onMouseLeave={() => setHoveredItemIdx(null)}
                     >
                       <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
-                        {it.label}
+                        <HoverRollingText text={it.label} isHovered={hoveredItemIdx === idx} />
                       </span>
                     </a>
                   </li>
@@ -777,6 +808,25 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             )}
           </div>
         </aside>
+
+        {/* Central Live Status & Clock Widget - Bottom Fixed */}
+        <div 
+          className="hidden md:flex items-center gap-6 pointer-events-auto text-[11px] uppercase tracking-[0.25em] font-semibold font-body select-none fixed bottom-8 left-1/2 -translate-x-1/2 z-[1001]"
+        >
+          {/* Status */}
+          <div className={`flex items-center gap-2.5 transition-colors duration-300 ${open ? 'text-white/60' : 'text-[var(--color-text-dark)]/60'}`}>
+            <ScrambledText text="Available for work" />
+          </div>
+          
+          {/* Separator */}
+          <span className={open ? 'text-white/20' : 'text-black/15'}>|</span>
+          
+          {/* Clock Time */}
+          <div className={`transition-colors duration-300 ${open ? 'text-white/60' : 'text-[var(--color-text-dark)]/60'}`}>
+            <span>KERALA, IN — </span>
+            <ScrambledText text={keralaTime} />
+          </div>
+        </div>
       </div>
 
       <style>{`
@@ -785,7 +835,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .staggered-menu-header > * { pointer-events: auto; }
 .sm-scope .sm-logo { display: flex; align-items: center; user-select: none; }
 .sm-scope .sm-logo-img { display: block; height: 32px; width: auto; object-fit: contain; }
-.sm-scope .sm-toggle { position: relative; display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: none; cursor: pointer; line-height: 1; overflow: visible; font-family: var(--font-body); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; }
+.sm-scope .sm-toggle { position: relative; display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: none; cursor: pointer; line-height: 1; overflow: visible; font-family: var(--font-body); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; transition: color 0.3s ease !important; padding: 1rem 0 1rem 1.5rem; margin-top: -1rem; margin-bottom: -1rem; }
+.sm-scope .sm-toggle:hover { color: #a1a1aa !important; }
 .sm-scope .sm-toggle:focus-visible { outline: 2px solid #ffffffaa; outline-offset: 4px; border-radius: 4px; }
 .sm-scope .sm-toggle-textWrap { position: relative; margin-right: 0.5em; display: inline-block; height: 1em; overflow: hidden; white-space: nowrap; width: 60px; min-width: 60px; }
 .sm-scope .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1; }

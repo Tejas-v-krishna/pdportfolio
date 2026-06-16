@@ -1,432 +1,438 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight } from 'lucide-react';
-import { Magnetic } from '../components/Magnetic';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ─── Project Data ────────────────────────────────────────────────────────────
+const projects = [
+  {
+    name: 'Trams Internal Dashboard',
+    image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80',
+    leftLabel: 'B2B SaaS',
+    rightLabel: 'UI/UX & Frontend',
+  },
+  {
+    name: 'Bold Cursor Agency',
+    image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=900&q=80',
+    leftLabel: 'Creative Studio',
+    rightLabel: 'Web Platform',
+  },
+  {
+    name: 'University Club Branding',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=80',
+    leftLabel: 'Identity',
+    rightLabel: 'Visual Design',
+  },
+  {
+    name: 'LearnWith Platform',
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&q=80',
+    leftLabel: 'EdTech',
+    rightLabel: 'Product Design',
+  },
+  {
+    name: 'Snapdeal Checkout Flow',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&q=80',
+    leftLabel: 'E-Commerce',
+    rightLabel: 'UX Research',
+  },
+  {
+    name: 'CyberDiag Health',
+    image: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=900&q=80',
+    leftLabel: 'Healthcare',
+    rightLabel: 'Mobile App',
+  },
+  {
+    name: 'Zenith FinTech',
+    image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=900&q=80',
+    leftLabel: 'Finance',
+    rightLabel: 'System Architecture',
+  },
+  {
+    name: 'ChromaBlock System',
+    image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=900&q=80',
+    leftLabel: 'Design System',
+    rightLabel: 'React / Tailwind',
+  },
+];
+
+const N = projects.length;
+
 export const SelectedWork: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const pinContainerRef = useRef<HTMLDivElement>(null);
-  const scrollTriggerRef = useRef<any>(null);
-  const navigate = useNavigate();
+  // ── Refs ──────────────────────────────────────────────────────────────────
+  const sectionRef             = useRef<HTMLElement>(null);
+  const indexH1Ref             = useRef<HTMLHeadingElement>(null);
+  const imagesContainerRef     = useRef<HTMLDivElement>(null);
+  const namesContainerRef      = useRef<HTMLDivElement>(null);
+  const leftLabelsContainerRef = useRef<HTMLDivElement>(null);
+  const imgRefs                = useRef<HTMLDivElement[]>([]);
+  const nameRefs               = useRef<HTMLDivElement[]>([]);
+  const nameListRefs           = useRef<HTMLSpanElement[]>([]);
+  const nameIndexRefs          = useRef<HTMLSpanElement[]>([]);
+  const leftLabelRefs          = useRef<HTMLDivElement[]>([]);
+  const rightLabelRefs         = useRef<HTMLDivElement[]>([]);
+  const bgLinesRef             = useRef<SVGGElement>(null);
 
-  const [activeProjectIdx, setActiveProjectIdx] = useState(0);
-
-  const scrollToProject = (idx: number) => {
-    const st = scrollTriggerRef.current;
-    if (!st) return;
-    const start = st.start;
-    const end = st.end;
-    const targetScroll = start + (idx / projects.length) * (end - start) + 15;
-    
-    if ((window as any).lenis) {
-      (window as any).lenis.scrollTo(targetScroll, { duration: 1.2 });
-    } else {
-      window.scrollTo({ top: targetScroll, behavior: 'smooth' });
-    }
-  };
-
-  const projects = [
-    {
-      title: "Seller AI Assistant",
-      description: "Redesigning a bilingual, Hindi-first AI dashboard so Tier 2/3 city sellers can actually trust and act on AI recommendations.",
-      tags: ["AI UX", "Bilingual Design", "Dashboard"],
-      image: "https://placehold.co/1200x800/E5EBE4/1A1A18?text=Seller+AI+Assistant",
-      bgColorCode: "#EAEFE9", // light soft green
-      accentColor: "#3B4E36",
-      link: "#"
-    },
-    {
-      title: "ExamWaliSite",
-      description: "A full UX audit and design-system rebuild for an ed-tech client, including light/dark mode and an interactive prototype.",
-      tags: ["UX Audit", "Design Systems", "Web"],
-      image: "https://placehold.co/1200x800/E6E3EB/1A1A18?text=ExamWaliSite",
-      bgColorCode: "#ECE8F1", // light soft lavender
-      accentColor: "#4E3663",
-      link: "#"
-    },
-    {
-      title: "LearnWith",
-      description: "Built a complete design system and story-driven UX copy for a design-learning product, backed by user research.",
-      tags: ["Design Systems", "UX Research", "EdTech"],
-      image: "https://placehold.co/1200x800/EBE8E3/1A1A18?text=LearnWith",
-      bgColorCode: "#EFEAE2", // light soft sand
-      accentColor: "#614F35",
-      link: "#"
-    }
-  ];
-
-  const animateImageEntry = (img: HTMLElement) => {
-    gsap.fromTo(
-      img,
-      {
-        scale: 1.25,
-        clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
-        opacity: 0,
-      },
-      {
-        scale: 1,
-        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-        opacity: 1,
-        duration: 1,
-        ease: "power2.inOut",
-      }
-    );
-
-    const innerImg = img.querySelector("img");
-    if (innerImg) {
-      gsap.fromTo(
-        innerImg,
-        {
-          filter: "contrast(2) brightness(10)",
-        },
-        {
-          filter: "contrast(1) brightness(1)",
-          duration: 1,
-          ease: "power2.inOut",
-        }
-      );
-    }
-  };
-
-  const animateImageExitForward = (img: HTMLElement) => {
-    gsap.to(img, {
-      scale: 0.5,
-      opacity: 0,
-      duration: 1,
-      ease: "power2.inOut",
-    });
-  };
-
-  const animateImageExitReverse = (img: HTMLElement) => {
-    gsap.to(img, {
-      scale: 1.25,
-      clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
-      duration: 1,
-      ease: "power2.inOut",
-    });
-
-    const innerImg = img.querySelector("img");
-    if (innerImg) {
-      gsap.to(innerImg, {
-        filter: "contrast(2) brightness(10)",
-        duration: 1,
-        ease: "power2.inOut",
-      });
-    }
-  };
-
+  // ── GSAP setup ───────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!containerRef.current || !pinContainerRef.current) return;
+    const section        = sectionRef.current;
+    const indexEl        = indexH1Ref.current;
+    const imagesCont     = imagesContainerRef.current;
+    const namesCont      = namesContainerRef.current;
+    const leftLabelsCont = leftLabelsContainerRef.current;
+    const bgLines        = bgLinesRef.current;
+    if (!section || !indexEl || !imagesCont || !namesCont || !leftLabelsCont || !bgLines) return;
+
+    const sectionPadding = parseFloat(getComputedStyle(section).padding) || 32;
+    const indexHeight    = indexEl.offsetHeight;
+
+    const moveDistanceIndex = window.innerHeight - sectionPadding * 2 - indexHeight;
+    const itemHeight = 130; // Consistent vertical height for list items
 
     const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
+      ScrollTrigger.create({
+        trigger: section,
+        start:   'top top',
+        end:     `+=${window.innerHeight * 5}px`,
+        pin:     true,
+        pinType: 'transform',
+        pinSpacing: true,
+        scrub:   1,
 
-      // Desktop Only Pinned Multi-Image Canvas
-      mm.add("(min-width: 768px)", () => {
-        const images = gsap.utils.toArray<HTMLElement>('.img');
-        const textBlocks = gsap.utils.toArray<HTMLElement>('.work-text-block');
+        onUpdate: (self) => {
+          const p = self.progress;
 
-        if (images.length === 0) return;
+          // Background subtle rotation
+          gsap.set(bgLines, { rotation: p * 90, transformOrigin: 'center center' });
 
-        // Start by animating the first image and text block
-        animateImageEntry(images[0]);
-        gsap.to(textBlocks[0], { opacity: 1, y: 0, duration: 1, ease: "power2.out" });
+          // Counter text + downward drift
+          const current = Math.min(Math.floor(p * N) + 1, N);
+          
+          // Format as "01 / 08" like the screenshot
+          const currentStr = String(current).padStart(2, '0');
+          const totalStr = String(N).padStart(2, '0');
+          indexEl.innerHTML = `${currentStr}<span style="font-size: 0.4em; margin-left: 0.2em; color: #000000;">/${totalStr}</span>`;
+          gsap.set(indexEl, { y: p * moveDistanceIndex });
 
-        // Hide other text blocks initially
-        textBlocks.slice(1).forEach((block) => {
-          gsap.set(block, { opacity: 0, y: 30 });
-        });
+          // Vertical scrolling of name container: active item stays centered at 50vh
+          const namesContY = - (p * (N - 1) + 0.5) * itemHeight;
+          gsap.set(namesCont, { y: namesContY });
+          // Note: leftLabelsCont is no longer translated since left labels are pinned absolute at 50vh
 
-        let lastCycle = 0;
+          // Animate each project item
+          for (let i = 0; i < N; i++) {
+            const p_i = i / (N - 1);
+            const deltaP = p - p_i;
+            const t_i = Math.max(0, 1 - Math.abs(deltaP) * (N - 1));
+            const ease_t = Math.sin(t_i * Math.PI / 2); // Smooth sine transition
 
-        scrollTriggerRef.current = ScrollTrigger.create({
-          trigger: containerRef.current,
-          start: "top top",
-          end: () => `+=${window.innerHeight * 3}`, // 3 screens scroll length
-          pin: pinContainerRef.current,
-          pinSpacing: true,
-          scrub: 0.1,
-          onUpdate: (self) => {
-            const totalProgress = self.progress * images.length;
-            const currentCycle = Math.floor(totalProgress);
-            const cycleProgress = (totalProgress % 1) * 100;
+            // 1. Thumbnail Image crossfade & scale
+            const img = imgRefs.current[i];
+            if (img) {
+              gsap.set(img, {
+                opacity: ease_t,
+                scale: 0.92 + 0.08 * ease_t,
+                zIndex: ease_t > 0.1 ? 2 : 1,
+              });
+            }
 
-            if (currentCycle < images.length) {
-              const currentImage = images[currentCycle];
-              if (currentImage) {
-                const scale = 1 - (0.25 * cycleProgress) / 100;
-                gsap.to(currentImage, {
-                  scale: scale,
-                  duration: 0.1,
-                  overwrite: "auto",
+            // 2a. Left labels (blurred crossfade & stagger up with narrow transition window to prevent overlap)
+            const leftLabel = leftLabelRefs.current[i];
+            if (leftLabel) {
+              // Narrow transition window so only one text is visible at a time
+              const left_t_i = Math.max(0, 1 - Math.abs(deltaP) * 16);
+              const left_ease_t = Math.sin(left_t_i * Math.PI / 2);
+
+              const dir = deltaP > 0 ? -1 : 1;
+              const yOffset = dir * 40 * (1 - left_ease_t);
+              const blurVal = 16 * (1 - left_ease_t);
+
+              gsap.set(leftLabel, {
+                opacity: left_ease_t,
+                y: yOffset,
+                filter: `blur(${blurVal}px)`,
+              });
+            }
+
+            // 2b. Right labels (subtext under name, staggered slide up/down)
+            const rightLabel = rightLabelRefs.current[i];
+            if (rightLabel) {
+              const dir = deltaP > 0 ? -1 : 1;
+              const yOffset = dir * 15 * (1 - ease_t);
+
+              gsap.set(rightLabel, {
+                opacity: ease_t,
+                y: yOffset,
+              });
+            }
+
+            // 3. Name Item styling: Swap font family, interpolate size on a SINGLE span (no overlays)
+            const nameItemDiv = nameRefs.current[i];
+            const spanName = nameListRefs.current[i];
+            const spanIndex = nameIndexRefs.current[i];
+
+            if (nameItemDiv && spanName) {
+              // Keep normal vertical spacing (no accordion push translation)
+              gsap.set(nameItemDiv, { x: 0, y: 0 });
+
+              const opacity = 0.3 + 0.7 * ease_t;
+              const fontFamily = 'var(--font-display)';
+              const fontWeight = '400';
+
+              // Fluidly interpolate font size (approx. 24px/18px to 54px/32px)
+              const isMobile = window.innerWidth < 640;
+              const minSize = isMobile ? 18 : 24;
+              const maxSize = isMobile ? 32 : 54;
+              const currentSize = minSize + (maxSize - minSize) * ease_t;
+
+              gsap.set(spanName, {
+                opacity: opacity,
+                fontFamily: fontFamily,
+                fontWeight: fontWeight,
+                fontSize: `${currentSize}px`,
+              });
+
+              if (spanIndex) {
+                gsap.set(spanIndex, { 
+                  opacity: ease_t,
+                  x: 20 * (1 - ease_t) // Slide leftwards into position as it active-fades
                 });
               }
-
-              if (currentCycle !== lastCycle) {
-                setActiveProjectIdx(currentCycle);
-                if (self.direction > 0) {
-                  // Scroll down (Forward)
-                  if (lastCycle < images.length) {
-                    animateImageExitForward(images[lastCycle]);
-                    gsap.to(textBlocks[lastCycle], { 
-                      opacity: 0, 
-                      y: -30, 
-                      duration: 0.8, 
-                      ease: "power2.inOut",
-                      onComplete: () => {
-                        gsap.set(textBlocks[lastCycle], { pointerEvents: 'none' });
-                      }
-                    });
-                  }
-                  if (currentCycle < images.length) {
-                    animateImageEntry(images[currentCycle]);
-                    gsap.set(textBlocks[currentCycle], { pointerEvents: 'auto' });
-                    gsap.fromTo(textBlocks[currentCycle],
-                      { opacity: 0, y: 30 },
-                      { opacity: 1, y: 0, duration: 1, ease: "power2.inOut" }
-                    );
-                    // Animate background color transition
-                    gsap.to(containerRef.current, {
-                      backgroundColor: projects[currentCycle].bgColorCode,
-                      duration: 0.8,
-                      ease: "power2.out"
-                    });
-                  }
-                } else {
-                  // Scroll up (Backward)
-                  if (currentCycle < images.length) {
-                    animateImageEntry(images[currentCycle]);
-                    gsap.set(textBlocks[currentCycle], { pointerEvents: 'auto' });
-                    gsap.fromTo(textBlocks[currentCycle],
-                      { opacity: 0, y: -30 },
-                      { opacity: 1, y: 0, duration: 1, ease: "power2.inOut" }
-                    );
-                    // Animate background color transition
-                    gsap.to(containerRef.current, {
-                      backgroundColor: projects[currentCycle].bgColorCode,
-                      duration: 0.8,
-                      ease: "power2.out"
-                    });
-                  }
-                  if (lastCycle < images.length) {
-                    animateImageExitReverse(images[lastCycle]);
-                    gsap.to(textBlocks[lastCycle], { 
-                      opacity: 0, 
-                      y: 30, 
-                      duration: 0.8, 
-                      ease: "power2.inOut",
-                      onComplete: () => {
-                        gsap.set(textBlocks[lastCycle], { pointerEvents: 'none' });
-                      }
-                    });
-                  }
-                }
-                lastCycle = currentCycle;
-              }
             }
-          },
-        });
+          }
+        },
       });
+    }, sectionRef);
 
-    }, containerRef);
-
-    return () => {
-      scrollTriggerRef.current = null;
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, []);
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
-    if (link === '#') {
-      e.preventDefault();
-      return;
-    }
-    if (link.startsWith('/')) {
-      e.preventDefault();
-      navigate(link);
-    }
-  };
-
   return (
-    <section 
-      ref={containerRef} 
-      id="work" 
-      className="relative w-full overflow-hidden transition-colors duration-500"
-      style={{ backgroundColor: projects[0].bgColorCode }}
+    <section
+      ref={sectionRef}
+      id="work"
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100vh',
+        padding: '2rem',
+        overflow: 'visible',
+        background: 'var(--color-base)',
+        color: 'var(--color-text-dark)',
+      }}
     >
-      {/* Desktop Pinned Gallery Layout */}
-      <div ref={pinContainerRef} className="hidden md:flex md:h-screen w-full items-center relative z-10">
+      {/* ── Background Geometric Lines ────────────────────────────────────── */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+        {/* Static Horizontal Line */}
+        <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'rgba(0,0,0,0.06)' }} />
         
-        {/* Left Column: Text Stack */}
-        <div className="w-[45%] h-full pl-12 md:pl-24 lg:pl-28 flex flex-col justify-center relative">
-          <div className="absolute top-16 left-12 md:left-24 lg:left-28 font-body text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-text-dark)] opacity-40 select-none">
-            Selected Work
-          </div>
-          
-          <div className="relative w-full h-[400px]">
-            {projects.map((project, idx) => (
-              <div 
-                key={idx} 
-                className="work-text-block absolute inset-0 flex flex-col justify-center"
-                style={{ 
-                  opacity: idx === 0 ? 1 : 0,
-                  transform: idx === 0 ? 'translateY(0px)' : 'translateY(30px)',
-                  pointerEvents: idx === 0 ? 'auto' : 'none' 
-                }}
-              >
-                {/* index count */}
-                <span 
-                  className="font-body text-xs font-semibold uppercase tracking-[0.2em] mb-4 block text-black"
-                >
-                  CASE STUDY 0{idx + 1}
-                </span>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.tags.map((tag, tagIdx) => (
-                    <span 
-                      key={tagIdx} 
-                      className="bg-white/70 backdrop-blur-md text-[var(--color-text-dark)] font-medium text-xs px-3.5 py-1.5 rounded-full border border-black/[0.04] shadow-[0_2px_10px_rgba(0,0,0,0.01)]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Title */}
-                <h3 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-[var(--color-text-dark)] mb-5 leading-tight tracking-tight">
-                  {project.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-base sm:text-lg opacity-80 mb-8 md:mb-10 leading-relaxed max-w-xl">
-                  {project.description}
-                </p>
-
-                {/* CTA Link */}
-                <Magnetic>
-                  <a 
-                    href={project.link} 
-                    onClick={(e) => handleLinkClick(e, project.link)}
-                    className="inline-flex items-center gap-2 text-white px-7 py-3.5 rounded-full text-sm font-semibold hover:opacity-90 transition-all duration-300 w-fit shadow-lg shadow-black/5 group/btn"
-                    style={{ backgroundColor: 'var(--color-text-dark)' }}
-                  >
-                    <span>Read case study</span>
-                    <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1" />
-                  </a>
-                </Magnetic>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Column: Image Stack */}
-        <div className="w-[55%] h-full relative flex items-center justify-center">
-          <div className="relative w-full h-full">
-            {projects.map((project, idx) => (
-              <div 
-                key={idx} 
-                className="img absolute rounded-[2.5rem] overflow-hidden border border-black/[0.04] shadow-[0_20px_50px_rgba(0,0,0,0.08)] bg-black/[0.02]"
-                style={{
-                  clipPath: idx === 0 ? "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" : "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
-                  opacity: idx === 0 ? 1 : 0,
-                }}
-              >
-                <img 
-                  src={project.image} 
-                  alt={project.title} 
-                  className="w-full h-full object-cover" 
-                  style={{
-                    filter: idx === 0 ? "contrast(1) brightness(1)" : "contrast(2) brightness(10)"
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Floating Progress Bar Sidebar */}
-        <div className="absolute right-6 sm:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 border border-black/10 bg-white/20 backdrop-blur-md rounded-2xl p-3.5 transition-all duration-300 hover:bg-white/65 hover:shadow-lg group/bar select-none w-11 hover:w-56 overflow-hidden">
-          {projects.map((project, idx) => (
-            <button
-              key={idx}
-              onClick={() => scrollToProject(idx)}
-              className="flex items-center justify-between w-full cursor-pointer focus:outline-none text-left"
-            >
-              {/* Label */}
-              <span 
-                className="text-[10px] font-body font-bold tracking-widest uppercase transition-all duration-300 opacity-0 group-hover/bar:opacity-75 max-w-0 group-hover/bar:max-w-[150px] overflow-hidden whitespace-nowrap flex-grow group-hover/bar:pr-3"
-                style={{ color: 'var(--color-text-dark)' }}
-              >
-                {project.title}
-              </span>
-              
-              {/* Dot Wrapper (to ensure dots stay perfectly aligned in a column) */}
-              <div className="w-4 h-4 flex items-center justify-center shrink-0">
-                {/* Dot */}
-                <div 
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    activeProjectIdx === idx 
-                      ? 'scale-125' 
-                      : 'bg-black/20 hover:bg-black/50 hover:scale-110'
-                  }`}
-                  style={{ 
-                    backgroundColor: activeProjectIdx === idx ? '#000000' : undefined 
-                  }}
-                />
-              </div>
-            </button>
-          ))}
-        </div>
-
+        {/* Rotating SVG group for circle and diagonals */}
+        <svg style={{ position: 'absolute', top: '50%', left: '50%', width: '150vh', height: '150vh', transform: 'translate(-50%, -50%)', overflow: 'visible' }}>
+          <g ref={bgLinesRef}>
+            {/* Massive Circle */}
+            <circle cx="50%" cy="50%" r="45vh" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
+            <circle cx="50%" cy="50%" r="75vh" fill="none" stroke="rgba(0,0,0,0.03)" strokeWidth="1" />
+            
+            {/* Diagonal Lines crossing through center */}
+            <line x1="0" y1="0" x2="100%" y2="100%" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
+            <line x1="100%" y1="0" x2="0" y2="100%" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
+          </g>
+        </svg>
       </div>
 
-      {/* Mobile Vertical Layout */}
-      <div className="md:hidden w-full px-6 py-12 flex flex-col gap-16">
-        <div>
-          <h2 className="font-display font-bold text-4xl text-[var(--color-text-dark)] mb-2">
-            Selected Work
-          </h2>
-          <p className="opacity-70 text-sm">Case studies · shipped products</p>
-        </div>
-        
-        <div className="flex flex-col gap-16">
-          {projects.map((project, idx) => (
-            <div 
-              key={idx} 
-              className="flex flex-col gap-6 rounded-[2rem] p-6 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100"
-              style={{ backgroundColor: project.bgColorCode }}
-            >
-              <span className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-black">
-                0{idx + 1} CASE STUDY
-              </span>
-              
-              <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-md">
-                <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-              </div>
+      {/* ── Project Index (top-left, drifts downward) ─────────────────── */}
+      <div style={{ position: 'absolute', top: '2rem', left: '2rem', zIndex: 10 }}>
+        <h1
+          ref={indexH1Ref}
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'clamp(5rem, 10vw, 12rem)', // Giant font matching design
+            fontWeight: 400,
+            lineHeight: 0.8,
+            textTransform: 'uppercase',
+            letterSpacing: '-0.04em',
+            color: 'var(--color-text-dark)',
+            willChange: 'transform',
+            display: 'flex',
+            alignItems: 'baseline'
+          }}
+        >
+          01<span style={{ fontSize: '0.4em', marginLeft: '0.2em', color: '#000000' }}>/{String(N).padStart(2, '0')}</span>
+        </h1>
+      </div>
 
-              <div>
-                <h3 className="font-display font-bold text-2xl mb-3 text-[var(--color-text-dark)]">{project.title}</h3>
-                <p className="opacity-80 text-sm leading-relaxed mb-6">{project.description}</p>
-                
-                <a 
-                  href={project.link} 
-                  onClick={(e) => handleLinkClick(e, project.link)}
-                  className="inline-flex items-center gap-1.5 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-md"
-                  style={{ backgroundColor: 'var(--color-text-dark)' }}
+      {/* ── Center-Left Labels Pinned Stack (Only active label clear, staggers up and blurs out) ── */}
+      <div 
+        ref={leftLabelsContainerRef}
+        style={{ 
+          position: 'absolute', 
+          left: '18%', 
+          top: '50vh', 
+          transform: 'translateY(-50%)',
+          display: 'flex', 
+          justifyContent: 'center',
+          alignItems: 'center',
+          pointerEvents: 'none', 
+          zIndex: 5 
+        }}
+      >
+        {projects.map((project, i) => (
+          <div
+            key={i}
+            ref={(el) => { if (el) leftLabelRefs.current[i] = el; }}
+            style={{
+              position: 'absolute',
+              whiteSpace: 'nowrap',
+              fontFamily: 'var(--font-display)',
+              fontSize: '1.25rem',
+              fontStyle: 'italic',
+              color: 'var(--color-text-dark)',
+              opacity: 0,
+              willChange: 'opacity, transform, filter',
+            }}
+          >
+            {project.leftLabel}
+          </div>
+        ))}
+      </div>
+
+      {/* ── Centered Pinned Thumbnails Stack ───────────────────────────── */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 2, pointerEvents: 'none' }}>
+        <div
+          ref={imagesContainerRef}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '32%',
+            aspectRatio: '16/10',
+            willChange: 'transform',
+          }}
+        >
+          {projects.map((project, i) => (
+            <div
+              key={i}
+              ref={(el) => { if (el) imgRefs.current[i] = el; }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                opacity: 0,
+                transform: 'scale(0.92)',
+                overflow: 'hidden',
+                borderRadius: '0',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                willChange: 'opacity, transform',
+              }}
+            >
+              <img
+                src={project.image}
+                alt={project.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                draggable="false"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Project Names List (right side vertical list, scrolls to center active item) ── */}
+      <div
+        style={{
+          position: 'absolute',
+          right: '5vw',
+          top: '50vh',
+          display: 'flex',
+          flexDirection: 'column',
+          pointerEvents: 'none',
+          zIndex: 10,
+          width: '35vw', // Ensures adequate horizontal space for dividers and elements
+        }}
+      >
+        <div
+          ref={namesContainerRef}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            willChange: 'transform',
+            width: '100%',
+          }}
+        >
+          {projects.map((project, i) => (
+            <div
+              key={i}
+              ref={(el) => { if (el) nameRefs.current[i] = el; }}
+              style={{
+                height: '130px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                willChange: 'transform',
+                whiteSpace: 'nowrap',
+                position: 'relative',
+                width: '100%',
+                borderBottom: '1px solid rgba(0,0,0,0.06)', // Divider lines matching screenshot
+              }}
+            >
+              {/* Single name element: normal flow, serves as relative anchor for the index prefix */}
+              <span
+                ref={(el) => { if (el) nameListRefs.current[i] = el; }}
+                style={{
+                  position: 'relative',
+                  color: 'var(--color-text-dark)',
+                  whiteSpace: 'nowrap',
+                  willChange: 'opacity, font-size, font-family',
+                  transformOrigin: 'right center',
+                  lineHeight: 1.1,
+                  display: 'inline-block',
+                }}
+              >
+                {/* Nested parenthesized Index: absolute-positioned left of the name */}
+                <span
+                  ref={(el) => { if (el) nameIndexRefs.current[i] = el; }}
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(0.8rem, 1.2vw, 1rem)',
+                    fontWeight: 400,
+                    color: 'var(--color-text-dark)',
+                    whiteSpace: 'nowrap',
+                    position: 'absolute',
+                    right: '100%',
+                    marginRight: '16px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    opacity: 0,
+                    willChange: 'opacity, transform',
+                  }}
                 >
-                  <span>Read case study</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
+                  ({String(i + 1).padStart(2, '0')})
+                </span>
+                
+                {project.name}
+              </span>
+
+              {/* Right Label (Subtext under name - aligned vertically in list item) */}
+              <div
+                ref={(el) => { if (el) rightLabelRefs.current[i] = el; }}
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '0.9rem',
+                  fontStyle: 'italic',
+                  color: 'var(--color-text-dark)',
+                  opacity: 0,
+                  marginTop: '4px',
+                  willChange: 'opacity, transform',
+                }}
+              >
+                {project.rightLabel}
               </div>
             </div>
           ))}
         </div>
       </div>
+
 
     </section>
   );

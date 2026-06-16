@@ -2,42 +2,57 @@ import React from 'react';
 
 export const About: React.FC = () => {
   return (
-    <section id="about" className="px-6 sm:px-12 md:px-16 lg:px-20 w-full mb-20">
+    <section id="about" className="relative z-20 w-full bg-[#f5f4ef] border-t border-b border-[#ccc9c2] flex items-stretch min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh]">
       
-      <div className="skew-on-scroll bg-white rounded-3xl p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center relative overflow-hidden">
-        
-        <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-16 text-center z-10 relative">
-          What's it like working with me?
-        </h2>
-
-        {/* Central Photo */}
-        <div className="relative z-10 w-32 h-32 sm:w-48 sm:h-48 rounded-full overflow-hidden border-4 border-white shadow-xl mb-8">
-          <img src="https://placehold.co/400x400/EFEFEF/1A1A18?text=Me" alt="Working with me" className="w-full h-full object-cover" />
+      {/* Left Sidebar */}
+      <div className="w-[50px] md:w-[70px] lg:w-[90px] flex-shrink-0 border-r border-[#ccc9c2] flex flex-col justify-between py-6">
+        {/* Top Asterisk */}
+        <div className="text-3xl md:text-5xl lg:text-6xl text-[#1a1a18] font-display font-medium leading-none text-center">
+          *
         </div>
 
-        {/* Floating Quotes */}
-        <div className="relative w-full max-w-4xl h-64 sm:h-auto">
-          
-          {/* Top Left Quote */}
-          <div className="sm:absolute sm:-top-32 sm:left-0 bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-100 max-w-[280px] transform sm:-rotate-2 z-20 mb-4 sm:mb-0">
-            <p className="font-handwriting text-lg leading-tight opacity-90 mb-3">
-              "Tejas is incredibly fast at prototyping. He doesn't just design the happy path; he thinks through the edge cases before development even starts."
-            </p>
-            <div className="text-xs font-medium font-body opacity-60">— Colleague @ Trams</div>
-          </div>
-
-          {/* Bottom Right Quote */}
-          <div className="sm:absolute sm:-top-16 sm:right-0 bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-100 max-w-[280px] transform sm:rotate-2 z-20">
-            <p className="font-handwriting text-lg leading-tight opacity-90 mb-3">
-              "It's rare to find a designer who can jump straight into the codebase and tweak the Tailwind classes to get the spacing exactly right."
-            </p>
-            <div className="text-xs font-medium font-body opacity-60">— Engineer @ Client</div>
-          </div>
-
+        {/* Middle ABOUT */}
+        <div className="flex-grow flex items-center justify-center">
+          <span 
+            className="font-display font-bold text-[10px] md:text-[11px] lg:text-[12px] tracking-[0.15em] text-[#1a1a18]"
+            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textTransform: 'uppercase' }}
+          >
+            ABOUT
+          </span>
         </div>
 
+        {/* Bottom [00-1] */}
+        <div className="text-center font-mono text-[9px] md:text-[10px] lg:text-[11px] tracking-[0.08em] text-[#8e8c87]">
+          <span style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', textTransform: 'uppercase' }}>
+            [00-1]
+          </span>
+        </div>
       </div>
-      
+
+      {/* Main Content Area */}
+      <div className="flex-grow flex flex-col">
+        {/* Top Space */}
+        <div className="flex-grow flex items-end px-6 md:px-12 lg:px-20 pb-2">
+          <div className="w-full max-w-4xl mx-auto">
+            <span className="font-mono text-[9px] md:text-[10px] lg:text-[11px] tracking-[0.05em] text-[#1a1a18] uppercase" style={{ textTransform: 'uppercase' }}>
+              [ + ] A BIT MORE ABOUT YOURS TRULY
+            </span>
+          </div>
+        </div>
+
+        {/* Separator line */}
+        <div className="w-full h-[1px] bg-[#ccc9c2]"></div>
+
+        {/* Bottom Space & Text */}
+        <div className="px-6 md:px-12 lg:px-20 py-10 md:py-16 lg:py-20 flex-shrink-0 flex items-center">
+          <div className="w-full max-w-4xl mx-auto">
+            <p className="font-body text-lg md:text-2xl lg:text-[26px] leading-[1.4] text-[#1a1a18] font-light" style={{ textTransform: 'none' }}>
+              Hey, I'm <strong className="font-semibold" style={{ textTransform: 'none' }}>Tejas, a UI/UX Designer</strong> focused on bridging intuitive digital experiences with pixel-perfect frontend execution. From founding Bold Cursor to my current work as a Product Designer at Trams, I work at the intersection of creative design and technical problem-solving, merging everyday usability with strong, scalable visuals built to last.
+            </p>
+          </div>
+        </div>
+      </div>
+
     </section>
   );
 };

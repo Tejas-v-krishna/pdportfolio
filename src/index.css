@@ -1,52 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap');
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'CDOvuer';
-  src: url('../Font/CDOvuer-Regular-PERSONAL-USE.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Nohemi';
-  src: url('../Font/Nohemi-Thin.ttf') format('truetype');
-  font-weight: 100;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Nohemi';
-  src: url('../Font/Nohemi-ExtraLight.ttf') format('truetype');
+  font-family: 'Aeonik';
+  src: url('./assets/fonnts.com-Aeonik_Regular.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Nohemi';
-  src: url('../Font/Nohemi-Light.ttf') format('truetype');
+  font-family: 'Aeonik';
+  src: url('./assets/fonnts.com-Aeonik_Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Nohemi';
-  src: url('../Font/Nohemi-Regular.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Nohemi';
-  src: url('../Font/Nohemi-Medium.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Nohemi';
-  src: url('../Font/Nohemi-SemiBold.ttf') format('truetype');
+  font-family: 'Aeonik';
+  src: url('./assets/fonnts.com-Aeonik_Regular.ttf') format('truetype');
   font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aeonik';
+  src: url('./assets/fonnts.com-Aeonik_Regular.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'POI Aeronaut Trial';
+  src: url('./assets/POIAeronautTrial-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NT Ginder Mini Edition';
+  src: url('./assets/NtGinderMiniEdition.ttf') format('truetype');
+  font-weight: normal;
   font-style: normal;
 }
 
@@ -62,10 +54,12 @@
   --color-postit-purple: #18181B; /* Zinc-900 */
   --color-postit-orange: #71717A; /* Zinc-500 */
 
-  --font-display: "CDOvuer", sans-serif;
-  --font-body: "Nohemi", sans-serif;
-  --font-handwriting: "Caveat", cursive;
-  --font-bonny: "Nohemi", sans-serif;
+  --font-display: "Aeonik", sans-serif;
+  --font-body: "Aeonik", sans-serif;
+  --font-handwriting: "Aeonik", sans-serif;
+  --font-bonny: "Aeonik", sans-serif;
+  --font-calligraphy: "Aeonik", sans-serif;
+  --font-mono: "NT Ginder Mini Edition", monospace;
 }
 
 @layer base {
@@ -168,4 +162,25 @@ html.lenis {
   a, button, [role="button"], input[type="submit"], input[type="button"] {
     cursor: none !important;
   }
+}
+
+/* Page content blur when menu is open */
+.flex-grow,
+footer {
+  transition: filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: filter;
+}
+
+body.menu-blur-active .flex-grow,
+body.menu-blur-active footer {
+  filter: blur(8px) brightness(0.95);
+  pointer-events: none;
+}
+
+/* Force all text in the website to be lowercase, except input and textarea values */
+*, *::before, *::after {
+  text-transform: lowercase !important;
+}
+input, textarea {
+  text-transform: none !important;
 }

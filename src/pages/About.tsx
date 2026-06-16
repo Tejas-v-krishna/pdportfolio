@@ -1,8 +1,12 @@
 import React from 'react';
+import { CreativeBanner } from '../sections/CreativeBanner';
+import { AboutStory } from '../sections/AboutStory';
 
 export const About: React.FC = () => {
   return (
-    <main className="relative z-10 w-full pt-32 pb-10">
+    <main className="relative z-10 w-full pt-32 pb-10 flex flex-col gap-8">
+      
+      {/* First Section: Biography, Journey and Values */}
       <section className="px-6 sm:px-12 md:px-16 lg:px-20 w-full flex flex-col gap-8">
         
         {/* Bio Block */}
@@ -95,6 +99,17 @@ export const About: React.FC = () => {
           </div>
         </div>
 
+      </section>
+
+      {/* Story Animation Section */}
+      <AboutStory />
+
+      {/* Full-Width Showcase Marquee Banner */}
+      <CreativeBanner />
+
+      {/* Second Section: Outside Work & CTA */}
+      <section className="px-6 sm:px-12 md:px-16 lg:px-20 w-full flex flex-col gap-8">
+        
         {/* Outside Work */}
         <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-16">
           <div className="md:w-1/2">
@@ -140,6 +155,7 @@ export const About: React.FC = () => {
         </div>
 
       </section>
+      
     </main>
   );
 };

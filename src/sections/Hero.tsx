@@ -1,24 +1,131 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import tejasProfile from '../assets/tejas-profile.jpg';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CustomEase } from 'gsap/CustomEase';
-import { DraggablePostit } from '../components/DraggablePostit';
-import Scribble from '../components/Scribble';
+import { BauhausCollage } from '../components/BauhausCollage';
+import { HeroBackgroundElements } from '../components/HeroBackgroundElements';
+import { HoverRollingText } from '../components/HoverRollingText';
 
 gsap.registerPlugin(ScrollTrigger, CustomEase);
+
+const workImages = [
+  "https://placehold.co/1200x800/E5EBE4/1A1A18?text=Seller+AI+Assistant",
+  "https://placehold.co/1200x800/E6E3EB/1A1A18?text=ExamWaliSite",
+  "https://placehold.co/1200x800/EBE8E3/1A1A18?text=LearnWith"
+];
 
 interface HeroProps {
   isLoading?: boolean;
 }
 
+// 1. Magnetic plus-sign intersections for the grid lines
+const MagneticPlus: React.FC<{ style: React.CSSProperties }> = ({ style }) => {
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = elementRef.current;
+    if (!el) return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const elX = rect.left + rect.width / 2;
+      const elY = rect.top + rect.height / 2;
+      const dist = Math.hypot(e.clientX - elX, e.clientY - elY);
+
+      if (dist < 100) {
+        // Pull towards cursor smoothly
+        const pullX = (e.clientX - elX) * 0.45;
+        const pullY = (e.clientY - elY) * 0.45;
+        gsap.to(el, {
+          x: pullX,
+          y: pullY,
+          scale: 1.4,
+          duration: 0.3,
+          ease: 'power2.out',
+        });
+      } else {
+        // Snap back to origin
+        gsap.to(el, {
+          x: 0,
+          y: 0,
+          scale: 1.0,
+          duration: 0.65,
+          ease: 'elastic.out(1.1, 0.4)',
+        });
+      }
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    return () => window.removeEventListener('mousemove', onMouseMove);
+  }, []);
+
+  return (
+    <div
+      ref={elementRef}
+      style={style}
+      className="absolute pointer-events-auto select-none text-black/15 font-light text-base z-10 w-6 h-6 flex items-center justify-center cursor-pointer transition-colors duration-200 hover:text-black/55"
+    >
+      +
+    </div>
+  );
+};
+
+
+
+const splitIntoWords = (text: string, startIdx: number = 0) => {
+  return text.split(' ').map((word, index) => {
+    if (word === '') return null;
+    return (
+      <React.Fragment key={index + startIdx}>
+        <span 
+          className="word inline-block"
+          style={{ willChange: 'transform, opacity' }}
+        >
+          {word}
+        </span>
+        {index < text.split(' ').length - 1 && <span className="inline-block">&nbsp;</span>}
+      </React.Fragment>
+    );
+  });
+};
+
+
+
 export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const stampContainerRef = useRef<HTMLDivElement>(null);
   const stampSvgRef = useRef<SVGSVGElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const rotationTweenRef = useRef<gsap.core.Tween | null>(null);
+
+  const [currentWorkIdx, setCurrentWorkIdx] = useState(0);
+  const [isAboutHovered, setIsAboutHovered] = useState(false);
+  const [isWorkHovered, setIsWorkHovered] = useState(false);
+  const workIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (workIntervalRef.current) {
+        clearInterval(workIntervalRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnterStamp = () => {
+    if (rotationTweenRef.current) {
+      gsap.killTweensOf(rotationTweenRef.current);
+      gsap.to(rotationTweenRef.current, { timeScale: 25.0, duration: 0.3, ease: "power3.in" });
+    }
+  };
+
+  const handleMouseLeaveStamp = () => {
+    if (rotationTweenRef.current) {
+      gsap.killTweensOf(rotationTweenRef.current);
+      gsap.to(rotationTweenRef.current, { timeScale: 1.0, duration: 1.2, ease: "power3.out" });
+    }
+  };
 
   useLayoutEffect(() => {
     if (isLoading) return;
@@ -32,22 +139,16 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       "M0,0 C0.29,0 0.348,0.05 0.422,0.134 0.494,0.217 0.484,0.355 0.5,0.5 0.518,0.662 0.515,0.793 0.596,0.876 0.701,0.983 0.72,0.987 1,1 "
     );
 
-    const lines = heading.querySelectorAll('.line-item');
-    const wrapper = heading.closest('.hero-content-wrapper');
+    const words = heading.querySelectorAll('.word');
     const ellipseImgs = heading.querySelectorAll('.animate-ellipse-appear img');
     const stamp = heading.closest('#hero')?.querySelector('.hero-stamp');
+    const headings = heading.querySelectorAll('.hero-heading-clone-target');
 
     // Make heading visible
-    gsap.set(heading, { opacity: 1 });
+    gsap.set(headings.length > 0 ? headings : heading, { opacity: 1 });
 
-    // Initial states (blurred and shifted for zoom in)
-    gsap.set(wrapper, { 
-      scale: 0.82,
-      filter: "blur(25px)",
-      force3D: true 
-    });
     gsap.set(ellipseImgs, { scale: 1.3, force3D: true });
-    gsap.set(lines, { opacity: 0, y: 80, filter: 'blur(15px)', force3D: true });
+    gsap.set(words, { opacity: 0, y: 50, force3D: true });
     if (stamp) {
       gsap.set(stamp, { opacity: 0, scale: 0.8, filter: 'blur(10px)', force3D: true });
     }
@@ -55,26 +156,19 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
     // Create reveal timeline matching preloader reveal
     const tl = gsap.timeline({ delay: 0.1 });
 
-    tl.to(wrapper, {
-      scale: 1.0,
-      filter: "blur(0px)",
-      duration: 2.25,
-      ease: "power3.inOut",
-    }, 0)
-    .to(ellipseImgs, {
+    tl.to(ellipseImgs, {
       scale: 1.0,
       duration: 2.25,
       ease: "power3.inOut",
     }, 0)
-    .to(lines, {
+    .to(words, {
       opacity: 1,
       y: 0,
-      filter: 'blur(0px)',
-      duration: 2.0,
-      ease: "power4.out",
-      stagger: 0.15,
+      duration: 0.8,
+      ease: "power2.out",
+      stagger: 0.05,
       force3D: true
-    }, 0.2);
+    }, 1.5);
 
     if (stamp) {
       tl.to(stamp, {
@@ -84,196 +178,309 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
         duration: 2.0,
         ease: "power4.out",
         force3D: true
-      }, 0.5);
+      }, 1.8);
     }
 
     // Continuous rotation of circular text stamp
-    let rotationTween: gsap.core.Tween | null = null;
     const stampSvg = stampSvgRef.current;
-    const stampContainer = stampContainerRef.current;
 
-    const handleMouseEnter = () => {
-      if (rotationTween) {
-        gsap.to(rotationTween, { timeScale: 2.5, duration: 0.6, ease: "power2.out" });
-      }
-    };
-
-    const handleMouseLeave = () => {
-      if (rotationTween) {
-        gsap.to(rotationTween, { timeScale: 1.0, duration: 0.8, ease: "power2.out" });
-      }
-    };
-
-    if (stampSvg && stampContainer) {
-      rotationTween = gsap.to(stampSvg, {
+    if (stampSvg) {
+      rotationTweenRef.current = gsap.to(stampSvg, {
         rotation: 360,
         duration: 25,
         ease: "none",
         repeat: -1,
         transformOrigin: "50% 50%"
       });
+    }
 
-      stampContainer.addEventListener('mouseenter', handleMouseEnter);
-      stampContainer.addEventListener('mouseleave', handleMouseLeave);
+    // --- NEW: Fade Out Scroll Animation ---
+    const heroSection = heroRef.current;
+    const heroContent = heading.querySelector('.hero-outro-content');
+
+    if (heroSection && heroContent) {
+      const heroScrollTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: heroSection,
+          start: "top top",
+          end: "bottom top",
+          pin: true,
+          pinSpacing: false, // Next section overlaps gracefully
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      heroScrollTimeline.to(
+        heroContent,
+        {
+          y: -100,
+          scale: 0.95,
+          opacity: 0,
+          duration: 1,
+          ease: "power2.out",
+        },
+        0
+      );
     }
 
     return () => {
       tl.kill();
-      if (rotationTween) {
-        rotationTween.kill();
+      if (rotationTweenRef.current) {
+        rotationTweenRef.current.kill();
+        rotationTweenRef.current = null;
       }
-      if (stampContainer) {
-        stampContainer.removeEventListener('mouseenter', handleMouseEnter);
-        stampContainer.removeEventListener('mouseleave', handleMouseLeave);
-      }
+      ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, [isLoading, navigate]);
+
+  const renderHeroHeading = (isClone: boolean = false) => (
+    <h1 className="hero-heading-clone-target opacity-0 font-display text-[1.8rem] sm:text-[2.6rem] md:text-[3.1rem] lg:text-[4.3rem] xl:text-[5.5rem] leading-[1.12] text-[var(--color-text-dark)] tracking-tight w-full select-none" aria-hidden={isClone ? "true" : "false"}>
+
+          {/* Line 1 */}
+          <span className="line-mask block overflow-visible py-1">
+            <span className="line-item inline-block md:block md:whitespace-nowrap">
+              <span 
+                onMouseEnter={() => setIsAboutHovered(true)}
+                onMouseLeave={() => setIsAboutHovered(false)}
+                className="inline-flex items-center cursor-pointer group/about"
+              >
+                <span className="word inline-block font-semibold transition-colors duration-300 group-hover/about:text-black/40">
+                  I
+                </span>
+                <Link 
+                  to="/about"
+                  className={`inline-block relative align-middle transition-all duration-700 ease-out -translate-y-[0.06em] ${
+                    isAboutHovered ? 'w-[1.47em] mx-[0.25em]' : 'w-0 mx-0'
+                  }`}
+                  style={{ height: '1.12em', willChange: 'width, margin' }}
+                >
+                  <span 
+                    className={`absolute left-1/2 top-1/2 h-[1em] rounded-full overflow-hidden transition-all duration-700 ease-out ${
+                      isAboutHovered ? 'border border-black/10 shadow-md' : 'border border-transparent shadow-none'
+                    }`}
+                    style={{
+                      width: isAboutHovered ? '1.35em' : '0',
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                  >
+                    <img 
+                      src={tejasProfile} 
+                      alt="Tejas Profile" 
+                      className="absolute left-1/2 top-1/2 h-[1em] max-w-none object-cover transition-transform duration-700 ease-out" 
+                      style={{
+                        width: '1.35em',
+                        transform: isAboutHovered ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(1.3)'
+                      }}
+                    />
+                  </span>
+                </Link>
+              </span>{' '}
+              {splitIntoWords("design and build ", 300)}
+              <span className="relative inline-block px-1.5 py-0.5 z-10 transition-[transform,color] duration-300 ease-out cursor-pointer text-black/50 hover:text-black/80">
+                <HoverRollingText text="living, breathing" className="word inline-block" />
+              </span>
+            </span>
+          </span>
+
+          {/* Line 2 */}
+          <span className="line-mask block overflow-visible py-1">
+            <span className="line-item inline-block md:block md:whitespace-nowrap">
+              <span className="relative inline-block px-1.5 py-0.5 z-10 transition-[transform,color] duration-300 ease-out cursor-pointer text-black/50 hover:text-black/80">
+                <HoverRollingText text="digital products" className="word inline-block" />
+              </span>{' '}
+              {splitIntoWords("and frontend ", 600)}
+              <span 
+                onMouseEnter={() => {
+                  setIsWorkHovered(true);
+                  if (workIntervalRef.current) clearInterval(workIntervalRef.current);
+                  workIntervalRef.current = setInterval(() => {
+                    setCurrentWorkIdx((prev) => (prev + 1) % workImages.length);
+                  }, 1500);
+                }}
+                onMouseLeave={() => {
+                  setIsWorkHovered(false);
+                  if (workIntervalRef.current) {
+                    clearInterval(workIntervalRef.current);
+                    workIntervalRef.current = null;
+                  }
+                  setCurrentWorkIdx(0);
+                }}
+                className="inline-flex items-center cursor-pointer group/work"
+              >
+                <a 
+                  href="#work"
+                  className="transition-colors duration-300 group-hover/work:text-black/40 font-semibold"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const workSection = document.getElementById('work');
+                    if (workSection && (window as any).lenis) {
+                      (window as any).lenis.scrollTo(workSection);
+                    } else if (workSection) {
+                      workSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  <span className="word inline-block">work</span>
+                </a>
+                <a 
+                  href="#work"
+                  className={`inline-block relative align-middle transition-all duration-700 ease-out -translate-y-[0.06em] ${
+                    isWorkHovered ? 'w-[1.47em] mx-[0.25em]' : 'w-0 mx-0'
+                  }`}
+                  style={{ height: '1.12em', willChange: 'width, margin' }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const workSection = document.getElementById('work');
+                    if (workSection && (window as any).lenis) {
+                      (window as any).lenis.scrollTo(workSection);
+                    } else if (workSection) {
+                      workSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  <span 
+                    className={`absolute left-1/2 top-1/2 h-[1em] rounded-full overflow-hidden transition-all duration-700 ease-out ${
+                      isWorkHovered ? 'border border-black/10 shadow-md bg-gray-100' : 'border border-transparent shadow-none bg-transparent'
+                    }`}
+                    style={{
+                      width: isWorkHovered ? '1.35em' : '0',
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                  >
+                    {workImages.map((imgUrl, idx) => (
+                      <img 
+                        key={idx}
+                        src={imgUrl} 
+                        alt={`Work ${idx + 1}`} 
+                        className="absolute left-1/2 top-1/2 h-[1em] max-w-none object-cover transition-all duration-700 ease-out" 
+                        style={{ 
+                          width: '1.35em',
+                          opacity: idx === currentWorkIdx ? 1 : 0,
+                          transform: !isWorkHovered 
+                            ? 'translate(-50%, -50%) scale(1.3)' 
+                            : (idx === currentWorkIdx ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(1.3)'),
+                          willChange: 'opacity, transform'
+                        }}
+                      />
+                    ))}
+                  </span>
+                </a>
+              </span>
+            </span>
+          </span>
+
+          {/* Line 3 */}
+          <span className="line-mask block overflow-visible py-1">
+            <span className="line-item inline-block md:block md:whitespace-nowrap">
+              {splitIntoWords("that demands to be felt, not just seen.", 700)}
+            </span>
+          </span>
+
+    </h1>
+  );
 
   return (
     <section 
       ref={heroRef}
       id="hero" 
-      className="relative min-h-screen py-20 px-6 sm:px-12 md:px-16 lg:px-20 w-full flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-screen pt-32 pb-16 px-6 sm:px-12 md:px-16 lg:px-20 w-full flex flex-col items-start justify-end overflow-hidden"
     >
       
-      {/* 1. Background Grid Lines */}
+      {/* 1. Background Grid Lines & Magnetic Nodes */}
       <div className="absolute inset-0 pointer-events-none flex justify-between z-0 px-6 sm:px-12 md:px-16 lg:px-20 w-full">
-        <div className="w-px h-full bg-black/[0.03]"></div>
-        <div className="w-px h-full bg-black/[0.03] hidden sm:block"></div>
-        <div className="w-px h-full bg-black/[0.03] hidden md:block"></div>
-        <div className="w-px h-full bg-black/[0.03] hidden lg:block"></div>
-        <div className="w-px h-full bg-black/[0.03]"></div>
+        {/* Column 1 */}
+        <div className="relative w-px h-full bg-black/[0.03]"></div>
+        
+        {/* Column 2 */}
+        <div className="relative w-px h-full bg-black/[0.03] hidden sm:block">
+          <MagneticPlus style={{ top: '28%', transform: 'translateX(-50%)' }} />
+          <MagneticPlus style={{ top: '65%', transform: 'translateX(-50%)' }} />
+        </div>
+        
+        {/* Column 3 */}
+        <div className="relative w-px h-full bg-black/[0.03] hidden md:block">
+          <MagneticPlus style={{ top: '50%', transform: 'translateX(-50%)' }} />
+        </div>
+        
+        {/* Column 4 */}
+        <div className="relative w-px h-full bg-black/[0.03] hidden lg:block">
+          <MagneticPlus style={{ top: '38%', transform: 'translateX(-50%)' }} />
+          <MagneticPlus style={{ top: '80%', transform: 'translateX(-50%)' }} />
+        </div>
+        
+        {/* Column 5 */}
+        <div className="relative w-px h-full bg-black/[0.03]"></div>
       </div>
 
-      {/* 2. Interactive/Draggable Post-it Notes in Background */}
-      <DraggablePostit
-        text="Design is how it works."
-        color="white"
-        doodleType="smiley"
-        defaultPosition={{ x: 4, y: 14 }}
-        defaultRotation={-6}
-        containerRef={heroRef}
-      />
-      <DraggablePostit
-        text="Interactive & playful."
-        color="light-grey"
-        doodleType="star"
-        defaultPosition={{ x: 82, y: 12 }}
-        defaultRotation={8}
-        containerRef={heroRef}
-      />
-      <DraggablePostit
-        text="Double click to flip me! ⚡"
-        color="black"
-        doodleType="lightning"
-        defaultPosition={{ x: 79, y: 58 }}
-        defaultRotation={-10}
-        containerRef={heroRef}
-      />
-      <DraggablePostit
-        text="Kerala, IN 🌴"
-        color="mid-grey"
-        doodleType="wireframe"
-        defaultPosition={{ x: 6, y: 65 }}
-        defaultRotation={5}
-        containerRef={heroRef}
-      />
+      {/* 2. Bauhaus Collage background layer */}
+      <BauhausCollage />
 
-      {/* 4. Central Headline (with wrapper for scale zoom / blur focus reveal) */}
+      {/* Decorative background visual elements */}
+      <HeroBackgroundElements />
+
+      {/* Vertical Scroll Indicator (Right Side) */}
+      <div className="absolute right-6 sm:right-12 md:right-16 lg:right-20 bottom-8 translate-x-1/2 hidden md:flex flex-col items-center gap-4 z-10 select-none pointer-events-none">
+        {/* Top Line */}
+        <div className="w-px h-28 bg-black/[0.08]" />
+        
+        {/* Text */}
+        <span 
+          className="text-[9px] tracking-[0.25em] font-medium text-black/35 uppercase my-3 whitespace-nowrap"
+          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+        >
+          Scroll to explore
+        </span>
+        
+        {/* Bottom Line */}
+        <div className="w-px h-12 bg-black/[0.08]" />
+        
+        {/* Circle with Down Arrow */}
+        <div className="scroll-arrow-circle w-8 h-8 rounded-full border border-black/10 flex items-center justify-center text-black/50 text-xs bg-transparent">
+          ↓
+        </div>
+      </div>
+
+
+
+
+
+      {/* 5. Central Headline (with wrapper for scale zoom / blur focus reveal) */}
       <div 
-        className="hero-content-wrapper flex flex-col items-center text-center z-10 w-full max-w-7xl"
-        style={{ 
-          transform: "scale(0.82)",
-          filter: "blur(25px)",
-          willChange: "transform, filter"
-        }}
+        className="hero-content-wrapper relative flex flex-col items-start text-left z-10 w-full max-w-[1300px] px-0 py-6 mb-4 sm:mb-8"
       >
+        {/* Soft color blur glow (Aurora effect) to focus Hero Text */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[60%] rounded-full bg-gradient-to-r from-[#FFF2C3]/60 via-[#FFFBEB]/70 to-[#FFE4A0]/50 opacity-80 filter blur-[60px] sm:blur-[80px] pointer-events-none -z-10"
+        />
         
         {/* Headline */}
-        <h1 ref={headingRef} className="opacity-0 font-display text-[2.2rem] sm:text-[3.5rem] md:text-[4.8rem] lg:text-[6rem] xl:text-[6.6rem] leading-[1.12] text-[var(--color-text-dark)] tracking-tight max-w-7xl w-full">
-          <span className="md:block md:overflow-hidden md:pt-1 md:pb-4">
-            <span className="line-item inline-block md:block">
-              I{' '}
-              <Link 
-                to="/about" 
-                className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group z-20" 
-                style={{ animationDelay: '0.4s' }}
-              >
-                {/* Self-Drawing Circle Scribble around avatar */}
-                <Scribble 
-                  type="circle" 
-                  preserveAspectRatio="none"
-                  delay={0.6}
-                  className="absolute -top-[22%] -left-[24%] w-[148%] h-[144%] text-zinc-500 pointer-events-none opacity-80 z-0" 
-                />
-                {/* Ellipse Container */}
-                <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 z-10">
-                  <img 
-                    src={tejasProfile} 
-                    alt="Tejas Profile" 
-                    className="w-full h-full object-cover" 
-                    style={{ transform: "scale(1.4)", willChange: "transform" }}
-                  />
-                  {/* Overlay Text */}
-                  <span className="absolute inset-0 bg-white/85 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
-                    <span className="text-[var(--color-text-dark)] text-[0.15em] tracking-tight font-medium leading-none whitespace-nowrap">
-                      about
-                    </span>
-                  </span>
-                </span>
-              </Link>{' '}
-              create{' '}
-              <span className="relative inline-block px-1 z-10">
-                living, breathing
-                <Scribble 
-                  type="underline" 
-                  preserveAspectRatio="none"
-                  delay={0.8}
-                  className="absolute -bottom-2 sm:-bottom-3 left-0 w-full text-zinc-500 h-3 sm:h-4 pointer-events-none opacity-85" 
-                />
-              </span>
-            </span>
-          </span>
-          <br className="hidden md:inline" />
-          websites for brands{' '}
-          <a 
-            href="#work" 
-            className="inline-block relative w-[1.35em] h-[1em] mx-1 sm:mx-3 align-baseline top-[0.08em] animate-ellipse-appear cursor-pointer group" 
-            style={{ animationDelay: '0.8s' }}
-          >
-            {/* Ellipse Container */}
-            <span className="absolute inset-0 m-auto w-[1.35em] h-[1em] rounded-full overflow-hidden border border-black/10 shadow-md group-hover:w-[1em] transition-all duration-300 bg-gray-100">
-              <img 
-                src="https://placehold.co/400x250/111111/FFFFFF?text=UI/UX" 
-                alt="Product UI Mockup" 
-                className="w-full h-full object-cover" 
-                style={{ transform: "scale(1.4)", willChange: "transform" }}
-              />
-              {/* Overlay Text */}
-              <span className="absolute inset-0 bg-white/85 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
-                <span className="text-[var(--color-text-dark)] text-[0.15em] tracking-tight font-medium leading-none whitespace-nowrap">
-                  work
-                </span>
-              </span>
-            </span>
-          </a>
-          <br className="hidden md:inline" />
-          that want to be felt, not just seen.
-        </h1>
+        {/* Headline Wrapper */}
+        <div ref={headingRef} className="relative w-full opacity-0" style={{ opacity: 1 }}>
+           <div className="hero-outro-content relative z-20 w-full">
+             {renderHeroHeading(false)}
+           </div>
+        </div>
 
       </div>
 
-      {/* 5. Circular Text Stamp */}
-      <div 
-        ref={stampContainerRef}
-        className="hero-stamp absolute right-6 sm:right-12 md:right-16 lg:right-20 bottom-8 sm:bottom-12 md:bottom-16 z-10 select-none pointer-events-auto cursor-pointer opacity-80"
+      {/* 6. Circular Text Stamp - Easter Egg Trigger */}
+      <Link 
+        to="/easter-egg"
+        onMouseEnter={handleMouseEnterStamp}
+        onMouseLeave={handleMouseLeaveStamp}
+        className="hero-stamp absolute right-6 sm:right-12 md:right-16 lg:right-28 top-[50vh] -translate-y-1/2 z-10 select-none pointer-events-auto cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300"
+        aria-label="Discover an easter egg"
       >
-        <div className="relative flex items-center justify-center w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40">
+        <div className="relative flex items-center justify-center w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full border border-black/10 pointer-events-auto" style={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}>
+          {/* Hitbox circle to ensure 100% solid hover detection across the entire area */}
+          <div className="absolute inset-0 rounded-full pointer-events-auto z-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0)' }} />
+          
           {/* Circular Text SVG */}
           <svg
             ref={stampSvgRef}
             viewBox="0 0 200 200"
-            className="w-full h-full overflow-visible origin-center"
+            className="w-full h-full overflow-visible origin-center z-10 pointer-events-none"
           >
             <defs>
               <path
@@ -293,7 +500,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
           </svg>
 
           {/* 8-pointed star in the center */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
             <svg
               viewBox="0 0 64 64"
               className="w-7 h-7 sm:w-9 sm:h-9 lg:w-10 lg:h-10"
@@ -306,9 +513,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
             </svg>
           </div>
         </div>
-      </div>
-
+      </Link>
     </section>
   );
 };
-

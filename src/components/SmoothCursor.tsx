@@ -22,7 +22,7 @@ function isTrackablePointer(pointerType: string) {
   return pointerType !== "touch"
 }
 
-const DefaultCursorSVG = () => {
+const DefaultCursorSVG = ({ isHovering }: { isHovering: boolean }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +35,8 @@ const DefaultCursorSVG = () => {
       <g filter="url(#filter0_d_91_7928)">
         <path
           d="M42.6817 41.1495L27.5103 6.79925C26.7269 5.02557 24.2082 5.02558 23.3927 6.79925L7.59814 41.1495C6.75833 42.9759 8.52712 44.8902 10.4125 44.1954L24.3757 39.0496C24.8829 38.8627 25.4385 38.8627 25.9422 39.0496L39.8121 44.1954C41.6849 44.8902 43.4884 42.9759 42.6817 41.1495Z"
-          fill="black"
+          fill={isHovering ? "#a1a1aa" : "black"}
+          style={{ transition: "fill 0.2s ease" }}
         />
         <path
           d="M43.7146 40.6933L28.5431 6.34306C27.3556 3.65428 23.5772 3.69516 22.3668 6.32755L6.57226 40.6778C5.3134 43.4156 7.97238 46.298 10.803 45.2549L24.7662 40.109C25.0221 40.0147 25.2999 40.0156 25.5494 40.1082L39.4193 45.254C42.2261 46.2953 44.9254 43.4347 43.7146 40.6933Z"
@@ -85,7 +86,7 @@ const DefaultCursorSVG = () => {
 }
 
 export const SmoothCursor = ({
-  cursor = <DefaultCursorSVG />,
+  cursor,
   springConfig = {
     damping: 30,    // Snappier response
     stiffness: 800, // Moves faster to the target
@@ -98,6 +99,7 @@ export const SmoothCursor = ({
   const lastUpdateTime = useRef(Date.now())
   const [isEnabled, setIsEnabled] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
 
   const cursorX = useSpring(0, springConfig)
   const cursorY = useSpring(0, springConfig)
@@ -126,6 +128,14 @@ export const SmoothCursor = ({
       mediaQuery.removeEventListener("change", updateEnabled)
     }
   }, [])
+
+  useEffect(() => {
+    if (isHovering) {
+      scale.set(1.4)
+    } else {
+      scale.set(1)
+    }
+  }, [isHovering, scale])
 
   useEffect(() => {
     if (!isEnabled) {
@@ -166,7 +176,11 @@ export const SmoothCursor = ({
       cursorX.set(currentPos.x)
       cursorY.set(currentPos.y)
 
-      if (speed > 0.1) {
+      const target = e.target as HTMLElement | null
+      const isOverInteractive = target ? !!target.closest('a, button, [role="button"], input[type="submit"], input[type="button"], .cursor-pointer') : false
+      setIsHovering(isOverInteractive)
+
+      if (speed > 0.1 && !isOverInteractive) {
         scale.set(0.95)
 
         if (timeout !== null) {
@@ -179,13 +193,50 @@ export const SmoothCursor = ({
       }
     }
 
+    const handlePointerOver = (e: PointerEvent) => {
+      const target = e.target as HTMLElement | null
+      if (!target) return
+      
+      const interactiveEl = target.closest('a, button, [role="button"], input[type="submit"], input[type="button"], .cursor-pointer')
+      setIsHovering(!!interactiveEl)
+    }
+
+    const handlePointerOut = (e: PointerEvent) => {
+      const relatedTarget = e.relatedTarget as HTMLElement | null
+      if (!relatedTarget) {
+        setIsHovering(false)
+        return
+      }
+      
+      const interactiveEl = relatedTarget.closest('a, button, [role="button"], input[type="submit"], input[type="button"], .cursor-pointer')
+      if (!interactiveEl) {
+        setIsHovering(false)
+      }
+    }
+
+    const handleDocumentLeave = () => {
+      setIsVisible(false)
+    }
+
+    const handleDocumentEnter = () => {
+      setIsVisible(true)
+    }
+
     document.body.style.cursor = "none"
     window.addEventListener("pointermove", smoothPointerMove, {
       passive: true,
     })
+    window.addEventListener("pointerover", handlePointerOver)
+    window.addEventListener("pointerout", handlePointerOut)
+    document.addEventListener("mouseleave", handleDocumentLeave)
+    document.addEventListener("mouseenter", handleDocumentEnter)
 
     return () => {
       window.removeEventListener("pointermove", smoothPointerMove)
+      window.removeEventListener("pointerover", handlePointerOver)
+      window.removeEventListener("pointerout", handlePointerOut)
+      document.removeEventListener("mouseleave", handleDocumentLeave)
+      document.removeEventListener("mouseenter", handleDocumentEnter)
       document.body.style.cursor = "auto"
       if (timeout !== null) {
         clearTimeout(timeout)
@@ -197,8 +248,11 @@ export const SmoothCursor = ({
     return null
   }
 
+  const finalCursor = cursor || <DefaultCursorSVG isHovering={isHovering} />
+
   return (
     <motion.div
+      className="custom-cursor"
       style={{
         position: "fixed",
         left: cursorX,
@@ -218,7 +272,7 @@ export const SmoothCursor = ({
         duration: 0.15,
       }}
     >
-      {cursor}
+      {finalCursor}
     </motion.div>
   )
 }
