@@ -28,8 +28,8 @@ export const About: React.FC = () => {
         y: '110%',
         opacity: 1,
         rotationZ: 10,
-        duration: 1,
-        ease: 'power1.inOut',
+        duration: 0.7,
+        ease: 'power3.out',
         stagger: 0.05,
         scrollTrigger: {
           trigger: textRef.current,
