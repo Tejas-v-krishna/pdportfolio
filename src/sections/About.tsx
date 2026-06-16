@@ -33,7 +33,7 @@ export const About: React.FC = () => {
         stagger: 0.05,
         scrollTrigger: {
           trigger: textRef.current,
-          start: 'top center',
+          start: 'top 85%',
         }
       });
     }, textRef);
