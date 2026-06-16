@@ -12,30 +12,36 @@ export const About: React.FC = () => {
     if (!textRef.current) return;
 
     const typeSplit = new SplitType(textRef.current, {
-      types: 'lines, words, chars',
+      types: 'lines, chars',
       tagName: 'span'
     });
 
-    // To ensure the y: '110%' acts as a masked reveal, the lines need overflow hidden
-    if (typeSplit.lines) {
-      typeSplit.lines.forEach(line => {
-        (line as HTMLElement).style.overflow = 'hidden';
-      });
-    }
-
     const ctx = gsap.context(() => {
-      gsap.from(typeSplit.words, {
-        y: '110%',
-        opacity: 1,
-        rotationZ: 10,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.05,
+      // Create the timeline
+      const fadeInTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: textRef.current,
-          start: 'top 85%',
+          start: 'top 85%', // Kept at 85% so you can actually see it when scrolling down
         }
       });
+
+      // Mimic the nested SplitText logic using SplitType's generated lines
+      if (typeSplit.lines) {
+        typeSplit.lines.forEach((line, i) => {
+          const chars = line.querySelectorAll('.char');
+          fadeInTimeline.from(
+            chars,
+            {
+              y: 12,
+              opacity: 0,
+              stagger: 0.025
+            },
+            i * 0.1
+          );
+        });
+      }
+
+      gsap.set(textRef.current, { opacity: 1 });
     }, textRef);
 
     return () => {
