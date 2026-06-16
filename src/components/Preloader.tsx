@@ -60,9 +60,9 @@ export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onCompl
       splits = [word1, word2, word3].map(el => new SplitType(el, { types: 'chars' }));
 
       // Initial state (GPU accelerated to prevent text wobbling)
-      gsap.set(containerRef.current, { opacity: 0, force3D: true });
-      gsap.set(".preloader-logo-line", { opacity: 0, force3D: true });
-      gsap.set(subRef.current, { opacity: 0, force3D: true });
+      gsap.set(containerRef.current, { force3D: true });
+      gsap.set(".preloader-logo-line", { force3D: true }); // They start at opacity: 0 via CSS
+      gsap.set(subRef.current, { force3D: true }); // Starts at opacity: 0 via CSS
       gsap.set(".preloader-sub-word", { y: 20, opacity: 0 }); // clean slide up instead of blur
       
       // Setup initial character positions for word2 and word3
@@ -75,12 +75,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onCompl
       gsap.set(wordContainer, { width: w1 });
 
       // Animation sequence
-      tl.to(containerRef.current, {
-        opacity: 1,
-        duration: 0.8,
-        ease: 'power2.out'
-      }, 0)
-      .to(".preloader-logo-line", {
+      tl.to(".preloader-logo-line", {
         opacity: 1,
         duration: 1.2,
         ease: 'power3.out',
@@ -175,10 +170,10 @@ export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onCompl
         
         {/* Main Title Row */}
         <div ref={logoRef} className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 mb-6">
-          <span className="preloader-logo-line font-body text-[10px] sm:text-xs uppercase tracking-[0.2em] text-zinc-400 font-medium select-none sm:translate-y-[-0.2em]">
+          <span className="preloader-logo-line opacity-0 font-body text-[10px] sm:text-xs uppercase tracking-[0.2em] text-zinc-400 font-medium select-none sm:translate-y-[-0.2em]">
             I AM A(N)
           </span>
-          <h1 className="preloader-logo-line font-display text-[2.6rem] sm:text-[4rem] md:text-[5rem] lg:text-[5.5rem] leading-[1.05] tracking-tight select-none flex items-center justify-center sm:justify-start gap-3.5 sm:gap-5">
+          <h1 className="preloader-logo-line opacity-0 font-display text-[2.6rem] sm:text-[4rem] md:text-[5rem] lg:text-[5.5rem] leading-[1.05] tracking-tight select-none flex items-center justify-center sm:justify-start gap-3.5 sm:gap-5">
             <span className="word-container relative inline-block h-[1.1em] flex-shrink-0" style={{ clipPath: 'inset(-0.25em -0.3em -0.25em -0.3em)' }}>
               <span className="word-1 absolute left-0 top-0 text-left font-normal whitespace-nowrap">Product</span>
               <span className="word-2 absolute left-0 top-0 text-left font-normal whitespace-nowrap">Experience</span>
@@ -189,7 +184,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onCompl
         </div>
 
         {/* Subtitle */}
-        <div ref={subRef} className="max-w-xl flex flex-col items-center gap-4 mt-2">
+        <div ref={subRef} className="max-w-xl flex flex-col items-center gap-4 mt-2 opacity-0">
           <p className="font-body text-base sm:text-[17px] text-zinc-400 tracking-normal leading-relaxed">
             {splitSubtextWords("a multidisciplinary designer driven by curiosity, learning through making.")}
           </p>
