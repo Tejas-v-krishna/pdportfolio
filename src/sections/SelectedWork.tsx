@@ -4,436 +4,382 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Project Data ────────────────────────────────────────────────────────────
+// ─── Project Data ─────────────────────────────────────────────────────────────
 const projects = [
   {
-    name: 'Trams Internal Dashboard',
-    image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80',
-    leftLabel: 'B2B SaaS',
-    rightLabel: 'UI/UX & Frontend',
+    name: 'Trams Dashboard',
+    tag: 'B2B SaaS · UI/UX & Frontend',
+    image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=80',
   },
   {
     name: 'Bold Cursor Agency',
-    image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=900&q=80',
-    leftLabel: 'Creative Studio',
-    rightLabel: 'Web Platform',
+    tag: 'Creative Studio · Web Platform',
+    image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200&q=80',
   },
   {
-    name: 'University Club Branding',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=80',
-    leftLabel: 'Identity',
-    rightLabel: 'Visual Design',
+    name: 'Uni Club Branding',
+    tag: 'Identity · Visual Design',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80',
   },
   {
     name: 'LearnWith Platform',
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&q=80',
-    leftLabel: 'EdTech',
-    rightLabel: 'Product Design',
+    tag: 'EdTech · Product Design',
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&q=80',
   },
   {
-    name: 'Snapdeal Checkout Flow',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&q=80',
-    leftLabel: 'E-Commerce',
-    rightLabel: 'UX Research',
-  },
-  {
-    name: 'CyberDiag Health',
-    image: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=900&q=80',
-    leftLabel: 'Healthcare',
-    rightLabel: 'Mobile App',
-  },
-  {
-    name: 'Zenith FinTech',
-    image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=900&q=80',
-    leftLabel: 'Finance',
-    rightLabel: 'System Architecture',
-  },
-  {
-    name: 'ChromaBlock System',
-    image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=900&q=80',
-    leftLabel: 'Design System',
-    rightLabel: 'React / Tailwind',
+    name: 'Snapdeal Checkout',
+    tag: 'E-Commerce · UX Research',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&q=80',
   },
 ];
 
-const N = projects.length;
+// ─── Config ────────────────────────────────────────────────────────────────────
+const CONFIG = {
+  gap: 0.15,        // time gap between each floating image starting
+  speed: 0.28,      // how long each image takes to traverse the curve
+  arcRadius: 260,   // px — how wide the bezier arc bulges to the right
+};
 
+// Quadratic Bezier position calculator
+function getBezierPosition(t: number) {
+  const h = window.innerHeight;
+  const start = { x: 0, y: -h * 0.5 };
+  const cp    = { x: CONFIG.arcRadius, y: h * 0.5 };
+  const end   = { x: 0, y: h * 1.5 };
+  const x = (1 - t) ** 2 * start.x + 2 * (1 - t) * t * cp.x + t * t * end.x;
+  const y = (1 - t) ** 2 * start.y + 2 * (1 - t) * t * cp.y + t * t * end.y;
+  return { x, y };
+}
+
+// Normalized progress for a single image within the overall [0,1] range
+function getImageState(index: number, progress: number) {
+  const start = index * CONFIG.gap;
+  const end   = start + CONFIG.speed;
+  if (progress < start) return -1;   // not yet
+  if (progress > end)   return 2;    // finished
+  return (progress - start) / (end - start); // 0 → 1
+}
+
+// ─── Component ─────────────────────────────────────────────────────────────────
 export const SelectedWork: React.FC = () => {
-  // ── Refs ──────────────────────────────────────────────────────────────────
-  const sectionRef             = useRef<HTMLElement>(null);
-  const indexH1Ref             = useRef<HTMLHeadingElement>(null);
-  const imagesContainerRef     = useRef<HTMLDivElement>(null);
-  const namesContainerRef      = useRef<HTMLDivElement>(null);
-  const leftLabelsContainerRef = useRef<HTMLDivElement>(null);
-  const imgRefs                = useRef<HTMLDivElement[]>([]);
-  const nameRefs               = useRef<HTMLDivElement[]>([]);
-  const nameListRefs           = useRef<HTMLSpanElement[]>([]);
-  const nameIndexRefs          = useRef<HTMLSpanElement[]>([]);
-  const leftLabelRefs          = useRef<HTMLDivElement[]>([]);
-  const rightLabelRefs         = useRef<HTMLDivElement[]>([]);
-  const bgLinesRef             = useRef<SVGGElement>(null);
+  const sectionRef      = useRef<HTMLElement>(null);
+  const bgContainerRef  = useRef<HTMLDivElement>(null);
+  const bgImageRef      = useRef<HTMLImageElement>(null);
+  const introLeftRef    = useRef<HTMLDivElement>(null);
+  const introRightRef   = useRef<HTMLDivElement>(null);
+  const titlesCtnRef    = useRef<HTMLDivElement>(null);
+  const imagesAreaRef   = useRef<HTMLDivElement>(null);
+  const headerRef       = useRef<HTMLDivElement>(null);
+  const activeTitleIdx  = useRef<number>(-1);
 
-  // ── GSAP setup ───────────────────────────────────────────────────────────
   useEffect(() => {
-    const section        = sectionRef.current;
-    const indexEl        = indexH1Ref.current;
-    const imagesCont     = imagesContainerRef.current;
-    const namesCont      = namesContainerRef.current;
-    const leftLabelsCont = leftLabelsContainerRef.current;
-    const bgLines        = bgLinesRef.current;
-    if (!section || !indexEl || !imagesCont || !namesCont || !leftLabelsCont || !bgLines) return;
+    const section       = sectionRef.current;
+    const bgCtn         = bgContainerRef.current;
+    const bgImg         = bgImageRef.current;
+    const introL        = introLeftRef.current;
+    const introR        = introRightRef.current;
+    const titlesCtn     = titlesCtnRef.current;
+    const imagesArea    = imagesAreaRef.current;
+    const header        = headerRef.current;
 
-    const sectionPadding = parseFloat(getComputedStyle(section).padding) || 32;
-    const indexHeight    = indexEl.offsetHeight;
+    if (!section || !bgCtn || !bgImg || !introL || !introR || !titlesCtn || !imagesArea || !header) return;
 
-    const moveDistanceIndex = window.innerHeight - sectionPadding * 2 - indexHeight;
-    const itemHeight = 130; // Consistent vertical height for list items
+    // Grab generated elements
+    const titleEls  = Array.from(titlesCtn.querySelectorAll<HTMLElement>('.sw-title'));
+    const imageEls  = Array.from(imagesArea.querySelectorAll<HTMLElement>('.sw-float-img'));
 
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: section,
-        start:   'top top',
-        end:     `+=${window.innerHeight * 5}px`,
-        pin:     true,
-        pinType: 'transform',
-        pinSpacing: true,
-        scrub:   1,
+    // Set initial states
+    gsap.set(bgCtn,    { scale: 0 });
+    gsap.set(bgImg,    { scale: 1.5 });
+    gsap.set(imageEls, { opacity: 0 });
+    gsap.set(header,   { opacity: 0 });
+    gsap.set(titlesCtn,{ y: window.innerHeight });
 
-        onUpdate: (self) => {
-          const p = self.progress;
+    activeTitleIdx.current = -1;
 
-          // Background subtle rotation
-          gsap.set(bgLines, { rotation: p * 90, transformOrigin: 'center center' });
+    const st = ScrollTrigger.create({
+      trigger: section,
+      start:   'top top',
+      end:     '+=900%',   // 9× viewport scroll distance
+      pin:     true,
+      pinSpacing: true,
+      scrub:   1.2,
 
-          // Counter text + downward drift
-          const current = Math.min(Math.floor(p * N) + 1, N);
-          
-          // Format as "01 / 08" like the screenshot
-          const currentStr = String(current).padStart(2, '0');
-          const totalStr = String(N).padStart(2, '0');
-          indexEl.innerHTML = `${currentStr}<span style="font-size: 0.4em; margin-left: 0.2em; color: #000000;">/${totalStr}</span>`;
-          gsap.set(indexEl, { y: p * moveDistanceIndex });
+      onUpdate: (self) => {
+        const p = self.progress;
 
-          // Vertical scrolling of name container: active item stays centered at 50vh
-          const namesContY = - (p * (N - 1) + 0.5) * itemHeight;
-          gsap.set(namesCont, { y: namesContY });
-          // Note: leftLabelsCont is no longer translated since left labels are pinned absolute at 50vh
+        /* ── SEGMENT 1: Opening (0% – 20%) ─────────────────────── */
+        if (p <= 0.2) {
+          const ip = p / 0.2; // 0 → 1
+          const offset = window.innerWidth * 0.45 * ip;
 
-          // Animate each project item
-          for (let i = 0; i < N; i++) {
-            const p_i = i / (N - 1);
-            const deltaP = p - p_i;
-            const t_i = Math.max(0, 1 - Math.abs(deltaP) * (N - 1));
-            const ease_t = Math.sin(t_i * Math.PI / 2); // Smooth sine transition
+          gsap.set(introL,  { x: -offset, opacity: 1 - ip * 0.3 });
+          gsap.set(introR,  { x:  offset, opacity: 1 - ip * 0.3 });
+          gsap.set(bgCtn,   { scale: ip });
+          gsap.set(bgImg,   { scale: 1.5 - 0.5 * ip });
+          gsap.set(header,  { opacity: 0 });
+          imageEls.forEach(el => gsap.set(el, { opacity: 0 }));
+          gsap.set(titlesCtn, { y: window.innerHeight });
+          activeTitleIdx.current = -1;
+        }
 
-            // 1. Thumbnail Image crossfade & scale
-            const img = imgRefs.current[i];
-            if (img) {
-              gsap.set(img, {
-                opacity: ease_t,
-                scale: 0.92 + 0.08 * ease_t,
-                zIndex: ease_t > 0.1 ? 2 : 1,
-              });
+        /* ── SEGMENT 2: Main Scroll (25% – 95%) ────────────────── */
+        else if (p > 0.25 && p <= 0.95) {
+          const sp = (p - 0.25) / 0.70; // 0 → 1 within segment
+
+          gsap.set(introL, { opacity: 0 });
+          gsap.set(introR, { opacity: 0 });
+          gsap.set(bgCtn,  { scale: 1 });
+          gsap.set(bgImg,  { scale: 1 });
+          gsap.set(header, { opacity: 1 });
+
+          // Scroll titles vertically through clip window
+          const titlesH   = titlesCtn.getBoundingClientRect().height;
+          const startY    =  window.innerHeight * 0.5;
+          const endY      = -titlesH - window.innerHeight * 0.2;
+          gsap.set(titlesCtn, { y: startY + (endY - startY) * sp });
+
+          // Float images along bezier arc
+          imageEls.forEach((imgEl, i) => {
+            const state = getImageState(i, sp);
+            if (state === -1 || state === 2) {
+              gsap.set(imgEl, { opacity: 0 });
+            } else {
+              const pos = getBezierPosition(state);
+              gsap.set(imgEl, { x: pos.x - 100, y: pos.y - 75, opacity: 1 });
             }
+          });
 
-            // 2a. Left labels (blurred crossfade & stagger up with narrow transition window to prevent overlap)
-            const leftLabel = leftLabelRefs.current[i];
-            if (leftLabel) {
-              // Narrow transition window so only one text is visible at a time
-              const left_t_i = Math.max(0, 1 - Math.abs(deltaP) * 16);
-              const left_ease_t = Math.sin(left_t_i * Math.PI / 2);
+          // Highlight nearest title to vertical center
+          const center = window.innerHeight / 2;
+          let closestIdx = 0;
+          let minDist    = Infinity;
+          titleEls.forEach((el, i) => {
+            const rect = el.getBoundingClientRect();
+            const dist = Math.abs(rect.top + rect.height / 2 - center);
+            if (dist < minDist) { minDist = dist; closestIdx = i; }
+          });
 
-              const dir = deltaP > 0 ? -1 : 1;
-              const yOffset = dir * 40 * (1 - left_ease_t);
-              const blurVal = 16 * (1 - left_ease_t);
-
-              gsap.set(leftLabel, {
-                opacity: left_ease_t,
-                y: yOffset,
-                filter: `blur(${blurVal}px)`,
-              });
+          if (closestIdx !== activeTitleIdx.current) {
+            if (activeTitleIdx.current !== -1) {
+              const prev = titleEls[activeTitleIdx.current];
+              gsap.to(prev, { opacity: 0.2, scale: 0.95, duration: 0.4, ease: 'power2.out' });
             }
+            const cur = titleEls[closestIdx];
+            gsap.to(cur, { opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' });
+            activeTitleIdx.current = closestIdx;
 
-            // 2b. Right labels (subtext under name, staggered slide up/down)
-            const rightLabel = rightLabelRefs.current[i];
-            if (rightLabel) {
-              const dir = deltaP > 0 ? -1 : 1;
-              const yOffset = dir * 15 * (1 - ease_t);
-
-              gsap.set(rightLabel, {
-                opacity: ease_t,
-                y: yOffset,
-              });
-            }
-
-            // 3. Name Item styling: Swap font family, interpolate size on a SINGLE span (no overlays)
-            const nameItemDiv = nameRefs.current[i];
-            const spanName = nameListRefs.current[i];
-            const spanIndex = nameIndexRefs.current[i];
-
-            if (nameItemDiv && spanName) {
-              // Keep normal vertical spacing (no accordion push translation)
-              gsap.set(nameItemDiv, { x: 0, y: 0 });
-
-              const opacity = 0.3 + 0.7 * ease_t;
-              const fontFamily = 'var(--font-display)';
-              const fontWeight = '400';
-
-              // Fluidly interpolate font size (approx. 24px/18px to 54px/32px)
-              const isMobile = window.innerWidth < 640;
-              const minSize = isMobile ? 18 : 24;
-              const maxSize = isMobile ? 32 : 54;
-              const currentSize = minSize + (maxSize - minSize) * ease_t;
-
-              gsap.set(spanName, {
-                opacity: opacity,
-                fontFamily: fontFamily,
-                fontWeight: fontWeight,
-                fontSize: `${currentSize}px`,
-              });
-
-              if (spanIndex) {
-                gsap.set(spanIndex, { 
-                  opacity: ease_t,
-                  x: 20 * (1 - ease_t) // Slide leftwards into position as it active-fades
-                });
-              }
+            // Swap background image
+            if (bgImg && projects[closestIdx]) {
+              bgImg.src = projects[closestIdx].image;
             }
           }
-        },
-      });
-    }, sectionRef);
+        }
 
-    return () => ctx.revert();
+        /* ── SEGMENT 3: Outro (95%+) ──────────────────────────── */
+        else if (p > 0.95) {
+          const op = 1 - (p - 0.95) / 0.05;
+          gsap.set(header, { opacity: op });
+        }
+      },
+    });
+
+    return () => {
+      st.kill();
+    };
   }, []);
 
   return (
     <section
       ref={sectionRef}
       id="work"
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100vh',
-        padding: '2rem',
-        overflow: 'visible',
-        background: 'var(--color-base)',
-        color: 'var(--color-text-dark)',
-      }}
+      style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a' }}
     >
-      {/* ── Background Geometric Lines ────────────────────────────────────── */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
-        {/* Static Horizontal Line */}
-        <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'rgba(0,0,0,0.06)' }} />
-        
-        {/* Rotating SVG group for circle and diagonals */}
-        <svg style={{ position: 'absolute', top: '50%', left: '50%', width: '150vh', height: '150vh', transform: 'translate(-50%, -50%)', overflow: 'visible' }}>
-          <g ref={bgLinesRef}>
-            {/* Massive Circle */}
-            <circle cx="50%" cy="50%" r="45vh" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
-            <circle cx="50%" cy="50%" r="75vh" fill="none" stroke="rgba(0,0,0,0.03)" strokeWidth="1" />
-            
-            {/* Diagonal Lines crossing through center */}
-            <line x1="0" y1="0" x2="100%" y2="100%" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
-            <line x1="100%" y1="0" x2="0" y2="100%" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
-          </g>
-        </svg>
-      </div>
-
-      {/* ── Project Index (top-left, drifts downward) ─────────────────── */}
-      <div style={{ position: 'absolute', top: '2rem', left: '2rem', zIndex: 10 }}>
-        <h1
-          ref={indexH1Ref}
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(5rem, 10vw, 12rem)', // Giant font matching design
-            fontWeight: 400,
-            lineHeight: 0.8,
-            textTransform: 'uppercase',
-            letterSpacing: '-0.04em',
-            color: 'var(--color-text-dark)',
-            willChange: 'transform',
-            display: 'flex',
-            alignItems: 'baseline'
-          }}
-        >
-          01<span style={{ fontSize: '0.4em', marginLeft: '0.2em', color: '#000000' }}>/{String(N).padStart(2, '0')}</span>
-        </h1>
-      </div>
-
-      {/* ── Center-Left Labels Pinned Stack (Only active label clear, staggers up and blurs out) ── */}
-      <div 
-        ref={leftLabelsContainerRef}
-        style={{ 
-          position: 'absolute', 
-          left: '18%', 
-          top: '50vh', 
-          transform: 'translateY(-50%)',
-          display: 'flex', 
-          justifyContent: 'center',
-          alignItems: 'center',
-          pointerEvents: 'none', 
-          zIndex: 5 
+      {/* ── Full-bleed background image ─────────────────────────── */}
+      <div
+        ref={bgContainerRef}
+        style={{
+          position: 'absolute', inset: 0,
+          zIndex: 1,
+          willChange: 'transform',
         }}
       >
-        {projects.map((project, i) => (
+        <img
+          ref={bgImageRef}
+          src={projects[0].image}
+          alt="Project background"
+          style={{
+            width: '100%', height: '100%', objectFit: 'cover',
+            willChange: 'transform',
+          }}
+        />
+        {/* Dark vignette overlay */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.65) 100%)',
+        }} />
+      </div>
+
+      {/* ── AWARD / WINNING split text ─────────────────────────── */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '100%', display: 'flex', justifyContent: 'center', gap: '3vw',
+        zIndex: 10, pointerEvents: 'none',
+      }}>
+        <div
+          ref={introLeftRef}
+          style={{
+            fontSize: 'clamp(3rem, 8vw, 9rem)',
+            fontFamily: 'var(--font-display)',
+            fontWeight: 900, color: '#fff',
+            letterSpacing: '-0.04em',
+            textTransform: 'uppercase',
+            willChange: 'transform',
+          }}
+        >
+          SELECTED
+        </div>
+        <div
+          ref={introRightRef}
+          style={{
+            fontSize: 'clamp(3rem, 8vw, 9rem)',
+            fontFamily: 'var(--font-display)',
+            fontWeight: 900, color: '#fff',
+            letterSpacing: '-0.04em',
+            textTransform: 'uppercase',
+            willChange: 'transform',
+          }}
+        >
+          WORK
+        </div>
+      </div>
+
+      {/* ── Diagonal clip-path titles window ───────────────────── */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '6%',
+        transform: 'translateY(-50%)',
+        width: '52%', height: '55vh',
+        clipPath: 'polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%)',
+        zIndex: 3,
+        overflow: 'hidden',
+      }}>
+        <div
+          ref={titlesCtnRef}
+          style={{
+            position: 'absolute', width: '100%',
+            display: 'flex', flexDirection: 'column',
+            gap: '5vh', paddingLeft: '12%',
+            willChange: 'transform',
+          }}
+        >
+          {projects.map((p, i) => (
+            <div key={i} className="sw-title" style={{
+              opacity: 0.2,
+              transform: 'scale(0.95)',
+              willChange: 'transform, opacity',
+              transformOrigin: 'left center',
+            }}>
+              <h2 style={{
+                fontFamily: 'var(--font-display)',
+                fontWeight: 900,
+                fontSize: 'clamp(2.2rem, 5vw, 6rem)',
+                lineHeight: 1.0,
+                letterSpacing: '-0.04em',
+                color: '#fff',
+                textTransform: 'uppercase',
+                margin: 0,
+                whiteSpace: 'nowrap',
+              }}>
+                {p.name}
+              </h2>
+              <p style={{
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: 'clamp(0.6rem, 0.9vw, 0.85rem)',
+                letterSpacing: '0.15em',
+                color: 'rgba(255,255,255,0.5)',
+                textTransform: 'uppercase',
+                marginTop: '0.4em',
+              }}>
+                {p.tag}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Floating images (bezier arc, right side) ────────────── */}
+      <div
+        ref={imagesAreaRef}
+        style={{
+          position: 'absolute', top: 0, right: 0,
+          width: '48vw', height: '100vh',
+          pointerEvents: 'none', zIndex: 4,
+        }}
+      >
+        {projects.map((p, i) => (
           <div
             key={i}
-            ref={(el) => { if (el) leftLabelRefs.current[i] = el; }}
+            className="sw-float-img"
             style={{
               position: 'absolute',
-              whiteSpace: 'nowrap',
-              fontFamily: 'var(--font-display)',
-              fontSize: '1.25rem',
-              fontStyle: 'italic',
-              color: 'var(--color-text-dark)',
+              width: 220, height: 160,
               opacity: 0,
-              willChange: 'opacity, transform, filter',
+              willChange: 'transform, opacity',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              overflow: 'hidden',
             }}
           >
-            {project.leftLabel}
+            <img
+              src={p.image}
+              alt={p.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
           </div>
         ))}
       </div>
 
-      {/* ── Centered Pinned Thumbnails Stack ───────────────────────────── */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 2, pointerEvents: 'none' }}>
-        <div
-          ref={imagesContainerRef}
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '32%',
-            aspectRatio: '16/10',
-            willChange: 'transform',
-          }}
-        >
-          {projects.map((project, i) => (
-            <div
-              key={i}
-              ref={(el) => { if (el) imgRefs.current[i] = el; }}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                opacity: 0,
-                transform: 'scale(0.92)',
-                overflow: 'hidden',
-                borderRadius: '0',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-                willChange: 'opacity, transform',
-              }}
-            >
-              <img
-                src={project.image}
-                alt={project.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                draggable="false"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Project Names List (right side vertical list, scrolls to center active item) ── */}
+      {/* ── Side header label ────────────────────────────────────── */}
       <div
+        ref={headerRef}
         style={{
-          position: 'absolute',
-          right: '5vw',
-          top: '50vh',
-          display: 'flex',
-          flexDirection: 'column',
-          pointerEvents: 'none',
-          zIndex: 10,
-          width: '35vw', // Ensures adequate horizontal space for dividers and elements
+          position: 'absolute', top: '50%', right: '5vw',
+          transform: 'translateY(-50%)',
+          zIndex: 5, opacity: 0,
+          display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem',
         }}
       >
-        <div
-          ref={namesContainerRef}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-            willChange: 'transform',
-            width: '100%',
-          }}
-        >
-          {projects.map((project, i) => (
-            <div
-              key={i}
-              ref={(el) => { if (el) nameRefs.current[i] = el; }}
-              style={{
-                height: '130px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-                justifyContent: 'center',
-                willChange: 'transform',
-                whiteSpace: 'nowrap',
-                position: 'relative',
-                width: '100%',
-                borderBottom: '1px solid rgba(0,0,0,0.06)', // Divider lines matching screenshot
-              }}
-            >
-              {/* Single name element: normal flow, serves as relative anchor for the index prefix */}
-              <span
-                ref={(el) => { if (el) nameListRefs.current[i] = el; }}
-                style={{
-                  position: 'relative',
-                  color: 'var(--color-text-dark)',
-                  whiteSpace: 'nowrap',
-                  willChange: 'opacity, font-size, font-family',
-                  transformOrigin: 'right center',
-                  lineHeight: 1.1,
-                  display: 'inline-block',
-                }}
-              >
-                {/* Nested parenthesized Index: absolute-positioned left of the name */}
-                <span
-                  ref={(el) => { if (el) nameIndexRefs.current[i] = el; }}
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: 'clamp(0.8rem, 1.2vw, 1rem)',
-                    fontWeight: 400,
-                    color: 'var(--color-text-dark)',
-                    whiteSpace: 'nowrap',
-                    position: 'absolute',
-                    right: '100%',
-                    marginRight: '16px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    opacity: 0,
-                    willChange: 'opacity, transform',
-                  }}
-                >
-                  ({String(i + 1).padStart(2, '0')})
-                </span>
-                
-                {project.name}
-              </span>
-
-              {/* Right Label (Subtext under name - aligned vertically in list item) */}
-              <div
-                ref={(el) => { if (el) rightLabelRefs.current[i] = el; }}
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.9rem',
-                  fontStyle: 'italic',
-                  color: 'var(--color-text-dark)',
-                  opacity: 0,
-                  marginTop: '4px',
-                  willChange: 'opacity, transform',
-                }}
-              >
-                {project.rightLabel}
-              </div>
-            </div>
-          ))}
-        </div>
+        <span style={{
+          fontFamily: 'var(--font-mono, monospace)',
+          fontSize: '0.65rem', letterSpacing: '0.2em',
+          color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase',
+        }}>
+          Portfolio / 2025
+        </span>
+        <span style={{
+          fontFamily: 'var(--font-mono, monospace)',
+          fontSize: '0.65rem', letterSpacing: '0.2em',
+          color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase',
+        }}>
+          Selected Work
+        </span>
       </div>
 
-
+      {/* ── Bottom progress indicator ────────────────────────────── */}
+      <div style={{
+        position: 'absolute', bottom: '2.5rem', left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex', gap: '0.5rem',
+        zIndex: 6,
+      }}>
+        {projects.map((_, i) => (
+          <div key={i} style={{
+            width: 24, height: 2,
+            background: 'rgba(255,255,255,0.25)',
+            borderRadius: 2,
+          }} />
+        ))}
+      </div>
     </section>
   );
 };
