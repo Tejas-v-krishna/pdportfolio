@@ -140,6 +140,69 @@ export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onCompl
         force3D: true
       }, '<')
 
+      // --- New Counter Logic ---
+      const counter1 = document.querySelector(".counter-1") as HTMLElement;
+      const counter2 = document.querySelector(".counter-2") as HTMLElement;
+      const counter3 = document.querySelector(".counter-3") as HTMLElement;
+
+      // Populate counter 1 (0 to 1)
+      if (counter1) {
+        counter1.innerHTML = '';
+        ['0', '1'].forEach(num => {
+          const div = document.createElement("div");
+          div.className = "num font-display leading-[150px]";
+          div.textContent = num;
+          counter1.appendChild(div);
+        });
+      }
+
+      // Populate counter 2 (0 to 10, replacing 10 with 0)
+      if (counter2) {
+        counter2.innerHTML = '';
+        for (let i = 0; i <= 10; i++) {
+          const div = document.createElement("div");
+          div.className = "num font-display leading-[150px]";
+          div.textContent = (i === 10) ? '0' : i.toString();
+          counter2.appendChild(div);
+        }
+      }
+
+      // Populate counter 3 (0 to 30 + final 0)
+      if (counter3) {
+        counter3.innerHTML = '';
+        for (let i = 0; i < 30; i++) {
+          const div = document.createElement("div");
+          div.className = "num font-display leading-[150px]";
+          div.textContent = (i % 10).toString();
+          counter3.appendChild(div);
+        }
+        const finalZero = document.createElement("div");
+        finalZero.className = "num font-display leading-[150px]";
+        finalZero.textContent = '0';
+        counter3.appendChild(finalZero);
+      }
+
+      // Helper to animate counter
+      const animateCounter = (counterEl: HTMLElement, duration: number, delay: number = 0) => {
+        const numEl = counterEl.querySelector(".num");
+        if (!numEl) return;
+        const numHeight = numEl.clientHeight;
+        const totalDistance = (counterEl.querySelectorAll(".num").length - 1) * numHeight;
+        
+        tl.to(counterEl, {
+          y: -totalDistance,
+          duration: duration,
+          ease: "power2.inOut"
+        }, delay);
+      };
+
+      // Animate the counters concurrently with the main timeline
+      if (counter3) animateCounter(counter3, 2.5, 0);
+      if (counter2) animateCounter(counter2, 3, 0);
+      if (counter1) animateCounter(counter1, 2, 1.5);
+
+      // --- End Counter Logic ---
+
       // Exit preloader animation
       .to(containerRef.current, {
         yPercent: -100,
@@ -190,6 +253,16 @@ export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onCompl
           </p>
         </div>
 
+      </div>
+
+      {/* Counter */}
+      <div 
+        className="counter absolute right-4 sm:right-8 bottom-4 sm:bottom-8 flex font-display text-[80px] sm:text-[120px] h-[100px] sm:h-[150px] overflow-hidden text-zinc-400 pointer-events-none select-none"
+        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)' }}
+      >
+        <div className="counter-1 relative -top-[10px] sm:-top-[15px]"></div>
+        <div className="counter-2 relative -top-[10px] sm:-top-[15px]"></div>
+        <div className="counter-3 relative -top-[10px] sm:-top-[15px]"></div>
       </div>
     </div>
   );
