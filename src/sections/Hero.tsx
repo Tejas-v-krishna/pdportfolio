@@ -443,7 +443,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
             className="hero-cascade-img absolute top-6 left-6 w-[20%] max-w-[200px] aspect-[5/3] rounded-xl overflow-hidden will-change-transform"
             style={{ transition: 'top 0s, left 0s, right 0s, bottom 0s' }} // prevent css transition interference
           >
-            <img src={`https://placehold.co/800x600/E5EBE4/1A1A18?text=Image+${i+1}`} alt={`Cascade ${i+1}`} className="w-full h-full object-cover" />
+            <img src={`https://picsum.photos/seed/${i + 10}/800/600`} alt={`Cascade ${i+1}`} className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
