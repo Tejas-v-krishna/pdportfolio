@@ -5,16 +5,40 @@ import { useTextReveal } from '../hooks/useTextReveal';
 
 export const About: React.FC = () => {
   const heroHeadingRef = useRef<HTMLHeadingElement>(null);
+  const bioPara1Ref = useRef<HTMLParagraphElement>(null);
+  const bioPara2Ref = useRef<HTMLParagraphElement>(null);
+  const bioPara3Ref = useRef<HTMLParagraphElement>(null);
+  const bioPara4Ref = useRef<HTMLParagraphElement>(null);
   const journeyHeadingRef = useRef<HTMLHeadingElement>(null);
+  const journeySubRef = useRef<HTMLParagraphElement>(null);
   const valuesHeadingRef = useRef<HTMLHeadingElement>(null);
+  const valuesSubRef = useRef<HTMLParagraphElement>(null);
+  const values1Ref = useRef<HTMLHeadingElement>(null);
+  const values2Ref = useRef<HTMLHeadingElement>(null);
+  const values3Ref = useRef<HTMLHeadingElement>(null);
   const outsideHeadingRef = useRef<HTMLHeadingElement>(null);
+  const outsideSub1Ref = useRef<HTMLHeadingElement>(null);
+  const outsideSub2Ref = useRef<HTMLHeadingElement>(null);
   const ctaHeadingRef = useRef<HTMLHeadingElement>(null);
+  const ctaSubRef = useRef<HTMLParagraphElement>(null);
 
   useTextReveal(heroHeadingRef, { start: 'top 85%', stagger: 0.12, duration: 1.0 });
+  useTextReveal(bioPara1Ref, { start: 'top 82%', stagger: 0.08, duration: 0.85, delay: 0.1 });
+  useTextReveal(bioPara2Ref, { start: 'top 82%', stagger: 0.08, duration: 0.85, delay: 0.1 });
+  useTextReveal(bioPara3Ref, { start: 'top 82%', stagger: 0.08, duration: 0.85, delay: 0.1 });
+  useTextReveal(bioPara4Ref, { start: 'top 82%', stagger: 0.08, duration: 0.85, delay: 0.1 });
   useTextReveal(journeyHeadingRef, { start: 'top 80%', stagger: 0.1, duration: 0.9 });
+  useTextReveal(journeySubRef, { start: 'top 80%', stagger: 0.08, duration: 0.8, delay: 0.1 });
   useTextReveal(valuesHeadingRef, { start: 'top 80%', stagger: 0.1, duration: 0.9 });
+  useTextReveal(valuesSubRef, { start: 'top 80%', stagger: 0.08, duration: 0.8, delay: 0.1 });
+  useTextReveal(values1Ref, { start: 'top 82%', stagger: 0, duration: 0.8 });
+  useTextReveal(values2Ref, { start: 'top 82%', stagger: 0, duration: 0.8 });
+  useTextReveal(values3Ref, { start: 'top 82%', stagger: 0, duration: 0.8 });
   useTextReveal(outsideHeadingRef, { start: 'top 80%', stagger: 0.1, duration: 0.9 });
+  useTextReveal(outsideSub1Ref, { start: 'top 82%', stagger: 0, duration: 0.8 });
+  useTextReveal(outsideSub2Ref, { start: 'top 82%', stagger: 0, duration: 0.8 });
   useTextReveal(ctaHeadingRef, { start: 'top 80%', stagger: 0.12, duration: 1.0 });
+  useTextReveal(ctaSubRef, { start: 'top 80%', stagger: 0.08, duration: 0.85, delay: 0.1 });
   return (
     <main className="relative z-10 w-full pt-32 pb-10 flex flex-col gap-8">
       
@@ -29,17 +53,17 @@ export const About: React.FC = () => {
               Building is how I prove it.
             </h1>
             <div className="text-lg opacity-80 leading-relaxed space-y-6">
-              <p>
+              <p ref={bioPara1Ref}>
                 I grew up as a kid who wanted to know how everything worked, taking apart toys to see what was inside. Without that curiosity, I probably wouldn't be a designer today.
               </p>
-              <p>
+              <p ref={bioPara2Ref}>
                 Along the way, I realized that understanding systems wasn't enough. I cared just as much about how people experienced them. That's when UI/UX design clicked for me.
               </p>
-              <p>
+              <p ref={bioPara3Ref}>
                 My background in engineering and design has shaped how I work. I believe that a great product isn't just about how it looks, but how it feels to use.
               </p>
-              <p>
-                Today, I work as a UI/UX Designer & Researcher Intern at Trams, while pursuing my CS&E degree. I'm exploring how we can build interfaces that are powerful, empathetic, and truly helpful.
+              <p ref={bioPara4Ref}>
+                Today, I work as a UI/UX Designer &amp; Researcher Intern at Trams, while pursuing my CS&amp;E degree. I'm exploring how we can build interfaces that are powerful, empathetic, and truly helpful.
               </p>
             </div>
           </div>
@@ -62,7 +86,7 @@ export const About: React.FC = () => {
         {/* My Journey */}
         <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100">
           <h2 ref={journeyHeadingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-4">My journey</h2>
-          <p className="text-lg opacity-80 mb-12 max-w-2xl">
+          <p ref={journeySubRef} className="text-lg opacity-80 mb-12 max-w-2xl">
             Some highlights of my career so far.
           </p>
           <div className="relative flex flex-col gap-4 items-center">
@@ -89,23 +113,23 @@ export const About: React.FC = () => {
         {/* Values */}
         <div className="p-8 sm:p-16">
           <h2 ref={valuesHeadingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-4">Values I believe in.</h2>
-          <p className="text-lg opacity-80 mb-12 max-w-2xl">
+          <p ref={valuesSubRef} className="text-lg opacity-80 mb-12 max-w-2xl">
             The way I work is shaped as much by values as it is by craft.
           </p>
           <div className="flex flex-col gap-12">
             <div className="flex flex-col md:flex-row gap-4 md:gap-16 border-t border-gray-200 pt-8">
               <div className="font-mono text-sm opacity-50">01</div>
-              <h3 className="font-display font-bold text-2xl w-full md:w-1/3">Disagree, but commit.</h3>
+              <h3 ref={values1Ref} className="font-display font-bold text-2xl w-full md:w-1/3">Disagree, but commit.</h3>
               <p className="opacity-80 flex-1 leading-relaxed">It's healthy to debate and push back on decisions during the exploration phase. But once a direction is chosen, I fully commit to executing it and moving forward together as a team.</p>
             </div>
             <div className="flex flex-col md:flex-row gap-4 md:gap-16 border-t border-gray-200 pt-8">
               <div className="font-mono text-sm opacity-50">02</div>
-              <h3 className="font-display font-bold text-2xl w-full md:w-1/3">A sports-team mindset.</h3>
+              <h3 ref={values2Ref} className="font-display font-bold text-2xl w-full md:w-1/3">A sports-team mindset.</h3>
               <p className="opacity-80 flex-1 leading-relaxed">We succeed and fail together. I believe in lifting up my teammates, covering for them when needed, and keeping the collective goal above individual ego.</p>
             </div>
             <div className="flex flex-col md:flex-row gap-4 md:gap-16 border-t border-gray-200 pt-8">
               <div className="font-mono text-sm opacity-50">03</div>
-              <h3 className="font-display font-bold text-2xl w-full md:w-1/3">Be kind, be true, be you.</h3>
+              <h3 ref={values3Ref} className="font-display font-bold text-2xl w-full md:w-1/3">Be kind, be true, be you.</h3>
               <p className="opacity-80 flex-1 leading-relaxed">Empathy goes a long way. I try to bring my authentic self to work and create an environment where others feel comfortable doing the same.</p>
             </div>
           </div>
@@ -126,11 +150,11 @@ export const About: React.FC = () => {
         <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-16">
           <div className="md:w-1/2">
             <h2 ref={outsideHeadingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-8">What I do outside of work.</h2>
-            <h4 className="font-display font-bold text-xl mb-4">I invest a lot in community.</h4>
+            <h4 ref={outsideSub1Ref} className="font-display font-bold text-xl mb-4">I invest a lot in community.</h4>
             <p className="opacity-80 mb-8 leading-relaxed">
               Meeting people, mentoring designers, and building community is a big part of who I am. I regularly participate in design meetups and help moderate online design communities.
             </p>
-            <h4 className="font-display font-bold text-xl mb-4">I am also a music enthusiast.</h4>
+            <h4 ref={outsideSub2Ref} className="font-display font-bold text-xl mb-4">I am also a music enthusiast.</h4>
             <p className="opacity-80 leading-relaxed">
               When I'm not designing, I'm probably listening to shoegaze, discovering new artists, or experimenting with making my own music. It's a great way to reset my creative energy.
             </p>
@@ -150,7 +174,7 @@ export const About: React.FC = () => {
           <h2 ref={ctaHeadingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-6 max-w-2xl">
             Let's talk if you're building something that makes life a little better.
           </h2>
-          <p className="text-lg opacity-80 mb-12 max-w-2xl">
+          <p ref={ctaSubRef} className="text-lg opacity-80 mb-12 max-w-2xl">
             I'm always open to discussing new opportunities, collaborations, or just having a chat about design.
           </p>
           

@@ -5,9 +5,11 @@ import { useTextReveal } from '../hooks/useTextReveal';
 export const Contact: React.FC = () => {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const letterRef = useRef<HTMLParagraphElement>(null);
+  const signatureRef = useRef<HTMLDivElement>(null);
 
   useTextReveal(headingRef, { start: 'top 85%', duration: 0.9 });
   useTextReveal(letterRef, { start: 'top 82%', stagger: 0.1, duration: 0.85, delay: 0.15 });
+  useTextReveal(signatureRef, { start: 'top 82%', duration: 0.8, delay: 0.3 });
   return (
     <section id="contact" className="px-6 sm:px-12 md:px-16 lg:px-20 w-full mb-20 flex flex-col items-center">
       
@@ -31,7 +33,7 @@ export const Contact: React.FC = () => {
             I'm currently looking for full-time Product Design roles or freelance projects. If you have something in mind, or just want to chat about design, I'd love to hear from you.
           </p>
 
-          <div className="font-handwriting text-2xl text-[var(--color-text-dark)] opacity-90">
+          <div ref={signatureRef} className="font-handwriting text-2xl text-[var(--color-text-dark)] opacity-90">
             Cheers,<br />
             Tejjxuu.ui
           </div>
