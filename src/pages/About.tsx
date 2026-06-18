@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { CreativeBanner } from '../sections/CreativeBanner';
 import { AboutStory } from '../sections/AboutStory';
+import { useTextReveal } from '../hooks/useTextReveal';
 
 export const About: React.FC = () => {
+  const heroHeadingRef = useRef<HTMLHeadingElement>(null);
+  const journeyHeadingRef = useRef<HTMLHeadingElement>(null);
+  const valuesHeadingRef = useRef<HTMLHeadingElement>(null);
+  const outsideHeadingRef = useRef<HTMLHeadingElement>(null);
+  const ctaHeadingRef = useRef<HTMLHeadingElement>(null);
+
+  useTextReveal(heroHeadingRef, { start: 'top 85%', stagger: 0.12, duration: 1.0 });
+  useTextReveal(journeyHeadingRef, { start: 'top 80%', stagger: 0.1, duration: 0.9 });
+  useTextReveal(valuesHeadingRef, { start: 'top 80%', stagger: 0.1, duration: 0.9 });
+  useTextReveal(outsideHeadingRef, { start: 'top 80%', stagger: 0.1, duration: 0.9 });
+  useTextReveal(ctaHeadingRef, { start: 'top 80%', stagger: 0.12, duration: 1.0 });
   return (
     <main className="relative z-10 w-full pt-32 pb-10 flex flex-col gap-8">
       
@@ -12,7 +24,7 @@ export const About: React.FC = () => {
         {/* Bio Block */}
         <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-16">
           <div className="md:w-2/3">
-            <h1 className="font-display font-bold text-4xl sm:text-6xl text-[var(--color-text-dark)] leading-tight mb-8">
+            <h1 ref={heroHeadingRef} className="font-display font-bold text-4xl sm:text-6xl text-[var(--color-text-dark)] leading-tight mb-8">
               Design is how I think.<br />
               Building is how I prove it.
             </h1>
@@ -49,7 +61,7 @@ export const About: React.FC = () => {
 
         {/* My Journey */}
         <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100">
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-4">My journey</h2>
+          <h2 ref={journeyHeadingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-4">My journey</h2>
           <p className="text-lg opacity-80 mb-12 max-w-2xl">
             Some highlights of my career so far.
           </p>
@@ -76,7 +88,7 @@ export const About: React.FC = () => {
 
         {/* Values */}
         <div className="p-8 sm:p-16">
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-4">Values I believe in.</h2>
+          <h2 ref={valuesHeadingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-4">Values I believe in.</h2>
           <p className="text-lg opacity-80 mb-12 max-w-2xl">
             The way I work is shaped as much by values as it is by craft.
           </p>
@@ -113,7 +125,7 @@ export const About: React.FC = () => {
         {/* Outside Work */}
         <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-16">
           <div className="md:w-1/2">
-            <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-8">What I do outside of work.</h2>
+            <h2 ref={outsideHeadingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-8">What I do outside of work.</h2>
             <h4 className="font-display font-bold text-xl mb-4">I invest a lot in community.</h4>
             <p className="opacity-80 mb-8 leading-relaxed">
               Meeting people, mentoring designers, and building community is a big part of who I am. I regularly participate in design meetups and help moderate online design communities.
@@ -135,7 +147,7 @@ export const About: React.FC = () => {
 
         {/* Let's talk CTA */}
         <div className="skew-on-scroll bg-white rounded-[3rem] p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center text-center">
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-6 max-w-2xl">
+          <h2 ref={ctaHeadingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-6 max-w-2xl">
             Let's talk if you're building something that makes life a little better.
           </h2>
           <p className="text-lg opacity-80 mb-12 max-w-2xl">

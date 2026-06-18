@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useTextReveal } from '../hooks/useTextReveal';
 
 const playProjects = [
   {
@@ -53,6 +54,11 @@ const playProjects = [
 ];
 
 export const Play: React.FC = () => {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
+
+  useTextReveal(headingRef, { start: 'top 85%', stagger: 0, duration: 1.0 });
+  useTextReveal(subRef, { start: 'top 82%', stagger: 0.1, duration: 0.85, delay: 0.15 });
   return (
     <main className="relative z-10 w-full pt-32 pb-10">
       <section className="px-6 sm:px-12 md:px-16 lg:px-20 w-full">
@@ -60,10 +66,10 @@ export const Play: React.FC = () => {
           
           {/* Header */}
           <div className="mb-16">
-            <h1 className="font-display font-bold text-5xl sm:text-7xl text-[var(--color-text-dark)] mb-4">
+            <h1 ref={headingRef} className="font-display font-bold text-5xl sm:text-7xl text-[var(--color-text-dark)] mb-4">
               Side Projects
             </h1>
-            <p className="text-lg opacity-80 max-w-2xl leading-relaxed">
+            <p ref={subRef} className="text-lg opacity-80 max-w-2xl leading-relaxed">
               Apps, tools, AI ideas, and product experiments I shipped on the side, each one built to test an idea or scratch a real itch.
             </p>
           </div>

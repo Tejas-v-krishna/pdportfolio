@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useTextReveal } from '../hooks/useTextReveal';
 
 export const Testimonials: React.FC = () => {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  useTextReveal(headingRef, { start: 'top 80%', duration: 0.9 });
   return (
     <section id="about" className="px-6 sm:px-12 md:px-16 lg:px-20 w-full mb-20">
       
       <div className="skew-on-scroll bg-white rounded-3xl p-8 sm:p-16 shadow-[0_4px_40px_-10px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col items-center relative overflow-hidden">
         
-        <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-16 text-center z-10 relative">
+        <h2 ref={headingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-16 text-center z-10 relative">
           What's it like working with me?
         </h2>
 
