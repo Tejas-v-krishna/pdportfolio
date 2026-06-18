@@ -4,12 +4,11 @@ import tejasProfile from '../assets/tejas-profile.jpg';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CustomEase } from 'gsap/CustomEase';
-import { Flip } from 'gsap/Flip';
 import { BauhausCollage } from '../components/BauhausCollage';
 import { HeroBackgroundElements } from '../components/HeroBackgroundElements';
 import { HoverRollingText } from '../components/HoverRollingText';
 
-gsap.registerPlugin(ScrollTrigger, CustomEase, Flip);
+gsap.registerPlugin(ScrollTrigger, CustomEase);
 
 const workImages = [
   "https://placehold.co/1200x800/E5EBE4/1A1A18?text=Seller+AI+Assistant",
@@ -94,41 +93,6 @@ const splitIntoWords = (text: string, startIdx: number = 0) => {
 
 
 
-const animateImages = () => {
-  const images = document.querySelectorAll(".hero-cascade-img");
-  images.forEach(img => img.classList.remove("flip-animate-out"));
-  
-  // Capture the initial Top/Left layout
-  const state = Flip.getState(images);
-  
-  // Switch elements to the Bottom/Right corner
-  images.forEach(img => img.classList.add("flip-animate-out"));
-  
-  const scaleTimeline = gsap.timeline();
-  
-  // Let GSAP FLIP interpolate the transition
-  const flipTimeline = Flip.from(state, {
-      duration: 1,
-      ease: "power3.inOut",
-      stagger: 0.1
-  });
-  
-  images.forEach((img, index) => {
-      // Adding a slight "bounce/pop" on the scaling as they slide
-      const scaleUp = gsap.to(img, { scale: 2.5, duration: 0.45, ease: "power3.in" });
-      const scaleDown = gsap.to(img, { scale: 1, duration: 0.45, ease: "power3.out" });
-      
-      const imgTl = gsap.timeline();
-      imgTl.add(scaleUp).add(scaleDown);
-      
-      scaleTimeline.add(imgTl, index * 0.1);
-  });
-  
-  const mainTl = gsap.timeline();
-  mainTl.add(flipTimeline, 0).add(scaleTimeline, 0);
-  return mainTl;
-};
-
 export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const stampSvgRef = useRef<SVGSVGElement>(null);
@@ -185,8 +149,6 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
 
     gsap.set(ellipseImgs, { scale: 1.3, force3D: true });
     gsap.set(words, { opacity: 0, y: 50, force3D: true });
-    gsap.set(".hero-cascade-img", { scale: 0, opacity: 1 }); // Start scaled down
-
     if (stamp) {
       gsap.set(stamp, { opacity: 0, scale: 0.8, filter: 'blur(10px)', force3D: true });
     }
@@ -194,17 +156,7 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
     // Create reveal timeline matching preloader reveal
     const tl = gsap.timeline({ delay: 0.1 });
 
-    // Flip Cascade
-    tl.to(".hero-cascade-img", { 
-      scale: 1, 
-      duration: 1, 
-      stagger: 0.1, 
-      ease: "power3.out" 
-    }, 0)
-    .add(animateImages(), "-=0.2")
-
-    // Heading and other elements
-    .to(ellipseImgs, {
+    tl.to(ellipseImgs, {
       scale: 1.0,
       duration: 2.25,
       ease: "power3.inOut",
@@ -435,19 +387,6 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
       className="relative min-h-screen pt-32 pb-16 px-6 sm:px-12 md:px-16 lg:px-20 w-full flex flex-col items-start justify-end overflow-hidden"
     >
       
-      {/* Images Container (GSAP FLIP Cascade) */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-[1] overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <div 
-            key={i} 
-            className="hero-cascade-img absolute top-6 left-6 w-[20%] max-w-[200px] aspect-[5/3] rounded-xl overflow-hidden will-change-transform"
-            style={{ transition: 'top 0s, left 0s, right 0s, bottom 0s' }} // prevent css transition interference
-          >
-            <img src={`https://picsum.photos/seed/${i + 10}/800/600`} alt={`Cascade ${i+1}`} className="w-full h-full object-cover" />
-          </div>
-        ))}
-      </div>
-
       {/* 1. Background Grid Lines & Magnetic Nodes */}
       <div className="absolute inset-0 pointer-events-none flex justify-between z-0 px-6 sm:px-12 md:px-16 lg:px-20 w-full">
         {/* Column 1 */}
