@@ -204,7 +204,7 @@ export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onCompl
       // --- End Counter Logic ---
 
       // Exit preloader animation
-      .to(containerRef.current, {
+      tl.to(containerRef.current, {
         yPercent: -100,
         opacity: 0,
         duration: 1.4,
