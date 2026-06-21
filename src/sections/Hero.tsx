@@ -314,8 +314,8 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     const workSection = document.getElementById('work');
-                    if (workSection && (window as any).lenis) {
-                      (window as any).lenis.scrollTo(workSection);
+                    if (workSection && window.lenis) {
+                      window.lenis.scrollTo(workSection);
                     } else if (workSection) {
                       workSection.scrollIntoView({ behavior: 'smooth' });
                     }
@@ -332,8 +332,8 @@ export const Hero: React.FC<HeroProps> = ({ isLoading = false }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     const workSection = document.getElementById('work');
-                    if (workSection && (window as any).lenis) {
-                      (window as any).lenis.scrollTo(workSection);
+                    if (workSection && window.lenis) {
+                      window.lenis.scrollTo(workSection);
                     } else if (workSection) {
                       workSection.scrollIntoView({ behavior: 'smooth' });
                     }

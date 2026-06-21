@@ -84,53 +84,7 @@ export const FluidMenu: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Handle scroll lock (Lenis & body overflow)
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      if ((window as any).lenis) {
-        (window as any).lenis.stop();
-      }
-    } else {
-      document.body.style.overflow = '';
-      if ((window as any).lenis) {
-        (window as any).lenis.start();
-      }
-    }
-    return () => {
-      document.body.style.overflow = '';
-      if ((window as any).lenis) {
-        (window as any).lenis.start();
-      }
-    };
-  }, [isOpen]);
-
-  // Close menu on click outside card
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        cardWrapperRef.current && 
-        !cardWrapperRef.current.contains(e.target as Node) &&
-        toggleBtnRef.current &&
-        !toggleBtnRef.current.contains(e.target as Node)
-      ) {
-        handleClose();
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
-
-  // Set initial path state
-  useEffect(() => {
-    if (pathRef.current && !isOpen) {
-      const paths = getPaths(dimensions.w, dimensions.h);
-      gsap.set(pathRef.current, { attr: { d: paths.closed } });
-    }
-  }, [dimensions, getPaths, isOpen]);
-
-  const handleOpen = () => {
+  const handleOpen = useCallback(() => {
     setIsOpen(true);
     const paths = getPaths(dimensions.w, dimensions.h);
 
@@ -177,9 +131,9 @@ export const FluidMenu: React.FC = () => {
       { opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out', stagger: 0.04 },
       0.5
     );
-  };
+  }, [dimensions, getPaths]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     const paths = getPaths(dimensions.w, dimensions.h);
 
     if (timelineRef.current) timelineRef.current.kill();
@@ -222,7 +176,53 @@ export const FluidMenu: React.FC = () => {
       duration: 0.25,
       ease: 'power2.in'
     }, 0);
-  };
+  }, [dimensions, getPaths]);
+
+  // Handle scroll lock (Lenis & body overflow)
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      if (window.lenis) {
+        window.lenis.stop();
+      }
+    } else {
+      document.body.style.overflow = '';
+      if (window.lenis) {
+        window.lenis.start();
+      }
+    }
+    return () => {
+      document.body.style.overflow = '';
+      if (window.lenis) {
+        window.lenis.start();
+      }
+    };
+  }, [isOpen]);
+
+  // Close menu on click outside card
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        cardWrapperRef.current && 
+        !cardWrapperRef.current.contains(e.target as Node) &&
+        toggleBtnRef.current &&
+        !toggleBtnRef.current.contains(e.target as Node)
+      ) {
+        handleClose();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, handleClose]);
+
+  // Set initial path state
+  useEffect(() => {
+    if (pathRef.current && !isOpen) {
+      const paths = getPaths(dimensions.w, dimensions.h);
+      gsap.set(pathRef.current, { attr: { d: paths.closed } });
+    }
+  }, [dimensions, getPaths, isOpen]);
 
   const handleItemClick = (e: React.MouseEvent, item: MenuItem) => {
     e.preventDefault();

@@ -2,15 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useTextReveal } from '../hooks/useTextReveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Vault = ({ isRevealed }: { isRevealed: boolean }) => {
   const vaultRef = useRef<HTMLDivElement>(null);
-  const vaultHeadingRef = useRef<HTMLHeadingElement>(null);
-
-  useTextReveal(vaultHeadingRef, { start: 'top 85%', duration: 0.9 });
   
   useEffect(() => {
     if (!isRevealed || !vaultRef.current) return;
@@ -39,7 +35,7 @@ const Vault = ({ isRevealed }: { isRevealed: boolean }) => {
   return (
     <div ref={vaultRef} className="w-full max-w-5xl mx-auto px-6 py-32 border-t border-white/10 mt-32">
       <div className="text-center mb-24">
-        <h2 ref={vaultHeadingRef} className="font-body text-2xl md:text-4xl font-bold tracking-tight text-white mb-4">
+        <h2 className="font-body text-2xl md:text-4xl font-bold tracking-tight text-white mb-4">
           DIRECTOR'S CUT
         </h2>
         <p className="font-body text-[10px] tracking-[0.3em] uppercase text-white/40">
@@ -141,9 +137,6 @@ export const EasterEgg = () => {
   const [unlocked, setUnlocked] = useState(false);
   const [vaultRevealed, setVaultRevealed] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const restrictedRef = useRef<HTMLHeadingElement>(null);
-
-  useTextReveal(restrictedRef, { start: 'top 80%', duration: 0.9, once: true });
 
   const handleRevealVault = () => {
     setVaultRevealed(true);
@@ -194,7 +187,7 @@ export const EasterEgg = () => {
         <div className="w-full flex-grow px-8 flex flex-col items-center justify-center">
           <div className="w-full max-w-lg mb-24">
             <div className="text-center mb-12">
-              <h1 ref={restrictedRef} className="font-body text-2xl md:text-3xl font-bold tracking-tight text-white mb-2">
+              <h1 className="font-body text-2xl md:text-3xl font-bold tracking-tight text-white mb-2">
                 RESTRICTED AREA
               </h1>
               <p className="font-body text-[10px] tracking-[0.3em] uppercase text-white/40">

@@ -1,12 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { useTextReveal } from '../hooks/useTextReveal';
 
 export const CreativeBanner: React.FC = () => {
   const marqueeRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-
-  useTextReveal(headingRef, { start: 'top 80%', stagger: 0.1, duration: 1.0 });
 
   useEffect(() => {
     const marquee = marqueeRef.current;
@@ -61,7 +57,7 @@ export const CreativeBanner: React.FC = () => {
 
         {/* Foreground Main Statement (placed on top with z-10) */}
         <div className="max-w-4xl text-center z-10 pointer-events-none">
-          <h2 ref={headingRef} className="font-display text-[1.8rem] sm:text-[3rem] md:text-[3.6rem] lg:text-[4.2rem] leading-[1.2] text-[#F9F6EE] tracking-tight uppercase">
+          <h2 className="font-display text-[1.8rem] sm:text-[3rem] md:text-[3.6rem] lg:text-[4.2rem] leading-[1.2] text-[#F9F6EE] tracking-tight uppercase">
             TEJAS V KRISHNA IS A PRODUCT DESIGNER BORN OUT OF A DESIRE TO SHAPE MEMORABLE DIGITAL INTERFACES & EXPERIENCES
           </h2>
         </div>

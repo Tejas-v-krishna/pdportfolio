@@ -1,5 +1,4 @@
-import React, { useRef } from 'react';
-import { useTextReveal } from '../hooks/useTextReveal';
+import React from 'react';
 
 const notesData = [
   {
@@ -38,11 +37,6 @@ const notesData = [
 ];
 
 export const Notes: React.FC = () => {
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const subRef = useRef<HTMLParagraphElement>(null);
-
-  useTextReveal(headingRef, { start: 'top 85%', stagger: 0, duration: 1.0 });
-  useTextReveal(subRef, { start: 'top 82%', stagger: 0.1, duration: 0.85, delay: 0.15 });
   return (
     <main className="relative z-10 w-full pt-32 pb-10">
       <section className="px-6 sm:px-12 md:px-16 lg:px-20 w-full">
@@ -51,10 +45,10 @@ export const Notes: React.FC = () => {
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-16 gap-6">
             <div>
-              <h1 ref={headingRef} className="font-display font-bold text-5xl sm:text-7xl text-[var(--color-text-dark)] mb-4 tracking-tight">
+              <h1 className="font-display font-bold text-5xl sm:text-7xl text-[var(--color-text-dark)] mb-4 tracking-tight">
                 Notes & Writings
               </h1>
-              <p ref={subRef} className="text-lg opacity-80 max-w-2xl leading-relaxed">
+              <p className="text-lg opacity-80 max-w-2xl leading-relaxed">
                 Thoughts, essays, and explorations on product design, AI UX, growth, and the craft of building.
               </p>
             </div>

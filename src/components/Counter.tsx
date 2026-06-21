@@ -22,7 +22,7 @@ const Counter: React.FC<CounterProps> = ({ end, suffix = '', duration = 2, label
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     
     if (prefersReducedMotion) {
-      setValue(end);
+      setTimeout(() => setValue(end), 0);
       return;
     }
 

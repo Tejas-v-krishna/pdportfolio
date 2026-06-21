@@ -1,391 +1,266 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import './spotlight.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Project Data ─────────────────────────────────────────────────────────────
+// ─── Project Data ────────────────────────────────────────────────────────────
 const projects = [
   {
-    name: 'Trams Dashboard',
-    tag: 'B2B SaaS · UI/UX & Frontend',
-    image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=80',
+    name: 'Trams Internal Dashboard',
+    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=900',
+    leftLabel: 'B2B SaaS',
+    rightLabel: 'UI/UX & Frontend',
   },
   {
     name: 'Bold Cursor Agency',
-    tag: 'Creative Studio · Web Platform',
-    image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200&q=80',
+    image: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=900',
+    leftLabel: 'Creative Studio',
+    rightLabel: 'Web Platform',
   },
   {
-    name: 'Uni Club Branding',
-    tag: 'Identity · Visual Design',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80',
+    name: 'University Club Branding',
+    image: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=900',
+    leftLabel: 'Identity',
+    rightLabel: 'Visual Design',
   },
   {
     name: 'LearnWith Platform',
-    tag: 'EdTech · Product Design',
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&q=80',
+    image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=900',
+    leftLabel: 'EdTech',
+    rightLabel: 'Product Design',
   },
   {
-    name: 'Snapdeal Checkout',
-    tag: 'E-Commerce · UX Research',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&q=80',
+    name: 'Snapdeal Checkout Flow',
+    image: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=900',
+    leftLabel: 'E-Commerce',
+    rightLabel: 'UX Research',
+  },
+  {
+    name: 'CyberDiag Health',
+    image: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=900',
+    leftLabel: 'Healthcare',
+    rightLabel: 'Mobile App',
+  },
+  {
+    name: 'Zenith FinTech',
+    image: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?q=80&w=900',
+    leftLabel: 'Finance',
+    rightLabel: 'System Architecture',
+  },
+  {
+    name: 'ChromaBlock System',
+    image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=900',
+    leftLabel: 'Design System',
+    rightLabel: 'React / Tailwind',
   },
 ];
 
-// ─── Config ────────────────────────────────────────────────────────────────────
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
 const CONFIG = {
-  gap:       0.15,  // stagger between images starting
-  speed:     0.28,  // duration each image takes on the arc
-  arcRadius: 260,   // how wide the bezier bulges right (px)
+  arcRadius: 300,  // how far right the bezier control point sits (px)
 };
 
-function getBezierPosition(t: number) {
-  const h     = window.innerHeight;
-  const start = { x: 0,                 y: -h * 0.5 };
-  const cp    = { x: CONFIG.arcRadius,  y:  h * 0.5 };
-  const end   = { x: 0,                 y:  h * 1.5 };
-  const x = (1-t)**2 * start.x + 2*(1-t)*t * cp.x + t*t * end.x;
-  const y = (1-t)**2 * start.y + 2*(1-t)*t * cp.y + t*t * end.y;
-  return { x, y };
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function getBezierPos(t: number, arcRadius: number) {
+  const h  = window.innerHeight;
+  const sx = 0,          sy = -h * 0.5;
+  const cx = arcRadius,  cy =  h * 0.5;
+  const ex = 0,          ey =  h * 1.5;
+  const mt = 1 - t;
+  return {
+    x: mt * mt * sx + 2 * mt * t * cx + t * t * ex,
+    y: mt * mt * sy + 2 * mt * t * cy + t * t * ey,
+  };
 }
 
-function getImageState(index: number, progress: number) {
-  const start = index * CONFIG.gap;
-  const end   = start + CONFIG.speed;
-  if (progress < start) return -1;
-  if (progress > end)   return  2;
-  return (progress - start) / (end - start);
-}
-
-// ─── Component ─────────────────────────────────────────────────────────────────
 export const SelectedWork: React.FC = () => {
-  const sectionRef     = useRef<HTMLElement>(null);
-  const innerRef       = useRef<HTMLDivElement>(null);   // ← the real full-screen layer
-  const bgImageRef     = useRef<HTMLImageElement>(null);
-  const bgScaleRef     = useRef<HTMLDivElement>(null);   // the div we scale (not the whole section)
-  const introLeftRef   = useRef<HTMLDivElement>(null);
-  const introRightRef  = useRef<HTMLDivElement>(null);
-  const titlesCtnRef   = useRef<HTMLDivElement>(null);
-  const imagesAreaRef  = useRef<HTMLDivElement>(null);
-  const headerRef      = useRef<HTMLDivElement>(null);
-  const activeTitleIdx = useRef<number>(-1);
+  const containerRef       = useRef<HTMLDivElement>(null);
+  const bgImageRef         = useRef<HTMLImageElement>(null);
+  const bgContainerRef     = useRef<HTMLDivElement>(null);
+  const introLeftRef       = useRef<HTMLDivElement>(null);
+  const introRightRef      = useRef<HTMLDivElement>(null);
+  const headerRef          = useRef<HTMLDivElement>(null);
+  const titlesContainerRef = useRef<HTMLDivElement>(null);
+
+  const activeIdx = useRef(-1);
 
   useEffect(() => {
-    const section    = sectionRef.current;
-    const inner      = innerRef.current;
-    const bgScale    = bgScaleRef.current;
-    const bgImg      = bgImageRef.current;
-    const introL     = introLeftRef.current;
-    const introR     = introRightRef.current;
-    const titlesCtn  = titlesCtnRef.current;
-    const imagesArea = imagesAreaRef.current;
-    const header     = headerRef.current;
+    if (!containerRef.current || !titlesContainerRef.current) return;
+    
+    const ctx = gsap.context(() => {
+      const titleEls = gsap.utils.toArray<HTMLElement>('.title-item');
+      const imageEls = gsap.utils.toArray<HTMLElement>('.floating-image');
 
-    if (!section || !inner || !bgScale || !bgImg || !introL || !introR || !titlesCtn || !imagesArea || !header) return;
+      const titlesHeight = titlesContainerRef.current!.scrollHeight;
 
-    const titleEls = Array.from(titlesCtn.querySelectorAll<HTMLElement>('.sw-title'));
-    const imageEls = Array.from(imagesArea.querySelectorAll<HTMLElement>('.sw-float-img'));
+      // Pre-load background images
+      projects.forEach(({ image }) => {
+        const preload = new Image();
+        preload.src = image;
+      });
 
-    // ── Initial states ────────────────────────────────────────────
-    // The bgScale wrapper starts at scale 0 (image hidden); everything else visible
-    gsap.set(bgScale,    { scale: 0, transformOrigin: 'center center' });
-    gsap.set(bgImg,      { scale: 1.5 });
-    gsap.set(imageEls,   { opacity: 0, x: 0, y: 0 });
-    gsap.set(header,     { opacity: 0 });
-    gsap.set(titlesCtn,  { y: window.innerHeight });
-    gsap.set(introL,     { x: 0, opacity: 1 });
-    gsap.set(introR,     { x: 0, opacity: 1 });
-    activeTitleIdx.current = -1;
+      // Initial state
+      gsap.set(bgContainerRef.current,     { scale: 0 });
+      gsap.set(bgImageRef.current,         { scale: 1.5 });
+      gsap.set(headerRef.current,          { opacity: 0 });
+      gsap.set(introLeftRef.current,       { x: 0, opacity: 1 });
+      gsap.set(introRightRef.current,      { x: 0, opacity: 1 });
+      gsap.set(titlesContainerRef.current, { y: window.innerHeight });
+      imageEls.forEach(el => gsap.set(el,  { opacity: 0 }));
+      titleEls.forEach(el => gsap.set(el,  { opacity: 0.2 }));
 
-    // ── ScrollTrigger ────────────────────────────────────────────
-    const st = ScrollTrigger.create({
-      trigger: section,
-      start:   'top top',
-      end:     '+=900%',
-      pin:     true,
-      pinSpacing: true,
-      scrub:   1.0,
-      anticipatePin: 1,
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start:   'top top',
+        end:     '+=1000%',
+        pin:     true,
+        pinType: 'transform',
+        pinSpacing: true,
+        scrub:   1,
+        onUpdate(self) {
+          const p = self.progress;
 
-      onUpdate: (self) => {
-        const p = self.progress;
+          // SEGMENT 1 (0 -> 20%)
+          if (p <= 0.2) {
+            const t      = p / 0.2;
+            const offset = window.innerWidth * 0.4 * t;
 
-        // ─ SEGMENT 1 : Intro opening  (0 → 0.22) ─────────────────
-        if (p <= 0.22) {
-          const ip     = p / 0.22;                          // 0 → 1
-          const offset = window.innerWidth * 0.48 * ip;
-
-          gsap.set(introL,   { x: -offset,       opacity: Math.max(0, 1 - ip) });
-          gsap.set(introR,   { x:  offset,        opacity: Math.max(0, 1 - ip) });
-          gsap.set(bgScale,  { scale: ip,         transformOrigin: 'center center' });
-          gsap.set(bgImg,    { scale: 1.5 - 0.5 * ip });
-          gsap.set(header,   { opacity: 0 });
-          gsap.set(titlesCtn,{ y: window.innerHeight });
-          imageEls.forEach(el => gsap.set(el, { opacity: 0 }));
-          activeTitleIdx.current = -1;
-        }
-
-        // ─ SEGMENT BRIDGE : (0.22 → 0.28) — bg fully open, hold ──
-        else if (p > 0.22 && p <= 0.28) {
-          const bp = (p - 0.22) / 0.06;                    // 0 → 1
-          gsap.set(introL,   { opacity: 0 });
-          gsap.set(introR,   { opacity: 0 });
-          gsap.set(bgScale,  { scale: 1 });
-          gsap.set(bgImg,    { scale: 1 });
-          gsap.set(header,   { opacity: bp });
-          gsap.set(titlesCtn,{ y: window.innerHeight * (1 - bp * 0.5) });
-          imageEls.forEach(el => gsap.set(el, { opacity: 0 }));
-        }
-
-        // ─ SEGMENT 2 : Main scroll  (0.28 → 0.94) ────────────────
-        else if (p > 0.28 && p <= 0.94) {
-          const sp = (p - 0.28) / 0.66;                    // 0 → 1
-
-          gsap.set(introL,  { opacity: 0 });
-          gsap.set(introR,  { opacity: 0 });
-          gsap.set(bgScale, { scale: 1 });
-          gsap.set(bgImg,   { scale: 1 });
-          gsap.set(header,  { opacity: 1 });
-
-          // Scroll titles vertically through the clip window
-          const titlesH  = titlesCtn.scrollHeight;
-          const startY   =  window.innerHeight * 0.35;
-          const endY     = -titlesH - window.innerHeight * 0.1;
-          gsap.set(titlesCtn, { y: startY + (endY - startY) * sp });
-
-          // Float images along bezier arc
-          imageEls.forEach((imgEl, i) => {
-            const state = getImageState(i, sp);
-            if (state === -1 || state === 2) {
-              gsap.set(imgEl, { opacity: 0 });
-            } else {
-              const pos = getBezierPosition(state);
-              gsap.set(imgEl, { x: pos.x - 110, y: pos.y - 80, opacity: 1 });
-            }
-          });
-
-          // Activate the title closest to vertical center
-          const center = window.innerHeight / 2;
-          let closestIdx = 0;
-          let minDist    = Infinity;
-          titleEls.forEach((el, i) => {
-            const rect = el.getBoundingClientRect();
-            const dist = Math.abs(rect.top + rect.height / 2 - center);
-            if (dist < minDist) { minDist = dist; closestIdx = i; }
-          });
-
-          if (closestIdx !== activeTitleIdx.current) {
-            if (activeTitleIdx.current !== -1) {
-              gsap.to(titleEls[activeTitleIdx.current], {
-                opacity: 0.18, scale: 0.93, duration: 0.45, ease: 'power2.out',
-              });
-            }
-            gsap.to(titleEls[closestIdx], {
-              opacity: 1, scale: 1, duration: 0.45, ease: 'power2.out',
-            });
-            activeTitleIdx.current = closestIdx;
-            if (projects[closestIdx]) bgImg.src = projects[closestIdx].image;
+            gsap.set(introLeftRef.current,       { x: -offset, opacity: 1 });
+            gsap.set(introRightRef.current,      { x:  offset, opacity: 1 });
+            gsap.set(bgContainerRef.current,     { scale: t });
+            gsap.set(bgImageRef.current,         { scale: 1.5 - 0.5 * t });
+            gsap.set(headerRef.current,          { opacity: 0 });
+            gsap.set(titlesContainerRef.current, { y: window.innerHeight });
+            imageEls.forEach(el => gsap.set(el, { opacity: 0 }));
           }
-        }
+          // SEGMENT 1->2 BRIDGE (20% -> 25%)
+          else if (p > 0.2 && p <= 0.25) {
+            const offset = window.innerWidth * 0.4;
+            gsap.set(introLeftRef.current,       { x: -offset, opacity: 1 });
+            gsap.set(introRightRef.current,      { x:  offset, opacity: 1 });
+            gsap.set(bgContainerRef.current,     { scale: 1 });
+            gsap.set(bgImageRef.current,         { scale: 1 });
+            gsap.set(headerRef.current,          { opacity: 0 });
+            gsap.set(titlesContainerRef.current, { y: window.innerHeight });
+            imageEls.forEach(el => gsap.set(el, { opacity: 0 }));
+          }
+          // SEGMENT 2 (25% -> 95%)
+          else if (p > 0.25 && p <= 0.95) {
+            const sp = (p - 0.25) / (0.95 - 0.25);
 
-        // ─ SEGMENT 3 : Outro fade  (0.94 → 1.0) ──────────────────
-        else if (p > 0.94) {
-          const op = Math.max(0, 1 - (p - 0.94) / 0.06);
-          gsap.set(header, { opacity: op });
-          imageEls.forEach(el => gsap.set(el, { opacity: 0 }));
-        }
-      },
-    });
+            gsap.set(introLeftRef.current,  { opacity: 0 });
+            gsap.set(introRightRef.current, { opacity: 0 });
+            gsap.set(headerRef.current,     { opacity: 1 });
 
-    return () => { st.kill(); };
+            const startY  =  window.innerHeight;
+            const targetY = -titlesHeight;
+            gsap.set(titlesContainerRef.current, {
+              y: startY - (startY - targetY) * sp,
+            });
+
+            // 1. READ phase: get true screen positions
+            const titleGlobalYs = titleEls.map(el => {
+              const rect = el.getBoundingClientRect();
+              return rect.top + rect.height / 2;
+            });
+
+            // 2. LOGIC phase: find closest title
+            const centerY = window.innerHeight / 2;
+            let closestIdx  = 0;
+            let minDist     = Infinity;
+
+            titleGlobalYs.forEach((titleGlobalY, i) => {
+              const dist = Math.abs(titleGlobalY - centerY);
+              if (dist < minDist) { minDist = dist; closestIdx = i; }
+            });
+
+            // 3. WRITE phase: update images based perfectly on title position
+            imageEls.forEach((img, i) => {
+              const titleGlobalY = titleGlobalYs[i];
+              // Map title Y from screen bottom (h) to screen top (0) -> t goes 0 to 1
+              const t = 1 - (titleGlobalY / window.innerHeight);
+
+              if (t < -0.2 || t > 1.2) {
+                gsap.set(img, { opacity: 0 });
+              } else {
+                const { x, y } = getBezierPos(t, CONFIG.arcRadius);
+                gsap.set(img, {
+                  x:       x - 100,
+                  y:       y - 75,
+                  opacity: 1,
+                });
+              }
+            });
+
+            if (closestIdx !== activeIdx.current) {
+              if (activeIdx.current !== -1) {
+                gsap.to(titleEls[activeIdx.current], { opacity: 0.2, duration: 0.25, overwrite: true });
+              }
+              gsap.to(titleEls[closestIdx], { opacity: 1, duration: 0.25, overwrite: true });
+              activeIdx.current = closestIdx;
+
+              if (bgImageRef.current) {
+                bgImageRef.current.src = projects[closestIdx].image;
+              }
+            }
+          }
+          // SEGMENT 3 (95% -> 100%)
+          else if (p > 0.95) {
+            const t = (p - 0.95) / 0.05;
+            gsap.set(headerRef.current,          { opacity: 1 - t });
+            gsap.set(titlesContainerRef.current, { opacity: 1 - t });
+            imageEls.forEach(el => gsap.set(el, { opacity: 0 }));
+          }
+        },
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
-  // ─── JSX ────────────────────────────────────────────────────────
   return (
-    /*
-     *  The <section> is what ScrollTrigger pins.
-     *  `overflow: hidden` is NOT on the section — GSAP needs to be able to
-     *  apply `position: fixed` without clipping issues.
-     *  The `inner` div fills 100vh and clips its own children.
-     */
-    <section
-      ref={sectionRef}
-      id="work"
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100vh',
-        // High z-index so the pinned fixed element always sits above later sections
-        zIndex: 50,
-      }}
-    >
-      {/* Inner full-screen container — clips overflow, provides solid background */}
-      <div
-        ref={innerRef}
-        style={{
-          position: 'absolute', inset: 0,
-          background: '#060606',
-          overflow: 'hidden',
-        }}
-      >
-        {/* ── Full-bleed background (scales from 0) ─────────────── */}
-        <div
-          ref={bgScaleRef}
-          style={{
-            position: 'absolute', inset: 0,
-            willChange: 'transform',
-          }}
-        >
-          <img
-            ref={bgImageRef}
-            src={projects[0].image}
-            alt="Project background"
-            style={{
-              width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-              willChange: 'transform',
-            }}
-          />
-          {/* Vignette */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.7) 100%)',
-          }} />
-        </div>
+    <section ref={containerRef} id="work" className="spotlight-section">
+      {/* Intro split words */}
+      <div className="spotlight-intro-text-wrapper">
+        <div ref={introLeftRef}  className="spotlight-intro-text"><p>CURATED</p></div>
+        <div ref={introRightRef} className="spotlight-intro-text"><p>PROJECTS</p></div>
+      </div>
 
-        {/* ── "SELECTED  WORK" split intro text ─────────────────── */}
-        <div style={{
-          position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '100%', display: 'flex', justifyContent: 'center',
-          gap: '3vw', zIndex: 10, pointerEvents: 'none',
-        }}>
-          <div ref={introLeftRef} style={{
-            fontSize: 'clamp(2.5rem, 7.5vw, 8.5rem)',
-            fontFamily: 'var(--font-display)',
-            fontWeight: 900, color: '#fff',
-            letterSpacing: '-0.04em', textTransform: 'uppercase',
-            willChange: 'transform, opacity',
-          }}>
-            SELECTED
-          </div>
-          <div ref={introRightRef} style={{
-            fontSize: 'clamp(2.5rem, 7.5vw, 8.5rem)',
-            fontFamily: 'var(--font-display)',
-            fontWeight: 900, color: '#fff',
-            letterSpacing: '-0.04em', textTransform: 'uppercase',
-            willChange: 'transform, opacity',
-          }}>
-            WORK
-          </div>
-        </div>
+      {/* Scalable background image */}
+      <div ref={bgContainerRef} className="spotlight-background-image">
+        <img
+          ref={bgImageRef}
+          src={projects[0].image}
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-        {/* ── Diagonal clip-path titles window ──────────────────── */}
-        <div style={{
-          position: 'absolute', top: '50%', left: '5%',
-          transform: 'translateY(-50%)',
-          width: '54%', height: '60vh',
-          clipPath: 'polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%)',
-          zIndex: 3, overflow: 'hidden',
-        }}>
-          <div ref={titlesCtnRef} style={{
-            position: 'absolute', width: '100%',
-            display: 'flex', flexDirection: 'column',
-            gap: '6vh', paddingLeft: '12%',
-            willChange: 'transform',
-          }}>
-            {projects.map((proj, i) => (
-              <div key={i} className="sw-title" style={{
-                opacity: 0.18, transformOrigin: 'left center',
-                willChange: 'transform, opacity',
-              }}>
-                <h2 style={{
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: 900,
-                  fontSize: 'clamp(2rem, 4.5vw, 5.5rem)',
-                  lineHeight: 1.0, letterSpacing: '-0.04em',
-                  color: '#fff', textTransform: 'uppercase',
-                  margin: 0, whiteSpace: 'nowrap',
-                }}>
-                  {proj.name}
-                </h2>
-                <p style={{
-                  fontFamily: 'var(--font-mono, monospace)',
-                  fontSize: 'clamp(0.55rem, 0.85vw, 0.8rem)',
-                  letterSpacing: '0.15em',
-                  color: 'rgba(255,255,255,0.45)',
-                  textTransform: 'uppercase', marginTop: '0.45em',
-                }}>
-                  {proj.tag}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Floating thumbnails (bezier arc, right side) ────────── */}
-        <div ref={imagesAreaRef} style={{
-          position: 'absolute', top: 0, right: 0,
-          width: '50vw', height: '100vh',
-          pointerEvents: 'none', zIndex: 4,
-        }}>
-          {projects.map((proj, i) => (
-            <div key={i} className="sw-float-img" style={{
-              position: 'absolute',
-              width: 220, height: 158,
-              opacity: 0,
-              willChange: 'transform, opacity',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.55)',
-              overflow: 'hidden',
-              borderRadius: 4,
-            }}>
-              <img
-                src={proj.image}
-                alt={proj.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            </div>
+      {/* Clipped title window */}
+      <div className="spotlight-titles-wrapper">
+        <div ref={titlesContainerRef} className="spotlight-titles-container">
+          {projects.map((item, i) => (
+            <h1 key={i} className="title-item">
+              {item.name}
+            </h1>
           ))}
         </div>
+      </div>
 
-        {/* ── Side header label ─────────────────────────────────── */}
-        <div ref={headerRef} style={{
-          position: 'absolute', top: '50%', right: '5vw',
-          transform: 'translateY(-50%)',
-          zIndex: 5, opacity: 0,
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'flex-end', gap: '0.5rem',
-        }}>
-          <span style={{
-            fontFamily: 'var(--font-mono, monospace)',
-            fontSize: '0.62rem', letterSpacing: '0.22em',
-            color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase',
-          }}>
-            Portfolio / 2025
-          </span>
-          <span style={{
-            fontFamily: 'var(--font-mono, monospace)',
-            fontSize: '0.62rem', letterSpacing: '0.22em',
-            color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase',
-          }}>
-            Selected Work
-          </span>
-        </div>
+      {/* Floating images (arc) */}
+      <div className="spotlight-images">
+        {projects.map((item, i) => (
+          <div key={i} className="floating-image">
+            <img src={item.image} alt={item.name} />
+          </div>
+        ))}
+      </div>
 
-        {/* ── Bottom dot indicator ──────────────────────────────── */}
-        <div style={{
-          position: 'absolute', bottom: '2.5rem', left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex', gap: '6px', zIndex: 6,
-        }}>
-          {projects.map((_, i) => (
-            <div key={i} style={{
-              width: 20, height: 2,
-              background: 'rgba(255,255,255,0.22)',
-              borderRadius: 2,
-            }} />
-          ))}
-        </div>
+      {/* Side label */}
+      <div ref={headerRef} className="spotlight-header">
+        <p>Spotlight / 2025</p>
       </div>
     </section>
   );

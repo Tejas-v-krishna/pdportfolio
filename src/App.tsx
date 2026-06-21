@@ -64,10 +64,10 @@ function App() {
     // Toggle scroll lock
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
-      if ((window as any).lenis) (window as any).lenis.stop();
+      if (window.lenis) window.lenis.stop();
     } else {
       document.body.style.overflow = '';
-      if ((window as any).lenis) (window as any).lenis.start();
+      if (window.lenis) window.lenis.start();
     }
 
     // Main shift
@@ -125,48 +125,52 @@ function App() {
 
     // Large Menu Items stagger
     const largeItems = document.querySelectorAll("[data-reveal-l]");
-    if (isMenuOpen) {
-      gsap.fromTo(largeItems,
-        { opacity: 0, x: 50 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.7,
-          stagger: 0.05,
-          ease: "energy",
-          delay: 0.1
-        }
-      );
-    } else {
-      gsap.to(largeItems, {
-        opacity: 0,
-        x: 20,
-        duration: 0.3,
-        ease: "power2.in"
-      });
+    if (largeItems.length > 0) {
+      if (isMenuOpen) {
+        gsap.fromTo(largeItems,
+          { opacity: 0, x: 50 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.7,
+            stagger: 0.05,
+            ease: "energy",
+            delay: 0.1
+          }
+        );
+      } else {
+        gsap.to(largeItems, {
+          opacity: 0,
+          x: 20,
+          duration: 0.3,
+          ease: "power2.in"
+        });
+      }
     }
 
     // Small Menu Items stagger
     const smallItems = document.querySelectorAll("[data-reveal-s]");
-    if (isMenuOpen) {
-      gsap.fromTo(smallItems,
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.03,
-          ease: "power3.out",
-          delay: 0.3
-        }
-      );
-    } else {
-      gsap.to(smallItems, {
-        opacity: 0,
-        y: 10,
-        duration: 0.25,
-        ease: "power2.in"
-      });
+    if (smallItems.length > 0) {
+      if (isMenuOpen) {
+        gsap.fromTo(smallItems,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.03,
+            ease: "power3.out",
+            delay: 0.3
+          }
+        );
+      } else {
+        gsap.to(smallItems, {
+          opacity: 0,
+          y: 10,
+          duration: 0.25,
+          ease: "power2.in"
+        });
+      }
     }
 
     // Handle Resize adjustment
@@ -198,7 +202,7 @@ function App() {
     });
 
     // Expose Lenis globally
-    (window as any).lenis = lenis;
+    window.lenis = lenis;
 
     // Sync ScrollTrigger with Lenis
     lenis.on('scroll', ScrollTrigger.update);
@@ -211,7 +215,7 @@ function App() {
     gsap.ticker.lagSmoothing(0);
 
     return () => {
-      (window as any).lenis = null;
+      window.lenis = null;
       gsap.ticker.remove(tick);
       lenis.destroy();
     };

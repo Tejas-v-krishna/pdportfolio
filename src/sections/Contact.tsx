@@ -1,21 +1,13 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Magnetic } from '../components/Magnetic';
-import { useTextReveal } from '../hooks/useTextReveal';
 
 export const Contact: React.FC = () => {
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const letterRef = useRef<HTMLParagraphElement>(null);
-  const signatureRef = useRef<HTMLDivElement>(null);
-
-  useTextReveal(headingRef, { start: 'top 85%', duration: 0.9 });
-  useTextReveal(letterRef, { start: 'top 82%', stagger: 0.1, duration: 0.85, delay: 0.15 });
-  useTextReveal(signatureRef, { start: 'top 82%', duration: 0.8, delay: 0.3 });
   return (
     <section id="contact" className="px-6 sm:px-12 md:px-16 lg:px-20 w-full mb-20 flex flex-col items-center">
       
       {/* Section Header */}
       <div className="mb-10 w-full">
-        <h2 ref={headingRef} className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-2">
+        <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--color-text-dark)] mb-2">
           Interested in collaborating?
         </h2>
         <p className="opacity-70 text-sm">I'm currently looking for new opportunities.</p>
@@ -28,12 +20,12 @@ export const Contact: React.FC = () => {
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(transparent 95%, #000 100%)', backgroundSize: '100% 2rem' }} />
 
         <div className="flex-1 relative z-10">
-          <p ref={letterRef} className="font-handwriting text-2xl sm:text-3xl leading-relaxed text-[var(--color-text-dark)] opacity-90 mb-8 max-w-xl">
+          <p className="font-handwriting text-2xl sm:text-3xl leading-relaxed text-[var(--color-text-dark)] opacity-90 mb-8 max-w-xl">
             Hi! If you made it this far, thank you for reading. <br /><br />
             I'm currently looking for full-time Product Design roles or freelance projects. If you have something in mind, or just want to chat about design, I'd love to hear from you.
           </p>
 
-          <div ref={signatureRef} className="font-handwriting text-2xl text-[var(--color-text-dark)] opacity-90">
+          <div className="font-handwriting text-2xl text-[var(--color-text-dark)] opacity-90">
             Cheers,<br />
             Tejjxuu.ui
           </div>

@@ -2,8 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { X } from 'lucide-react';
 
+interface Project {
+  title: string;
+  tech: string;
+  desc: string;
+  role: string;
+  highlight: string;
+}
+
 interface CaseStudyModalProps {
-  project: any | null;
+  project: Project | null;
   onClose: () => void;
 }
 

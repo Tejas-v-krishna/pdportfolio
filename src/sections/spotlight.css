@@ -1,0 +1,175 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   spotlight.css  —  Spotlight Scroll Section
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Section shell ──────────────────────────────────────────────────────────── */
+.spotlight-section {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  background-color: #000;
+}
+
+/* ── Intro split text ───────────────────────────────────────────────────────── */
+.spotlight-intro-text-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.spotlight-intro-text {
+  font-size: clamp(3rem, 8vw, 9rem);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  will-change: transform, opacity;
+}
+
+/* ── Scalable background ────────────────────────────────────────────────────── */
+.spotlight-background-image {
+  position: absolute;
+  inset: 0;              /* shorthand for top/right/bottom/left: 0 */
+  z-index: 1;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.spotlight-background-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.15) 60%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  z-index: 2;
+}
+
+.spotlight-background-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+}
+
+/* ── Title window (clipped) ─────────────────────────────────────────────────── */
+.spotlight-titles-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 55%;
+  height: 38vh;
+  /* Parallelogram clip — left edge angled, right edge angled */
+  clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+  z-index: 3;
+  overflow: hidden;   /* belt-and-suspenders: belt clips even if clip-path fails */
+}
+
+.spotlight-titles-container {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+  padding-left: 18%;
+  will-change: transform;
+}
+
+.title-item {
+  font-size: clamp(2rem, 5vw, 5rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+  opacity: 0.2;
+  margin: 0;
+  line-height: 1.1;
+  white-space: nowrap;
+  will-change: opacity;
+}
+
+/* ── Floating images (bezier arc) ───────────────────────────────────────────── */
+.spotlight-images {
+  position: absolute;
+  /* Full viewport so images can move freely */
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.floating-image {
+  position: absolute;
+  /* Centred at origin; GSAP translates x/y from there */
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 150px;
+  opacity: 0;
+  will-change: transform, opacity;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.floating-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Side label ─────────────────────────────────────────────────────────────── */
+.spotlight-header {
+  position: absolute;
+  top: 50%;
+  left: 5vw;
+  transform: translateY(-50%);
+  z-index: 5;
+  opacity: 0;
+  will-change: opacity;
+}
+
+.spotlight-header p {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .spotlight-titles-wrapper {
+    width: 90%;
+    clip-path: none;
+  }
+
+  .spotlight-titles-container {
+    padding-left: 8%;
+  }
+
+  .title-item {
+    font-size: clamp(2rem, 10vw, 4rem);
+    white-space: normal;
+  }
+
+  .spotlight-header {
+    display: none;
+  }
+
+  .floating-image {
+    width: 140px;
+    height: 105px;
+  }
+}

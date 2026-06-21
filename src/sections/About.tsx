@@ -1,12 +1,55 @@
-import React, { useRef } from 'react';
-import { useTextReveal } from '../hooks/useTextReveal';
+import React, { useRef, useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import SplitType from 'split-type';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const About: React.FC = () => {
-  const labelRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
 
-  useTextReveal(labelRef, { start: 'top 85%', stagger: 0, duration: 0.7 });
-  useTextReveal(textRef, { start: 'top 80%', stagger: 0.14, duration: 1.0, delay: 0.1 });
+  useEffect(() => {
+    if (!textRef.current) return;
+
+    const typeSplit = new SplitType(textRef.current, {
+      types: 'lines,chars',
+      tagName: 'span'
+    });
+
+    const ctx = gsap.context(() => {
+      // Create the timeline
+      const fadeInTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: textRef.current,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // Mimic the nested SplitText logic using SplitType's generated lines
+      if (typeSplit.lines) {
+        typeSplit.lines.forEach((line, i) => {
+          const chars = line.querySelectorAll('.char');
+          fadeInTimeline.from(
+            chars,
+            {
+              y: 12,
+              opacity: 0,
+              stagger: 0.025
+            },
+            i * 0.1
+          );
+        });
+      }
+
+      gsap.set(textRef.current, { opacity: 1 });
+    }, textRef);
+
+    return () => {
+      ctx.revert();
+      typeSplit.revert();
+    };
+  }, []);
 
   return (
     <section id="about" className="relative z-20 w-full bg-[#f5f4ef] border-t border-b border-[#ccc9c2] flex items-stretch min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh]">
@@ -41,7 +84,7 @@ export const About: React.FC = () => {
         {/* Top Space */}
         <div className="flex-grow flex items-end px-6 md:px-12 lg:px-20 pb-2">
           <div className="w-full max-w-4xl mx-auto">
-            <span ref={labelRef} className="font-mono text-[9px] md:text-[10px] lg:text-[11px] tracking-[0.05em] text-[#1a1a18] uppercase" style={{ textTransform: 'uppercase' }}>
+            <span className="font-mono text-[9px] md:text-[10px] lg:text-[11px] tracking-[0.05em] text-[#1a1a18] uppercase" style={{ textTransform: 'uppercase' }}>
               [ + ] A BIT MORE ABOUT YOURS TRULY
             </span>
           </div>

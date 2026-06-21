@@ -5,6 +5,7 @@ import SplitType from 'split-type';
 export const HoverRollingText: React.FC<{ text: string, className?: string, isHovered?: boolean }> = ({ text, className, isHovered }) => {
   const containerRef = useRef<HTMLSpanElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const initialHovered = useRef(isHovered);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -47,7 +48,7 @@ export const HoverRollingText: React.FC<{ text: string, className?: string, isHo
 
     tlRef.current = tl;
 
-    if (isHovered) tl.progress(1);
+    if (initialHovered.current) tl.progress(1);
 
     return () => {
       split1.revert();
