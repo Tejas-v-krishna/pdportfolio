@@ -1,196 +1,243 @@
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
-import gsap from 'gsap';
-import SplitType from 'split-type';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { gsap } from 'gsap';
+
+const titles = [
+  "Product Designer",
+  "Logo Designer",
+  "UI/UX Designer",
+  "Brand Identity Builder"
+];
+
+const mediaImages = [
+  "https://assets.codepen.io/16327/Revised+Flair.png",
+  "https://assets.codepen.io/16327/Revised+Flair-1.png",
+  "https://assets.codepen.io/16327/Revised+Flair-2.png",
+  "https://assets.codepen.io/16327/Revised+Flair-3.png",
+  "https://assets.codepen.io/16327/Revised+Flair-4.png",
+  "https://assets.codepen.io/16327/Revised+Flair-5.png",
+  "https://assets.codepen.io/16327/Revised+Flair-6.png",
+  "https://assets.codepen.io/16327/Revised+Flair-7.png",
+  "https://assets.codepen.io/16327/Revised+Flair-8.png",
+  "https://assets.codepen.io/16327/Revised+Flair.png",
+  "https://assets.codepen.io/16327/Revised+Flair-1.png",
+  "https://assets.codepen.io/16327/Revised+Flair-2.png"
+];
 
 interface PreloaderProps {
-  onTransitionStart: () => void;
   onComplete: () => void;
 }
 
-const splitSubtextWords = (text: string) => {
-  return text.split(' ').map((word, index) => (
-    <span key={index} className="inline-block">
-      <span className="preloader-sub-word inline-block translate-y-3 will-change-transform">
-        {word}
-      </span>
-      {index < text.split(' ').length - 1 && <span className="inline-block">&nbsp;</span>}
-    </span>
-  ));
-};
+export default function Preloader({ onComplete }: PreloaderProps) {
+  const [progress, setProgress] = useState(0);
+  const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
+  const mediaContainerRef = useRef<HTMLDivElement>(null);
 
-export const Preloader: React.FC<PreloaderProps> = ({ onTransitionStart, onComplete }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
-  const subRef = useRef<HTMLDivElement>(null);
-
-  // Capture current props in a ref to avoid recreating the timeline when callbacks change
-  const callbacksRef = useRef({ onTransitionStart, onComplete });
   useEffect(() => {
-    callbacksRef.current = { onTransitionStart, onComplete };
-  }, [onTransitionStart, onComplete]);
+    // Total duration of the preloader (7 seconds so each title stays readable)
+    const duration = 7000;
+    const interval = 30; // update frequency
+    const steps = duration / interval;
+    let step = 0;
 
-  useLayoutEffect(() => {
-    // Disable scrolling while loading
-    document.body.style.overflow = 'hidden';
+    const timer = setInterval(() => {
+      step++;
+      // Custom easing for progress to make it feel natural (fast at start, slow at end)
+      const easeOutQuart = 1 - Math.pow(1 - (step / steps), 4);
+      const currentProgress = Math.min(Math.floor(easeOutQuart * 100), 100);
+      setProgress(currentProgress);
 
-    const word1 = document.querySelector('.word-1') as HTMLElement;
-    const word2 = document.querySelector('.word-2') as HTMLElement;
-    const word3 = document.querySelector('.word-3') as HTMLElement;
-    const wordContainer = document.querySelector('.word-container') as HTMLElement;
+      if (step >= steps) {
+        clearInterval(timer);
+        setTimeout(onComplete, 500); // Pause at 100% before sliding up
+      }
+    }, interval);
 
-    if (!word1 || !word2 || !word3 || !wordContainer) return;
+    // Title cycler (change title evenly across the duration)
+    const titleInterval = duration / titles.length;
+    let titleStep = 0;
+    const titleTimer = setInterval(() => {
+      titleStep++;
+      if (titleStep < titles.length) {
+        setCurrentTitleIndex(titleStep);
+      }
+    }, titleInterval);
 
-    let tl: gsap.core.Timeline;
-    let splits: SplitType[] = [];
+    return () => {
+      clearInterval(timer);
+      clearInterval(titleTimer);
+    };
+  }, [onComplete]);
 
-    // Wait for custom fonts to load before measuring, to get precise pixel widths
-    document.fonts.ready.then(() => {
-      const w1 = word1.getBoundingClientRect().width;
-      const w2 = word2.getBoundingClientRect().width;
-      const w3 = word3.getBoundingClientRect().width;
+  // GSAP Media Velocity Inertia Effect (active ONLY during preloader stage)
+  useEffect(() => {
+    if (!mediaContainerRef.current) return;
+    const root = mediaContainerRef.current;
+    let oldX = 0;
+    let oldY = 0;
+    let deltaX = 0;
+    let deltaY = 0;
 
-      tl = gsap.timeline({
-        onComplete: () => {
-          // Re-enable scrolling
-          document.body.style.overflow = '';
-          callbacksRef.current.onComplete();
-        }
-      });
+    const handleMouseMove = (e: MouseEvent) => {
+      deltaX = e.clientX - oldX;
+      deltaY = e.clientY - oldY;
+      oldX = e.clientX;
+      oldY = e.clientY;
+    };
 
-      splits = [word1, word2, word3].map(el => new SplitType(el, { types: 'chars' }));
+    root.addEventListener('mousemove', handleMouseMove);
 
-      // Initial state (GPU accelerated to prevent text wobbling)
-      gsap.set(containerRef.current, { force3D: true });
-      gsap.set(".preloader-logo-line", { force3D: true }); // They start at opacity: 0 via CSS
-      gsap.set(subRef.current, { force3D: true }); // Starts at opacity: 0 via CSS
-      gsap.set(".preloader-sub-word", { y: 20, opacity: 0 }); // clean slide up instead of blur
-      
-      // Setup initial character positions for word2 and word3
-      splits.forEach((split, i) => {
-        if (i > 0 && split.chars) {
-          gsap.set(split.chars, { yPercent: 200 });
-        }
-      });
-      
-      gsap.set(wordContainer, { width: w1 });
+    const mediaElements = root.querySelectorAll<HTMLDivElement>('.media');
+    
+    const handleMouseEnter = (e: Event) => {
+      const target = e.currentTarget as HTMLDivElement;
+      const image = target.querySelector('img');
+      if (!image) return;
 
-      // Animation sequence
-      tl.to(".preloader-logo-line", {
-        opacity: 1,
-        duration: 1.2,
-        ease: 'power3.out',
-        stagger: 0.1,
-        delay: 0.2,
-        force3D: true
-      }, 0.1)
-      .to(subRef.current, {
-        opacity: 1,
-        duration: 1.0,
-        ease: 'power3.out',
-        force3D: true
-      }, '-=0.6')
-      .to(".preloader-sub-word", {
-        opacity: 0.65,
-        y: 0,
-        duration: 0.8,
-        stagger: 0.015,
-        ease: 'power3.out',
-        force3D: true
-      }, '<+=0.2')
-      
-      // Morph 1: Product -> Experience
-      .to(wordContainer, {
-        width: w2,
-        duration: 0.9,
-        ease: 'expo.inOut'
-      }, '+=0.4')
-      .to(splits[0].chars, {
-        yPercent: -200,
-        duration: 0.5,
-        stagger: 0.03,
-        ease: "power2.inOut",
-        force3D: true
-      }, '<')
-      .to(splits[1].chars, {
-        yPercent: 0,
-        duration: 0.5,
-        stagger: 0.03,
-        ease: "power2.inOut",
-        force3D: true
-      }, '<')
+      gsap.killTweensOf(image);
+      const randomRotate = (Math.random() - 0.5) * 30;
 
-      // Morph 2: Experience -> Interaction
-      .to(wordContainer, {
-        width: w3,
-        duration: 0.9,
-        ease: 'expo.inOut'
-      }, '+=0.6')
-      .to(splits[1].chars, {
-        yPercent: -200,
-        duration: 0.5,
-        stagger: 0.03,
-        ease: "power2.inOut",
-        force3D: true
-      }, '<')
-      .to(splits[2].chars, {
-        yPercent: 0,
-        duration: 0.5,
-        stagger: 0.03,
-        ease: "power2.inOut",
-        force3D: true
-      }, '<')
+      gsap.timeline()
+        .to(image, {
+          x: deltaX * 1.8,
+          y: deltaY * 1.8,
+          rotate: randomRotate,
+          duration: 0.25,
+          ease: 'power2.out'
+        })
+        .to(image, {
+          x: 0,
+          y: 0,
+          rotate: 0,
+          duration: 0.6,
+          ease: 'elastic.out(1, 0.4)'
+        });
+    };
 
-      // Exit preloader animation
-      .to(containerRef.current, {
-        yPercent: -100,
-        opacity: 0,
-        duration: 1.4,
-        ease: 'expo.inOut',
-        delay: 0.8,
-        onStart: () => {
-          callbacksRef.current.onTransitionStart();
-        }
-      });
+    mediaElements.forEach((el) => {
+      el.addEventListener('mouseenter', handleMouseEnter);
     });
 
     return () => {
-      if (tl) tl.kill();
-      // Revert splits on cleanup
-      splits.forEach(split => split.revert());
-      document.body.style.overflow = '';
+      root.removeEventListener('mousemove', handleMouseMove);
+      mediaElements.forEach((el) => {
+        el.removeEventListener('mouseenter', handleMouseEnter);
+        const image = el.querySelector('img');
+        if (image) gsap.killTweensOf(image);
+      });
     };
-  }, []); // Run exactly once on mount to prevent any timeline resets
+  }, []);
+
+  // Split text animation variants (pure Y-translation, no opacity fading)
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: { staggerChildren: 0.04 }
+    },
+    exit: {
+      transition: { staggerChildren: 0.02, staggerDirection: -1 }
+    }
+  };
+
+  const charVariants = {
+    hidden: { y: "100%" },
+    visible: { 
+      y: "0%", 
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } 
+    },
+    exit: { 
+      y: "-100%", 
+      transition: { duration: 0.4, ease: [0.7, 0, 0.84, 0] as const }
+    }
+  };
 
   return (
-    <div 
-      ref={containerRef}
-      className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center text-white pointer-events-auto"
+    <motion.div 
+      className="fixed inset-0 z-[9999] bg-[#09090b] flex flex-col justify-between overflow-hidden"
+      initial={{ y: 0 }}
+      exit={{ y: "-100%", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
     >
-      <div className="flex flex-col items-center text-center px-4 max-w-4xl w-full">
-        
-        {/* Main Title Row */}
-        <div ref={logoRef} className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 mb-6">
-          <span className="preloader-logo-line opacity-0 font-body text-[10px] sm:text-xs uppercase tracking-[0.2em] text-zinc-400 font-medium select-none sm:translate-y-[-0.2em]">
-            I AM A(N)
-          </span>
-          <h1 className="preloader-logo-line opacity-0 font-display text-[2.6rem] sm:text-[4rem] md:text-[5rem] lg:text-[5.5rem] leading-[1.05] tracking-tight select-none flex items-center justify-center sm:justify-start gap-3.5 sm:gap-5">
-            <span className="word-container relative inline-block h-[1.1em] flex-shrink-0" style={{ clipPath: 'inset(-0.25em -0.3em -0.25em -0.3em)' }}>
-              <span className="word-1 absolute left-0 top-0 text-left font-normal whitespace-nowrap">Product</span>
-              <span className="word-2 absolute left-0 top-0 text-left font-normal whitespace-nowrap">Experience</span>
-              <span className="word-3 absolute left-0 top-0 text-left font-normal whitespace-nowrap">Interaction</span>
-            </span>
-            <span>Designer</span>
-          </h1>
-        </div>
-
-        {/* Subtitle */}
-        <div ref={subRef} className="max-w-xl flex flex-col items-center gap-4 mt-2 opacity-0">
-          <p className="font-body text-base sm:text-[17px] text-zinc-400 tracking-normal leading-relaxed">
-            {splitSubtextWords("a multidisciplinary designer driven by curiosity, learning through making.")}
-          </p>
-        </div>
-
+      {/* Growing Background Vertical Lines */}
+      <div className="absolute inset-0 pointer-events-none grid grid-cols-6 md:grid-cols-8 px-6 md:px-12 z-0">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="relative h-full w-full border-r border-white/[0.02] first:border-l first:border-white/[0.02]">
+            <motion.div 
+              className="absolute bottom-0 right-0 w-px bg-white/[0.06] h-full origin-bottom"
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: 1 }}
+              transition={{ 
+                duration: 4, 
+                ease: [0.16, 1, 0.3, 1] as const, 
+                delay: i * 0.12 
+              }}
+            />
+          </div>
+        ))}
       </div>
-    </div>
+
+      {/* Interactive Media Grid (Inertia Velocity Effect) */}
+      <div 
+        ref={mediaContainerRef}
+        className="mwg_free_effect001 relative z-10 w-full max-w-5xl mx-auto pt-12 px-6 flex-1 flex flex-col justify-center items-center pointer-events-auto"
+      >
+        <div className="medias grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 md:gap-4 w-full">
+          {mediaImages.map((src, i) => (
+            <div key={i} className="media p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:border-white/20 transition-colors flex items-center justify-center cursor-pointer aspect-square">
+              <img 
+                src={src} 
+                alt="" 
+                className="w-12 h-12 md:w-16 md:h-16 object-contain pointer-events-none select-none"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-full px-6 pb-8 md:px-12 md:pb-12 relative z-10">
+        <div className="flex justify-between items-end mb-4 font-tech text-xs tracking-widest uppercase text-white overflow-hidden">
+          
+          <div className="relative w-full h-12 flex items-end">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTitleIndex}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="absolute left-0 bottom-0 flex overflow-hidden py-0.5"
+              >
+                {titles[currentTitleIndex].split('').map((char, index) => (
+                  <span key={index} className="inline-block overflow-hidden">
+                    <motion.span 
+                      variants={charVariants}
+                      className="inline-block text-sm md:text-base font-medium"
+                      style={{ whiteSpace: char === ' ' ? 'pre' : 'normal' }}
+                    >
+                      {char}
+                    </motion.span>
+                  </span>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          
+          {/* Large percentage display matching reference */}
+          <div className="font-display text-4xl md:text-6xl font-semibold text-white tracking-tighter tabular-nums leading-none flex items-baseline">
+            <span>{progress}</span>
+            <span className="text-zinc-500 text-2xl md:text-4xl font-normal ml-0.5">%</span>
+          </div>
+        </div>
+        
+        {/* Progress Bar Line */}
+        <div className="w-full h-px bg-white/20 relative overflow-hidden">
+          <motion.div 
+            className="absolute top-0 left-0 h-full bg-white"
+            initial={{ width: "0%" }}
+            animate={{ width: `${progress}%` }}
+            transition={{ ease: "linear", duration: 0.1 }}
+          />
+        </div>
+      </div>
+    </motion.div>
   );
-};
+}

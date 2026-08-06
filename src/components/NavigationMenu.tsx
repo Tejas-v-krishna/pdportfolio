@@ -1,0 +1,357 @@
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { gsap } from 'gsap';
+import StaggerText from './StaggerText';
+
+interface NavigationMenuProps {
+  isMounted: boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  onItemClick?: (link: string) => void;
+}
+
+export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick }: NavigationMenuProps) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [magneticX, setMagneticX] = useState<number>(0);
+  const [time, setTime] = useState(new Date());
+  const menuContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    // Calculate normalized X offset (-1 on left edge, +1 on right edge)
+    const normalizedX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    // Translate to dynamic magnetic shift (-140px to +140px)
+    setMagneticX(normalizedX * 140);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredIndex(null);
+    setMagneticX(0);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // GSAP Power1.inOut Staggered Down-to-Up Text & Element Animation
+  useEffect(() => {
+    if (!menuContainerRef.current) return;
+    
+    const ctx = gsap.context(() => {
+      if (isOpen) {
+        const tl = gsap.timeline({ defaults: { ease: "power1.inOut" } });
+
+        // Set initial positions cleanly below the overflow mask
+        gsap.set(".menu-char", { yPercent: 150 });
+        gsap.set(".menu-item-num", { yPercent: 150, rotate: 5 });
+        gsap.set(".menu-line", { scaleX: 0, transformOrigin: "center" });
+        gsap.set(".menu-fade-item", { y: 25, opacity: 0 });
+
+        // 1. Expand divider lines
+        tl.to(".menu-line", {
+          scaleX: 1,
+          duration: 0.4,
+          stagger: 0.03
+        }, 0);
+
+        // 2. Stagger text numbers (down to up)
+        tl.to(".menu-item-num", {
+          yPercent: 0,
+          rotate: 0,
+          duration: 0.45,
+          stagger: 0.05
+        }, 0);
+
+        // 3. Stagger individual text characters (down to up)
+        tl.to(".menu-char", {
+          yPercent: 0,
+          duration: 0.45,
+          stagger: {
+            each: 0.018,
+            from: "start"
+          },
+          ease: "power1.inOut"
+        }, 0);
+
+        // 4. Fade/slide in header and footer details
+        tl.to(".menu-fade-item", {
+          y: 0,
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.02
+        }, 0);
+
+      } else {
+        const tl = gsap.timeline({ defaults: { ease: "power1.inOut" } });
+
+        // Stagger exit characters downwards cleanly out of view
+        tl.to(".menu-char", {
+          yPercent: 150,
+          duration: 0.25,
+          stagger: { each: 0.015, from: "end" },
+          ease: "power1.inOut"
+        }, 0);
+
+        tl.to(".menu-item-num", {
+          yPercent: 150,
+          rotate: 5,
+          duration: 0.25,
+          stagger: { each: 0.03, from: "end" }
+        }, 0);
+
+        tl.to(".menu-fade-item", {
+          y: 25,
+          opacity: 0,
+          duration: 0.2
+        }, 0);
+
+        tl.to(".menu-line", {
+          scaleX: 0,
+          duration: 0.25
+        }, 0.05);
+      }
+    }, menuContainerRef);
+
+    return () => ctx.revert();
+  }, [isOpen]);
+
+  const handleItemClick = (link: string) => {
+    if (onItemClick) {
+      onItemClick(link);
+    } else {
+      onClose();
+    }
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour12: true,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  const menuItems = [
+    {
+      num: "01",
+      label: "ABOUT",
+      marquee: "MY JOURNEY ↗",
+      link: "#about"
+    },
+    {
+      num: "02",
+      label: "PROJECTS",
+      marquee: "RECENT WORK ↗",
+      link: "#work"
+    },
+    {
+      num: "03",
+      label: "CONTACT",
+      marquee: "LET'S TALK ↗",
+      link: "#contact"
+    }
+  ];
+
+  return (
+    <div 
+      ref={menuContainerRef}
+      className={`fixed inset-0 z-[9990] bg-[#f4f4f0] text-[#18181b] overflow-y-auto overflow-x-hidden transition-opacity duration-[200ms] ${isMounted ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+    >
+      <div className="relative z-10 flex flex-col justify-between min-h-full w-full">
+        {/* Top Header */}
+        <div className="relative w-full px-8 py-6 flex items-center justify-between z-20">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <span className="menu-fade-item w-12 h-12 rounded-full border border-black flex items-center justify-center font-heading font-black text-base tracking-tighter">
+              TVK
+            </span>
+          </div>
+          
+          <div className="overflow-hidden">
+            <button
+              onClick={onClose}
+              className="menu-fade-item w-12 h-12 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white cursor-pointer group"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Option 4: Bottom-Anchored Heavy Typography Layout */}
+        <div className="flex-1 flex flex-col justify-end w-full relative z-20 mt-auto pb-6">
+          {menuItems.map((item, index) => (
+            <div
+              key={index}
+              className="relative w-full py-2 md:py-4 px-8 md:px-16 cursor-pointer interactive group"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onClick={() => handleItemClick(item.link)}
+            >
+              {/* Number & Massive Label */}
+              <div className="flex items-baseline justify-between w-full">
+                <div className="py-1">
+                  <a
+                    href={item.link}
+                    className="inline-block font-heading font-black text-[11vw] md:text-[8.5vw] leading-[0.85] uppercase tracking-tighter text-[#18181b]"
+                  >
+                    <StaggerText text={item.label} staggerStep={35} />
+                  </a>
+                </div>
+
+                <div className="overflow-hidden leading-none shrink-0 mb-2">
+                  <div className="menu-item-num font-mono text-base md:text-2xl text-zinc-500 font-semibold leading-none">
+                    [{item.num}]
+                  </div>
+                </div>
+              </div>
+
+              {/* Horizontal Divider Line Growing From Center Between Menu Items */}
+              {index < menuItems.length - 1 && (
+                <div className="menu-line absolute bottom-0 left-0 right-0 h-px bg-[#323232]/15" />
+              )}
+
+              {/* Venetian Horizontal Slice Reveal with Magnetic Cursor Drag */}
+              <AnimatePresence>
+                {hoveredIndex === index && (
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                    className="absolute inset-0 z-10 flex items-center overflow-hidden"
+                  >
+                    {/* 8 Horizontal Venetian Slicing Bars */}
+                    <div className="absolute inset-0 flex flex-col pointer-events-none z-0">
+                      {[...Array(8)].map((_, barIdx) => (
+                        <motion.div
+                          key={barIdx}
+                          initial={{ scaleY: 0, transformOrigin: barIdx % 2 === 0 ? "top" : "bottom" }}
+                          animate={{ scaleY: 1 }}
+                          exit={{ scaleY: 0 }}
+                          transition={{ 
+                            duration: 0.3, 
+                            ease: [0.65, 0, 0.35, 1], 
+                            delay: barIdx * 0.02 
+                          }}
+                          className="flex-1 bg-[#09090b] w-full"
+                        />
+                      ))}
+                    </div>
+
+                    {/* Outer Magnetic Wrapper */}
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0, x: magneticX }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ 
+                        opacity: { duration: 0.25, delay: 0.08 },
+                        y: { duration: 0.25, delay: 0.08 },
+                        x: { type: "spring", stiffness: 220, damping: 22, mass: 0.3 }
+                      }}
+                      className="relative z-10 w-full flex items-center pointer-events-none"
+                    >
+                      {/* Inner Continuous CSS Marquee Loop with Staggered Split-Char Entrance */}
+                      <div className="animate-marquee flex whitespace-nowrap gap-12 font-heading font-black text-[11vw] md:text-[8.5vw] uppercase text-white tracking-tighter items-center select-none pl-8 md:pl-16">
+                        {[...Array(6)].map((_, i) => {
+                          const word = item.marquee.replace(" ↗", "");
+                          return (
+                            <span key={i} className="flex items-center gap-6">
+                              <span className="inline-flex overflow-hidden pb-2 -mb-2">
+                                {word.split('').map((char, charIdx) => (
+                                  <motion.span
+                                    key={charIdx}
+                                    initial={{ y: "100%" }}
+                                    animate={{ y: "0%" }}
+                                    transition={{
+                                      duration: 0.35,
+                                      ease: [0.33, 1, 0.68, 1],
+                                      delay: 0.05 + charIdx * 0.025
+                                    }}
+                                    className="inline-block"
+                                  >
+                                    {char === ' ' ? '\u00A0' : char}
+                                  </motion.span>
+                                ))}
+                              </span>
+                              <motion.span 
+                                initial={{ scale: 0, rotate: -45 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ 
+                                  duration: 0.4, 
+                                  ease: [0.34, 1.56, 0.64, 1], 
+                                  delay: 0.15 
+                                }}
+                                className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black flex items-center justify-center text-3xl md:text-4xl font-normal shrink-0"
+                              >
+                                ↗
+                              </motion.span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        {/* Option 2: High-Density Monospace Tech Bar */}
+        <div className="relative w-full grid grid-cols-1 md:grid-cols-4 text-xs font-mono text-zinc-700 z-20 border-t border-[#323232]/15">
+          
+          {/* Cell 1: Philosophy */}
+          <div className="p-6 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
+            <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 01 / PHILOSOPHY ]</div>
+            <p className="menu-fade-item text-zinc-800 leading-relaxed font-sans text-sm md:text-base font-normal">
+              Driven by clarity, performance, and detail. Simple, fast, intentional product systems.
+            </p>
+            <div className="menu-fade-item font-mono text-[10px] text-zinc-400">
+              ©{new Date().getFullYear()} tejjxuu
+            </div>
+          </div>
+
+          {/* Cell 2: Direct Contact */}
+          <div className="p-6 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
+            <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 02 / INQUIRIES ]</div>
+            <a href="mailto:hello@tejasvkrishna.com" className="group font-mono text-xs text-[#18181b] w-fit">
+              <StaggerText text="hello@tejasvkrishna.com" />
+            </a>
+            <div className="text-zinc-500 font-mono text-[10px]">Bengaluru, India</div>
+          </div>
+
+          {/* Cell 3: Networks */}
+          <div className="p-6 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
+            <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 03 / NETWORKS ]</div>
+            <div className="menu-fade-item flex flex-col gap-1 text-[#18181b] font-mono text-xs">
+              <a href="#" className="group hover:text-black w-fit">
+                <StaggerText text="INSTAGRAM ↗" />
+              </a>
+              <a href="#" className="group hover:text-black w-fit">
+                <StaggerText text="LINKEDIN ↗" />
+              </a>
+              <a href="#" className="group hover:text-black w-fit">
+                <StaggerText text="DRIBBBLE ↗" />
+              </a>
+            </div>
+          </div>
+
+          {/* Cell 4: System Clock */}
+          <div className="p-6 md:p-8 flex flex-col justify-between gap-4">
+            <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 04 / SYSTEM CLOCK ]</div>
+            <div className="menu-fade-item font-mono text-sm font-bold text-[#18181b] flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#000000] shrink-0"></span>
+              <span>{formatTime(time)}</span>
+            </div>
+            <div className="menu-fade-item font-mono text-[10px] text-zinc-400">
+              TIMEZONE: IST (UTC+5:30)
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,187 +1,354 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Aeonik';
-  src: url('./assets/fonnts.com-Aeonik_Regular.ttf') format('truetype');
-  font-weight: 300;
+  font-family: 'Neue Kaine';
+  src: url('/fonts/NeueKaineVariable.ttf') format('truetype');
+  font-weight: 100 900;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-  font-family: 'Aeonik';
-  src: url('./assets/fonnts.com-Aeonik_Regular.ttf') format('truetype');
-  font-weight: 400;
+  font-family: 'Neue Regrade';
+  src: url('/fonts/NeueRegradeVariable.ttf') format('truetype');
+  font-weight: 100 900;
   font-style: normal;
-}
-
-@font-face {
-  font-family: 'Aeonik';
-  src: url('./assets/fonnts.com-Aeonik_Regular.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Aeonik';
-  src: url('./assets/fonnts.com-Aeonik_Regular.ttf') format('truetype');
-  font-weight: 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'POI Aeronaut Trial';
-  src: url('./assets/POIAeronautTrial-Regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'NT Ginder Mini Edition';
-  src: url('./assets/NtGinderMiniEdition.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@theme {
-  --color-base: #F9F6EE;
-  --color-text-dark: #000000;
-  --color-text-light: #FFFFFF;
-  --color-accent-green: #000000;
-  --color-card-bg: #FFFFFF;
-  
-  --color-postit-yellow: #A1A1AA; /* Zinc-400 */
-  --color-postit-blue: #D4D4D8;   /* Zinc-300 */
-  --color-postit-purple: #18181B; /* Zinc-900 */
-  --color-postit-orange: #71717A; /* Zinc-500 */
-
-  --font-display: "Aeonik", sans-serif;
-  --font-body: "Aeonik", sans-serif;
-  --font-handwriting: "Aeonik", sans-serif;
-  --font-bonny: "Aeonik", sans-serif;
-  --font-calligraphy: "Aeonik", sans-serif;
-  --font-mono: "NT Ginder Mini Edition", monospace;
+  font-display: swap;
 }
 
 @layer base {
-  body {
-    background-color: var(--color-base);
-    color: var(--color-text-dark);
-    font-family: var(--font-body);
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  :root {
+    --font-sans: 'Neue Regrade', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-heading: 'Neue Kaine', var(--font-sans);
+    --font-display: 'Neue Kaine', sans-serif;
+    --font-mono: 'Neue Regrade', 'JetBrains Mono', monospace;
+    --font-tech: 'Neue Regrade', 'Space Grotesk', sans-serif;
   }
+  
   ::selection {
-    background-color: var(--color-accent-green);
-    color: var(--color-base);
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
+  ::-moz-selection {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+
+  /* Selection in light containers (like Navigation Menu) */
+  .bg-\[\#f4f4f0\] ::selection,
+  .bg-white ::selection {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+  .bg-\[\#f4f4f0\] ::-moz-selection,
+  .bg-white ::-moz-selection {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 1.05rem; /* ~17px base size */
+    background-color: #09090b; /* obsidian */
+    color: #f4f4f5; /* ivory */
+    cursor: none; /* For custom cursor */
+  }
+
   h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+
+  a, button, [role="button"], input, select, textarea {
+    cursor: none;
+  }
+}
+
+@layer utilities {
+  .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.025em;
+    font-weight: 600; /* Semi-bold for large texts */
+  }
+  .font-tech {
+    font-family: var(--font-tech);
+    font-size: 1.06em;
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+    font-size: 1.06em;
+  }
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
   }
 }
 
-/* Lenis smooth scrolling styles */
-html.lenis {
-  height: auto;
+/* Glassmorphism & Borders */
+.glass-panel {
+  background: rgba(9, 9, 11, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
+
+.hairline-border {
+  border-color: rgba(255, 255, 255, 0.15);
 }
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
+
+/* Shimmer Animation (Left to Right) */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
-.lenis.lenis-stopped {
-  overflow: hidden;
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #52525b 0%,
+    #a1a1aa 20%,
+    #ffffff 50%,
+    #a1a1aa 80%,
+    #52525b 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2.8s linear infinite;
 }
-.lenis.lenis-scrolling iframe {
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 22s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 22s linear infinite;
+}
+
+/* Custom Cursor */
+.custom-cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #f4f4f5;
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
   pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background-color 0.2s;
+  mix-blend-mode: difference;
 }
 
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
+.custom-cursor-ring {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s, border-color 0.3s;
+}
+
+/* Hover states for cursor */
+body.hovering-link .custom-cursor-dot {
+  transform: translate(-50%, -50%) scale(0.5);
+}
+
+body.hovering-link .custom-cursor-ring {
+  width: 60px;
+  height: 60px;
+  border-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Hide cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .custom-cursor-dot, .custom-cursor-ring {
+    display: none;
   }
-  to {
-    transform: rotate(360deg);
+  body, a, button, [role="button"], input, select, textarea {
+    cursor: auto;
   }
 }
 
-.animate-spin-slow {
-  animation: spin-slow 25s linear infinite;
+/* Utilities */
+.mix-blend-difference {
+  mix-blend-mode: difference;
 }
 
-.animate-spin-slow-reverse {
-  animation: spin-slow 30s linear infinite reverse;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-@keyframes ellipse-appear {
-  from {
-    opacity: 0;
-    transform: scale(0.8) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+::-webkit-scrollbar-track {
+  background: #09090b;
 }
 
-.animate-ellipse-appear {
-  opacity: 0;
-  animation: ellipse-appear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 0px;
 }
 
-.skew-on-scroll {
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Page & Menu Transition Overlays */
+.transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.transition-overlay.vertical-mode {
+  flex-direction: column;
+}
+
+.transition-overlay.horizontal-mode {
+  flex-direction: row;
+}
+
+.transition-block {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background-color: #09090b;
+  transform: scaleX(0);
+  transform-origin: left;
+  outline: 1px solid transparent;
+  backface-visibility: hidden;
   will-change: transform;
-  transform-origin: center center;
 }
 
-.img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(1.25);
-  width: 65%;
-  height: 90%;
-  clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);
-  will-change: transform, clip-path, opacity;
+.transition-overlay.vertical-mode .transition-block {
+  margin-top: -1px;
+  min-height: calc(100vh / 20 + 2px);
 }
 
-.img img {
-  filter: contrast(1) brightness(1);
-  will-change: filter;
+.transition-overlay.horizontal-mode .transition-block {
+  margin-left: -1px;
+  min-width: calc(100vw / 10 + 2px);
 }
 
-@media (any-hover: hover) and (any-pointer: fine) {
-  * {
-    cursor: none !important;
-  }
-  input, textarea, select, [contenteditable], iframe {
-    cursor: text !important;
-  }
-  a, button, [role="button"], input[type="submit"], input[type="button"] {
-    cursor: none !important;
-  }
-}
-
-/* Page content blur when menu is open */
-.flex-grow,
-footer {
-  transition: filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: filter;
-}
-
-body.menu-blur-active .flex-grow,
-body.menu-blur-active footer {
-  filter: blur(8px) brightness(0.95);
+.logo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #09090b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
   pointer-events: none;
+  z-index: 10001;
 }
 
-/* Force all text in the website to be lowercase, except input and textarea values */
-*, *::before, *::after {
-  text-transform: lowercase !important;
+.logo-container {
+  width: 125px;
+  height: 125px;
 }
-input, textarea {
-  text-transform: none !important;
+
+/* =========================================
+   NATIVE VIEW TRANSITIONS API
+   ========================================= */
+
+/* 1. Prevent the Navbar from animating at all */
+::view-transition-group(navbar) {
+  animation: none;
+  z-index: 9999;
 }
-.flip-animate-out { top: unset !important; left: unset !important; bottom: 1.5rem !important; right: 1.5rem !important; }
+
+/* 2. Target the old page (leaving) and the new page (entering) */
+::view-transition-old(root) {
+  animation: leave-page 0.8s cubic-bezier(0.87, 0, 0.13, 1) forwards;
+}
+
+::view-transition-new(root) {
+  animation: enter-page 0.8s cubic-bezier(0.87, 0, 0.13, 1) forwards;
+  z-index: 999;
+}
+
+/* 
+  VARIANT 1 (Wipe Upward Animation):
+  The old page fades out partially and lifts up.
+  The new page wipes upward from the bottom of the screen.
+*/
+@keyframes leave-page {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20%);
+    opacity: 0.5;
+  }
+}
+
+@keyframes enter-page {
+  0% {
+    clip-path: inset(100% 0 0 0); /* Collapsed at the bottom edge */
+    transform: translateY(20%);
+  }
+  100% {
+    clip-path: inset(0 0 0 0); /* Opens to full screen */
+    transform: translateY(0);
+  }
+}
+
+/* GSAP Scroll Text Reveal Styles */
+.reveal-text {
+  font-size: clamp(1.6rem, 3.2vw, 3.2rem);
+  line-height: 1.2;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  word-spacing: -0.02em;
+}
+
+
+
+
+.reveal-text div,
+.reveal-text span,
+.reveal-text .word {
+  will-change: transform, opacity;
+}
+
+
