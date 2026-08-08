@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import StaggerText from './StaggerText';
+import SplitTextReveal from './SplitTextReveal';
 
 export default function Footer() {
   const [time, setTime] = useState<string>('');
@@ -80,10 +81,15 @@ export default function Footer() {
         
         {/* Left: Giant Role Headline */}
         <div className="lg:col-span-6 flex flex-col justify-start">
-          <h2 className="font-sans font-normal text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.02] tracking-tighter text-white">
-            UI/UX Designer +<br />
-            Product Builder
-          </h2>
+          <SplitTextReveal 
+            text="UI/UX Designer + Product Builder"
+            as="h2"
+            direction="bottom"
+            mode="blur"
+            splitBy="chars"
+            randomize={true}
+            className="font-sans font-normal text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.02] tracking-tighter text-white"
+          />
         </div>
 
         {/* Right: Directory Grid (Menu, Get In Touch, Socials) */}

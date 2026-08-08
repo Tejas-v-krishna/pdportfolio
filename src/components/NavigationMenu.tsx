@@ -148,6 +148,12 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
     },
     {
       num: "03",
+      label: "ACCESSORIES",
+      marquee: "SURREAL OBJECTS ↗",
+      link: "accessories"
+    },
+    {
+      num: "04",
       label: "CONTACT",
       marquee: "LET'S TALK ↗",
       link: "#contact"

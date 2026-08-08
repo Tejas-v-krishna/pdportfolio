@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import SplitTextReveal from './SplitTextReveal';
 
 export default function CraftShowcase() {
   const [activeTab, setActiveTab] = useState('components');
@@ -11,11 +12,25 @@ export default function CraftShowcase() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
           <div>
             <div className="font-mono text-xs text-zinc-500 mb-4">[ 03 — CAPABILITIES ]</div>
-            <h2 className="font-heading text-4xl md:text-5xl uppercase font-bold tracking-tighter">Proof of Craft</h2>
+            <SplitTextReveal 
+              text="Proof of Craft"
+              as="h2"
+              direction="bottom"
+              mode="blur"
+              splitBy="chars"
+              randomize={true}
+              className="font-heading text-4xl md:text-5xl uppercase font-bold tracking-tighter"
+            />
           </div>
           <div className="max-w-md">
             <p className="text-zinc-400 font-light text-sm">
-              I don't just push pixels in Figma. I build functional, interactive systems that bridge the gap between design and engineering. 
+              <SplitTextReveal 
+                text="I don't just push pixels in Figma. I build functional, interactive systems that bridge the gap between design and engineering."
+                direction="top"
+                mode="fade"
+                splitBy="words"
+                randomize={true}
+              />
             </p>
           </div>
         </div>

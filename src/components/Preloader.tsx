@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
+import { InertiaPlugin } from 'gsap/InertiaPlugin';
+
+gsap.registerPlugin(InertiaPlugin);
 
 const titles = [
   "Product Designer",
@@ -9,19 +12,20 @@ const titles = [
   "Brand Identity Builder"
 ];
 
-const mediaImages = [
-  "https://assets.codepen.io/16327/Revised+Flair.png",
-  "https://assets.codepen.io/16327/Revised+Flair-1.png",
-  "https://assets.codepen.io/16327/Revised+Flair-2.png",
-  "https://assets.codepen.io/16327/Revised+Flair-3.png",
-  "https://assets.codepen.io/16327/Revised+Flair-4.png",
-  "https://assets.codepen.io/16327/Revised+Flair-5.png",
-  "https://assets.codepen.io/16327/Revised+Flair-6.png",
-  "https://assets.codepen.io/16327/Revised+Flair-7.png",
-  "https://assets.codepen.io/16327/Revised+Flair-8.png",
-  "https://assets.codepen.io/16327/Revised+Flair.png",
-  "https://assets.codepen.io/16327/Revised+Flair-1.png",
-  "https://assets.codepen.io/16327/Revised+Flair-2.png"
+const stickers = [
+  { id: 1, src: "/stickers/1.png", top: "6%", left: "4%", rotate: -18, scale: 1.1 },
+  { id: 2, src: "/stickers/2.png", top: "2%", left: "25%", rotate: 16, scale: 0.95 },
+  { id: 3, src: "/stickers/3.png", top: "0%", left: "46%", rotate: -22, scale: 1.2 },
+  { id: 4, src: "/stickers/4.png", top: "8%", left: "68%", rotate: 14, scale: 0.95 },
+  { id: 5, src: "/stickers/5.png", top: "4%", left: "85%", rotate: -16, scale: 1.1 },
+  
+  { id: 6, src: "/stickers/6.png", top: "52%", left: "6%", rotate: -12, scale: 1.2 },
+  { id: 7, src: "/stickers/7.png", top: "32%", left: "20%", rotate: 10, scale: 1.0 },
+  { id: 8, src: "/stickers/8.png", top: "44%", left: "42%", rotate: -8, scale: 1.25 },
+  { id: 9, src: "/stickers/9.png", top: "30%", left: "60%", rotate: 22, scale: 1.1 },
+  { id: 10, src: "/stickers/10.png", top: "48%", left: "78%", rotate: -15, scale: 1.15 },
+  
+  { id: 11, src: "/stickers/11.png", top: "74%", left: "42%", rotate: 8, scale: 1.05 },
 ];
 
 interface PreloaderProps {
@@ -69,18 +73,22 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     };
   }, [onComplete]);
 
-  // GSAP Media Velocity Inertia Effect (active ONLY during preloader stage)
+  // GSAP Inertia Velocity Effect matching exact reference
   useEffect(() => {
     if (!mediaContainerRef.current) return;
     const root = mediaContainerRef.current;
+    
     let oldX = 0;
     let oldY = 0;
     let deltaX = 0;
     let deltaY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
+      // Calculate horizontal movement since the last mouse position
       deltaX = e.clientX - oldX;
+      // Calculate vertical movement since the last mouse position
       deltaY = e.clientY - oldY;
+      // Update old coordinates with the current mouse position
       oldX = e.clientX;
       oldY = e.clientY;
     };
@@ -94,24 +102,35 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       const image = target.querySelector('img');
       if (!image) return;
 
-      gsap.killTweensOf(image);
-      const randomRotate = (Math.random() - 0.5) * 30;
+      const tl = gsap.timeline({ 
+        onComplete: () => {
+          tl.kill();
+        }
+      });
+      tl.timeScale(1.2); // Animation will play 20% faster than normal
 
-      gsap.timeline()
-        .to(image, {
-          x: deltaX * 1.8,
-          y: deltaY * 1.8,
-          rotate: randomRotate,
-          duration: 0.25,
-          ease: 'power2.out'
-        })
-        .to(image, {
-          x: 0,
-          y: 0,
-          rotate: 0,
-          duration: 0.6,
-          ease: 'elastic.out(1, 0.4)'
-        });
+      tl.to(image, {
+        inertia: {
+          x: {
+            velocity: deltaX * 30, // Higher number = movement amplified
+            end: 0 // Go back to initial position
+          },
+          y: {
+            velocity: deltaY * 30, // Higher number = movement amplified
+            end: 0 // Go back to initial position
+          }
+        }
+      });
+
+      tl.fromTo(image, {
+        rotate: 0
+      }, {
+        duration: 0.4,
+        rotate: (Math.random() - 0.5) * 30, // Returns a value between -15 & 15
+        yoyo: true,
+        repeat: 1,
+        ease: 'power1.inOut' // Will slow at the begin and the end
+      }, '<'); // Starts at the same time as previous tween
     };
 
     mediaElements.forEach((el) => {
@@ -175,28 +194,45 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         ))}
       </div>
 
-      {/* Interactive Media Grid (Inertia Velocity Effect) */}
+      {/* Interactive Sticker Cloud Scatter Stage (Inertia Velocity Effect) */}
       <div 
         ref={mediaContainerRef}
-        className="mwg_free_effect001 relative z-10 w-full max-w-5xl mx-auto pt-12 px-6 flex-1 flex flex-col justify-center items-center pointer-events-auto"
+        className="mwg_free_effect001 relative z-10 w-full max-w-7xl mx-auto pt-4 px-4 flex-1 flex flex-col justify-center items-center pointer-events-auto"
       >
-        <div className="medias grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 md:gap-4 w-full">
-          {mediaImages.map((src, i) => (
-            <div key={i} className="media p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:border-white/20 transition-colors flex items-center justify-center cursor-pointer aspect-square">
+        <div className="medias relative w-full h-[55vh] md:h-[62vh] max-w-6xl">
+          {stickers.map((sticker, i) => (
+            <motion.div
+              key={sticker.id}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ 
+                opacity: 1, 
+                scale: sticker.scale
+              }}
+              transition={{
+                opacity: { duration: 0.5, delay: i * 0.04 },
+                scale: { type: "spring", stiffness: 260, damping: 20, delay: i * 0.04 }
+              }}
+              className="media absolute group flex items-center justify-center cursor-pointer w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 hover:z-30"
+              style={{
+                top: sticker.top,
+                left: sticker.left,
+                transform: `rotate(${sticker.rotate}deg)`
+              }}
+            >
               <img 
-                src={src} 
-                alt="" 
-                className="w-12 h-12 md:w-16 md:h-16 object-contain pointer-events-none select-none"
+                src={sticker.src} 
+                alt={`Sticker ${sticker.id}`} 
+                className="w-full h-full object-contain pointer-events-none select-none drop-shadow-[0_16px_28px_rgba(0,0,0,0.85)] transition-shadow duration-300 group-hover:drop-shadow-[0_26px_36px_rgba(0,0,0,0.95)]"
               />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
       <div className="w-full px-6 pb-8 md:px-12 md:pb-12 relative z-10">
-        <div className="flex justify-between items-end mb-4 font-tech text-xs tracking-widest uppercase text-white overflow-hidden">
+        <div className="flex justify-between items-end mb-4 font-display text-xl sm:text-2xl md:text-4xl font-semibold uppercase text-white overflow-hidden">
           
-          <div className="relative w-full h-12 flex items-end">
+          <div className="relative w-full h-10 sm:h-12 md:h-16 flex items-end overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentTitleIndex}
@@ -210,7 +246,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                   <span key={index} className="inline-block overflow-hidden">
                     <motion.span 
                       variants={charVariants}
-                      className="inline-block text-sm md:text-base font-medium"
+                      className="inline-block text-xl sm:text-2xl md:text-4xl font-semibold text-white tracking-tight"
                       style={{ whiteSpace: char === ' ' ? 'pre' : 'normal' }}
                     >
                       {char}
@@ -221,10 +257,9 @@ export default function Preloader({ onComplete }: PreloaderProps) {
             </AnimatePresence>
           </div>
           
-          {/* Large percentage display matching reference */}
-          <div className="font-display text-4xl md:text-6xl font-semibold text-white tracking-tighter tabular-nums leading-none flex items-baseline">
-            <span>{progress}</span>
-            <span className="text-zinc-500 text-2xl md:text-4xl font-normal ml-0.5">%</span>
+          {/* Percentage display matching text size */}
+          <div className="font-display text-xl sm:text-2xl md:text-4xl font-semibold text-white tracking-tight tabular-nums leading-none flex items-baseline shrink-0 ml-4">
+            <span>{progress}%</span>
           </div>
         </div>
         

@@ -1,3 +1,5 @@
+import SplitTextReveal from './SplitTextReveal';
+
 export default function ExperienceGrid() {
   const experiences = [
     {
@@ -28,7 +30,15 @@ export default function ExperienceGrid() {
           
           <div className="lg:col-span-4">
             <div className="font-mono text-xs text-zinc-500 mb-4">[ 04 — BACKGROUND ]</div>
-            <h2 className="font-heading text-4xl uppercase font-bold tracking-tighter mb-8">Experience</h2>
+            <SplitTextReveal 
+              text="Experience"
+              as="h2"
+              direction="bottom"
+              mode="blur"
+              splitBy="chars"
+              randomize={true}
+              className="font-heading text-4xl uppercase font-bold tracking-tighter mb-8"
+            />
             <div className="flex flex-wrap gap-2">
               {['Design Systems', 'Prototyping', 'User Research', 'Frontend UI', 'Figma', 'React', 'Motion'].map((skill) => (
                 <div key={skill} className="px-3 py-1 border hairline-border rounded-full font-tech text-[10px] uppercase tracking-widest text-zinc-400">
@@ -45,7 +55,15 @@ export default function ExperienceGrid() {
                   <div className="font-tech text-xs tracking-widest uppercase text-zinc-500 group-hover:text-white transition-colors">{exp.period}</div>
                 </div>
                 <div className="md:col-span-9 flex flex-col gap-2">
-                  <h3 className="font-display text-2xl">{exp.company}</h3>
+                  <h3 className="font-display text-2xl">
+                    <SplitTextReveal 
+                      text={exp.company}
+                      direction="top"
+                      mode="blur"
+                      splitBy="chars"
+                      randomize={true}
+                    />
+                  </h3>
                   <div className="font-mono text-[10px] text-zinc-400 uppercase">[ {exp.role} ]</div>
                   <p className="text-zinc-400 font-light text-sm mt-2">{exp.description}</p>
                 </div>

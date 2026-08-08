@@ -1,95 +1,201 @@
-import { motion } from 'framer-motion';
-import StaggerText from './StaggerText';
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PROJECTS } from '../data/projects';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface SelectedWorkProps {
   onOpenCaseStudy: (id: string) => void;
 }
 
 export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
-  const projects = [
-    {
-      id: 'nexus',
-      title: 'Nexus AI OS',
-      category: 'SaaS / AI Workflow',
-      role: 'Lead Product Designer',
-      year: '2025',
-      image: 'https://images.unsplash.com/photo-1618761714954-0b8cd0026356?auto=format&fit=crop&q=80&w=1600'
-    },
-    {
-      id: 'kroma',
-      title: 'Kroma Mobile',
-      category: 'Fintech / Neobank',
-      role: 'UX Architect',
-      year: '2024',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1600'
-    },
-    {
-      id: 'aura',
-      title: 'Aura Design System',
-      category: 'Enterprise UI Kit',
-      role: 'Design Engineer',
-      year: '2023',
-      image: 'https://images.unsplash.com/photo-1507238692062-5a042e9e18c4?auto=format&fit=crop&q=80&w=1600'
-    }
-  ];
+  const projects = PROJECTS;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const activeProject = projects[activeIndex];
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        onUpdate: (self) => {
+          let index = Math.floor(self.progress * projects.length);
+          if (index >= projects.length) index = projects.length - 1;
+          setActiveIndex(index);
+        }
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, [projects.length]);
 
   return (
-    <section id="work" className="py-24 border-t hairline-border">
-      <div className="max-w-[1920px] mx-auto px-6">
-        
-        <div className="flex justify-between items-end mb-16">
-          <h2 className="font-heading text-4xl md:text-6xl uppercase font-bold tracking-tighter">Selected Work</h2>
-          <div className="font-mono text-xs text-zinc-500">[ 02 — FEATURED ]</div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-12 md:gap-24">
-          {projects.map((project) => (
-            <motion.div 
-              key={project.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
-              className="group cursor-pointer interactive"
-              onClick={() => onOpenCaseStudy(project.id)}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-                
-                {/* Project Image */}
-                <div className="md:col-span-8 overflow-hidden bg-zinc-900 aspect-video relative">
-                  <div className="absolute inset-0 bg-black/20 z-10 group-hover:bg-transparent transition-colors duration-500"></div>
-                  <img 
-                    src={project.image} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0"
-                  />
-                  <div className="absolute top-4 right-4 z-20 font-mono text-xs bg-black/80 backdrop-blur-md px-3 py-1.5 text-white opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
-                    <StaggerText text="VIEW CASE STUDY ↗" />
-                  </div>
+    <section id="work" ref={containerRef} className="bg-[#050505] text-white relative" style={{ height: `${projects.length * 100}vh` }}>
+      <div className="sticky top-0 h-[100dvh] w-full flex items-center max-w-[1920px] mx-auto px-6 md:px-12 overflow-hidden py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 w-full">
+          
+          {/* LEFT SIDE: Image and Meta */}
+          <div className="lg:col-span-5 flex flex-col h-full justify-center">
+            {/* Image Container with AnimatePresence for crossfade */}
+            <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-zinc-900 mb-12 border border-white/5">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeProject.id}
+                  src={activeProject.image}
+                  alt={activeProject.title}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </AnimatePresence>
+            </div>
+            
+            {/* Meta Table */}
+            <div className="flex flex-col border-t border-[#333333] text-sm font-sans tracking-wide">
+              
+              {/* Overview */}
+              <div className="grid grid-cols-12 py-5 border-b border-[#333333]">
+                <div className="col-span-3 text-zinc-500">Overview</div>
+                <div className="col-span-9 text-zinc-300 leading-relaxed pr-8">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`overview-${activeProject.id}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {activeProject.overview}
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
-
-                {/* Project Meta */}
-                <div className="md:col-span-4 flex flex-col justify-center">
-                  <div className="font-mono text-[10px] text-zinc-500 mb-4">[ {project.year} ]</div>
-                  <h3 className="font-display text-4xl md:text-5xl mb-4 group-hover:text-white transition-colors">{project.title}</h3>
-                  
-                  <div className="flex flex-col gap-2 mt-6 border-t hairline-border pt-6">
-                    <div className="flex justify-between items-center font-tech text-xs tracking-widest uppercase">
-                      <span className="text-zinc-500">Domain</span>
-                      <span>{project.category}</span>
-                    </div>
-                    <div className="flex justify-between items-center font-tech text-xs tracking-widest uppercase mt-2">
-                      <span className="text-zinc-500">Role</span>
-                      <span>{project.role}</span>
-                    </div>
-                  </div>
-                </div>
-
               </div>
-            </motion.div>
-          ))}
-        </div>
 
+              {/* Tags */}
+              <div className="grid grid-cols-12 py-5 border-b border-[#333333]">
+                <div className="col-span-3 text-zinc-500">Tags</div>
+                <div className="col-span-9 text-zinc-300 flex flex-col gap-1">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`tags-${activeProject.id}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {activeProject.tags?.map((tag, i) => (
+                        <div key={i}>{tag}</div>
+                      ))}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Industry */}
+              <div className="grid grid-cols-12 py-5 border-b border-[#333333]">
+                <div className="col-span-3 text-zinc-500">Industry</div>
+                <div className="col-span-9 text-zinc-300">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`industry-${activeProject.id}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {activeProject.industry}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Client */}
+              <div className="grid grid-cols-12 py-5 border-b border-[#333333]">
+                <div className="col-span-3 text-zinc-500">Client</div>
+                <div className="col-span-9 text-zinc-300">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`client-${activeProject.id}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {activeProject.client}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </div>
+              
+              {/* Explore Action */}
+              <div 
+                className="grid grid-cols-12 py-8 border-b border-[#333333] cursor-pointer group hover:bg-white/5 transition-colors"
+                onClick={() => onOpenCaseStudy(activeProject.id)}
+              >
+                <div className="col-span-12 flex justify-between items-center text-white">
+                  <span>Explore the case</span>
+                  <motion.span 
+                    className="group-hover:translate-x-2 transition-transform"
+                  >
+                    →
+                  </motion.span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* RIGHT SIDE: Massive Titles List */}
+          <div className="lg:col-span-7 flex flex-col justify-center items-start lg:pl-24 relative mt-16 lg:mt-0">
+            
+            <div className="flex flex-col w-full relative space-y-2">
+              {projects.map((project, index) => {
+                const isActive = index === activeIndex;
+                
+                return (
+                  <div 
+                    key={project.id}
+                    className="relative group cursor-pointer flex items-center"
+                    onClick={() => onOpenCaseStudy(project.id)}
+                  >
+                    {/* The Year floating left (only visible if active) */}
+                    <div className="hidden lg:block absolute -left-16 w-12 text-right">
+                      <AnimatePresence>
+                        {isActive && (
+                          <motion.span 
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="font-mono text-sm text-white block"
+                          >
+                            {project.year}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* The Massive Title */}
+                    <h2 
+                      className={`font-sans font-bold text-5xl md:text-7xl lg:text-[7vw] leading-[1] tracking-tight transition-colors duration-500
+                        ${isActive ? 'text-white' : 'text-[#333333] group-hover:text-[#555555]'}`}
+                    >
+                      {project.title}
+                    </h2>
+                  </div>
+                );
+              })}
+            </div>
+            
+          </div>
+          
+        </div>
       </div>
     </section>
   );

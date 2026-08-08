@@ -19,11 +19,15 @@ import CustomCursor from './components/CustomCursor';
 import PageTransitionManager, { type PageTransitionRef } from './components/PageTransitionManager';
 import NavigationMenu from './components/NavigationMenu';
 import CaseStudyModal from './components/CaseStudyModal';
+import CaseStudyPage from './components/CaseStudyPage';
 import CookieConsent from './components/CookieConsent';
+import AccessoriesPage from './components/AccessoriesPage';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isPreloaded, setIsPreloaded] = useState(false);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [isAccessoriesPageOpen, setIsAccessoriesPageOpen] = useState(false);
   
   // 2-Phase Menu Lifecycle States
   const [isMenuMounted, setIsMenuMounted] = useState(false);
@@ -31,6 +35,16 @@ function App() {
   
   // Transition Refs
   const transitionRef = useRef<PageTransitionRef>(null);
+
+  // Trigger page animations only after preloader curtain fully completes exit
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        setIsPreloaded(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   // Initialize smooth scrolling & sync with GSAP ScrollTrigger
   useEffect(() => {
@@ -123,11 +137,20 @@ function App() {
       if (transitionRef.current) {
         transitionRef.current.triggerLinkTransition(() => {
           setIsMenuMounted(false);
-          if (link.startsWith('#')) {
-            const element = document.querySelector(link);
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth' });
-            }
+          if (link === 'accessories') {
+            setIsAccessoriesPageOpen(true);
+            setActiveProjectId(null);
+          } else if (link.startsWith('#')) {
+            setIsAccessoriesPageOpen(false);
+            setActiveProjectId(null);
+            
+            // Allow DOM to update before scrolling
+            setTimeout(() => {
+              const element = document.querySelector(link);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }, 50);
           }
         });
       } else {
@@ -161,25 +184,36 @@ function App() {
         onItemClick={handleMenuItemClick}
       />
 
-      <div className={isLoading ? "h-screen overflow-hidden" : ""}>
-        <Navbar onOpenMenu={handleOpenMenu} />
-        
-        <main>
-          <Hero />
-          <PhilosophyScroll />
-          <SelectedWork onOpenCaseStudy={handleOpenCaseStudy} />
-          <CraftShowcase />
-          <ExperienceGrid />
-        </main>
-        
-        <Footer />
-
-        <CaseStudyModal 
-          isOpen={activeProjectId !== null} 
-          onClose={handleCloseCaseStudy} 
-          projectId={activeProjectId} 
+      {isAccessoriesPageOpen ? (
+        <AccessoriesPage 
+          onBack={() => navigateWithTransition(() => setIsAccessoriesPageOpen(false))} 
         />
-      </div>
+      ) : activeProjectId ? (
+        <CaseStudyPage 
+          projectId={activeProjectId} 
+          onBack={handleCloseCaseStudy} 
+        />
+      ) : (
+        <div className={isLoading ? "h-screen overflow-hidden" : ""}>
+          <Navbar onOpenMenu={handleOpenMenu} />
+          
+          <main>
+            <Hero isPreloaded={isPreloaded} />
+            <PhilosophyScroll />
+            <SelectedWork onOpenCaseStudy={handleOpenCaseStudy} />
+            <CraftShowcase />
+            <ExperienceGrid />
+          </main>
+          
+          <Footer />
+
+          <CaseStudyModal 
+            isOpen={false} 
+            onClose={handleCloseCaseStudy} 
+            projectId={activeProjectId} 
+          />
+        </div>
+      )}
     </>
   );
 }
