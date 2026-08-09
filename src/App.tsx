@@ -190,12 +190,6 @@ function App() {
     });
   };
 
-  const handleCloseCaseStudy = () => {
-    navigateWithTransition(() => {
-      resetAllPages();
-    });
-  };
-
   const handleBackToHome = () => {
     navigateWithTransition(() => {
       resetAllPages();
