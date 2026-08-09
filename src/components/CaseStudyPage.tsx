@@ -1,7 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { PROJECTS, helperFormatFigmaEmbed, type Project } from '../data/projects';
-import StaggerText from './StaggerText';
+import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { PROJECTS, type Project } from '../data/projects';
 import SplitTextReveal from './SplitTextReveal';
 
 interface CaseStudyPageProps {
@@ -14,23 +13,11 @@ export default function CaseStudyPage({ projectId, onBack }: CaseStudyPageProps)
   const project: Project | undefined = PROJECTS[projectIndex];
   const nextProject: Project = PROJECTS[(projectIndex + 1) % PROJECTS.length];
 
-  const [activeSection, setActiveSection] = useState('overview');
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [projectId]);
 
   if (!project) return null;
-
-
-
-  const scrollToSection = (id: string) => {
-    setActiveSection(id);
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   return (
     <motion.div 

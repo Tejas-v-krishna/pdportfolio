@@ -1,21 +1,5 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Neue Kaine';
-  src: url('/fonts/NeueKaineVariable.ttf') format('truetype');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Neue Regrade';
-  src: url('/fonts/NeueRegradeVariable.ttf') format('truetype');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
 @layer base {
   :root {
     --font-sans: 'Rosarivo', cursive;

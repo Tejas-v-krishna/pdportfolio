@@ -18,7 +18,6 @@ import Footer from './components/Footer';
 import CustomCursor from './components/CustomCursor';
 import PageTransitionManager, { type PageTransitionRef } from './components/PageTransitionManager';
 import NavigationMenu from './components/NavigationMenu';
-import CaseStudyModal from './components/CaseStudyModal';
 import CaseStudyPage from './components/CaseStudyPage';
 import CookieConsent from './components/CookieConsent';
 
@@ -246,11 +245,6 @@ function App() {
           
           <Footer />
 
-          <CaseStudyModal 
-            isOpen={false} 
-            onClose={handleCloseCaseStudy} 
-            projectId={activeProjectId} 
-          />
         </div>
       )}
     </>

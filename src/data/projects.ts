@@ -11,7 +11,6 @@ export interface Project {
   solution?: string;
   figmaUrl?: string; // Original or embed Figma URL
   tags?: string[];
-  externalUrl?: string;
   client?: string;
   industry?: string;
   overview?: string;
