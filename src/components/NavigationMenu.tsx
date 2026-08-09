@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
 import StaggerText from './StaggerText';
+import { useISTDate } from '../hooks/useIST';
 
 interface NavigationMenuProps {
   isMounted: boolean;
@@ -12,27 +13,29 @@ interface NavigationMenuProps {
 
 export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick }: NavigationMenuProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [magneticX, setMagneticX] = useState<number>(0);
-  const [time, setTime] = useState(new Date());
+  // Use a ref for magneticX to drive the motion value without causing React re-renders on every mousemove
+  const magneticXRef = useRef(0);
+  const magneticMotionRef = useRef<HTMLDivElement>(null);
+  const time = useISTDate();
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    // Calculate normalized X offset (-1 on left edge, +1 on right edge)
     const normalizedX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    // Translate to dynamic magnetic shift (-140px to +140px)
-    setMagneticX(normalizedX * 140);
+    magneticXRef.current = normalizedX * 140;
+    // Directly write to DOM — no React state update needed
+    if (magneticMotionRef.current) {
+      magneticMotionRef.current.style.transform = `translateX(${magneticXRef.current}px)`;
+    }
   };
 
   const handleMouseLeave = () => {
     setHoveredIndex(null);
-    setMagneticX(0);
+    magneticXRef.current = 0;
+    if (magneticMotionRef.current) {
+      magneticMotionRef.current.style.transform = `translateX(0px)`;
+    }
   };
-
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   // GSAP Power1.inOut Staggered Down-to-Up Text & Element Animation
   useEffect(() => {
@@ -138,25 +141,25 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
       num: "01",
       label: "ABOUT",
       marquee: "MY JOURNEY ↗",
-      link: "#about"
+      link: "about"
     },
     {
       num: "02",
       label: "PROJECTS",
       marquee: "RECENT WORK ↗",
-      link: "#work"
+      link: "projects"
     },
     {
       num: "03",
-      label: "ACCESSORIES",
-      marquee: "SURREAL OBJECTS ↗",
-      link: "accessories"
+      label: "SERVICES",
+      marquee: "CAPABILITIES ↗",
+      link: "services"
     },
     {
       num: "04",
       label: "CONTACT",
       marquee: "LET'S TALK ↗",
-      link: "#contact"
+      link: "contact"
     }
   ];
 
@@ -191,7 +194,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
           {menuItems.map((item, index) => (
             <div
               key={index}
-              className="relative w-full py-2 md:py-4 px-8 md:px-16 cursor-pointer interactive group"
+              className="relative w-full py-1 md:py-3 px-8 md:px-16 cursor-pointer interactive group"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
@@ -202,7 +205,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
                 <div className="py-1">
                   <a
                     href={item.link}
-                    className="inline-block font-heading font-black text-[11vw] md:text-[8.5vw] leading-[0.85] uppercase tracking-tighter text-[#18181b]"
+                    className="inline-block font-heading font-black text-[min(10vw,14vh)] md:text-[min(8.5vw,15vh)] leading-[0.82] uppercase tracking-[-0.05em] text-[#18181b]"
                   >
                     <StaggerText text={item.label} staggerStep={35} />
                   </a>
@@ -246,58 +249,35 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
                       ))}
                     </div>
 
-                    {/* Outer Magnetic Wrapper */}
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0, x: magneticX }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ 
-                        opacity: { duration: 0.25, delay: 0.08 },
-                        y: { duration: 0.25, delay: 0.08 },
-                        x: { type: "spring", stiffness: 220, damping: 22, mass: 0.3 }
+                    {/* Outer Magnetic Wrapper - driven by direct DOM ref, not React state */}
+                    <div 
+                      ref={magneticMotionRef}
+                      style={{ 
+                        opacity: 0,
+                        transition: 'opacity 0.25s ease 0.08s',
+                        animation: 'menuMagneticIn 0.25s ease 0.08s forwards'
                       }}
                       className="relative z-10 w-full flex items-center pointer-events-none"
                     >
-                      {/* Inner Continuous CSS Marquee Loop with Staggered Split-Char Entrance */}
+                      {/* Inner Continuous CSS Marquee Loop - no per-char motion.span */}
                       <div className="animate-marquee flex whitespace-nowrap gap-12 font-heading font-black text-[11vw] md:text-[8.5vw] uppercase text-white tracking-tighter items-center select-none pl-8 md:pl-16">
-                        {[...Array(6)].map((_, i) => {
+                        {[...Array(3)].map((_, i) => {
                           const word = item.marquee.replace(" ↗", "");
                           return (
-                            <span key={i} className="flex items-center gap-6">
-                              <span className="inline-flex overflow-hidden pb-2 -mb-2">
-                                {word.split('').map((char, charIdx) => (
-                                  <motion.span
-                                    key={charIdx}
-                                    initial={{ y: "100%" }}
-                                    animate={{ y: "0%" }}
-                                    transition={{
-                                      duration: 0.35,
-                                      ease: [0.33, 1, 0.68, 1],
-                                      delay: 0.05 + charIdx * 0.025
-                                    }}
-                                    className="inline-block"
-                                  >
-                                    {char === ' ' ? '\u00A0' : char}
-                                  </motion.span>
-                                ))}
+                            <span key={i} className="flex items-center gap-6 menu-hover-text-in">
+                              <span className="inline-block">
+                                {word}
                               </span>
-                              <motion.span 
-                                initial={{ scale: 0, rotate: -45 }}
-                                animate={{ scale: 1, rotate: 0 }}
-                                transition={{ 
-                                  duration: 0.4, 
-                                  ease: [0.34, 1.56, 0.64, 1], 
-                                  delay: 0.15 
-                                }}
+                              <span 
                                 className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black flex items-center justify-center text-3xl md:text-4xl font-normal shrink-0"
                               >
                                 ↗
-                              </motion.span>
+                              </span>
                             </span>
                           );
                         })}
                       </div>
-                    </motion.div>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -306,10 +286,10 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
         </div>
 
         {/* Option 2: High-Density Monospace Tech Bar */}
-        <div className="relative w-full grid grid-cols-1 md:grid-cols-4 text-xs font-mono text-zinc-700 z-20 border-t border-[#323232]/15">
+        <div className="relative w-full grid grid-cols-2 md:grid-cols-4 text-xs font-mono text-zinc-700 z-20 border-t border-[#323232]/15">
           
           {/* Cell 1: Philosophy */}
-          <div className="p-6 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
+          <div className="p-4 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
             <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 01 / PHILOSOPHY ]</div>
             <p className="menu-fade-item text-zinc-800 leading-relaxed font-sans text-sm md:text-base font-normal">
               Driven by clarity, performance, and detail. Simple, fast, intentional product systems.
@@ -320,7 +300,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
           </div>
 
           {/* Cell 2: Direct Contact */}
-          <div className="p-6 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
+          <div className="p-4 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
             <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 02 / INQUIRIES ]</div>
             <a href="mailto:hello@tejasvkrishna.com" className="group font-mono text-xs text-[#18181b] w-fit">
               <StaggerText text="hello@tejasvkrishna.com" />
@@ -329,7 +309,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
           </div>
 
           {/* Cell 3: Networks */}
-          <div className="p-6 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
+          <div className="p-4 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
             <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 03 / NETWORKS ]</div>
             <div className="menu-fade-item flex flex-col gap-1 text-[#18181b] font-mono text-xs">
               <a href="#" className="group hover:text-black w-fit">
@@ -345,7 +325,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
           </div>
 
           {/* Cell 4: System Clock */}
-          <div className="p-6 md:p-8 flex flex-col justify-between gap-4">
+          <div className="p-4 md:p-8 flex flex-col justify-between gap-4">
             <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 04 / SYSTEM CLOCK ]</div>
             <div className="menu-fade-item font-mono text-sm font-bold text-[#18181b] flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#000000] shrink-0"></span>

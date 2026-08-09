@@ -8,7 +8,7 @@ export default function StaggerText({ text, className = '', staggerStep = 25 }: 
   const chars = text.split('');
 
   return (
-    <span className={`relative inline-flex overflow-hidden select-none py-1 ${className}`}>
+    <span className={`relative inline-flex overflow-hidden select-none py-[0.18em] -my-[0.18em] px-[0.1em] -mx-[0.1em] ${className}`}>
       {/* Primary Row (Slides UP out of view) */}
       <span className="inline-flex">
         {chars.map((char, i) => (
@@ -23,7 +23,7 @@ export default function StaggerText({ text, className = '', staggerStep = 25 }: 
       </span>
 
       {/* Secondary Row (Slides UP into view from below) */}
-      <span className="absolute top-1 left-0 inline-flex">
+      <span className="absolute top-[0.18em] left-[0.1em] inline-flex">
         {chars.map((char, i) => (
           <span
             key={`s-${i}`}

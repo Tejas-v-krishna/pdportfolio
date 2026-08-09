@@ -21,13 +21,25 @@ import NavigationMenu from './components/NavigationMenu';
 import CaseStudyModal from './components/CaseStudyModal';
 import CaseStudyPage from './components/CaseStudyPage';
 import CookieConsent from './components/CookieConsent';
+
+// Pages
 import AccessoriesPage from './components/AccessoriesPage';
+import ServicesPage from './components/ServicesPage';
+import AboutPage from './components/AboutPage';
+import ProjectsPage from './components/ProjectsPage';
+import ContactPage from './components/ContactPage';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPreloaded, setIsPreloaded] = useState(false);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  
+  // Page States
   const [isAccessoriesPageOpen, setIsAccessoriesPageOpen] = useState(false);
+  const [isServicesPageOpen, setIsServicesPageOpen] = useState(false);
+  const [isAboutPageOpen, setIsAboutPageOpen] = useState(false);
+  const [isProjectsPageOpen, setIsProjectsPageOpen] = useState(false);
+  const [isContactPageOpen, setIsContactPageOpen] = useState(false);
   
   // 2-Phase Menu Lifecycle States
   const [isMenuMounted, setIsMenuMounted] = useState(false);
@@ -46,29 +58,25 @@ function App() {
     }
   }, [isLoading]);
 
-  // Initialize smooth scrolling & sync with GSAP ScrollTrigger
+  // Initialize smooth scrolling & sync with GSAP ScrollTrigger via shared ticker
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
+      wheelMultiplier: 0.9,
+      touchMultiplier: 1.5,
+      infinite: false,
     });
+
+    // Drive Lenis from the GSAP ticker so both share the same RAF loop
+    // This prevents double-RAF and keeps ScrollTrigger in perfect sync
+    const lenisRAF = (time: number) => { lenis.raf(time * 1000); };
+    gsap.ticker.add(lenisRAF);
+    gsap.ticker.lagSmoothing(0); // Disable lag smoothing for most consistent frame timing
 
     lenis.on('scroll', ScrollTrigger.update);
 
-    function updateLenis(time: number) {
-      lenis.raf(time * 1000);
-    }
-
-    gsap.ticker.add(updateLenis);
-    gsap.ticker.lagSmoothing(0);
-
     return () => {
-      gsap.ticker.remove(updateLenis);
+      gsap.ticker.remove(lenisRAF);
       lenis.destroy();
     };
   }, []);
@@ -78,7 +86,7 @@ function App() {
     if (!isLoading) {
       const timer = setTimeout(() => {
         ScrollTrigger.refresh();
-      }, 150);
+      }, 300); // Extra time for paint to settle
       return () => clearTimeout(timer);
     }
   }, [isLoading]);
@@ -90,6 +98,15 @@ function App() {
     } else {
       callback();
     }
+  };
+
+  const resetAllPages = () => {
+    setIsAccessoriesPageOpen(false);
+    setIsServicesPageOpen(false);
+    setIsAboutPageOpen(false);
+    setIsProjectsPageOpen(false);
+    setIsContactPageOpen(false);
+    setActiveProjectId(null);
   };
 
   const handleOpenMenu = () => {
@@ -137,13 +154,21 @@ function App() {
       if (transitionRef.current) {
         transitionRef.current.triggerLinkTransition(() => {
           setIsMenuMounted(false);
+          resetAllPages();
+          
           if (link === 'accessories') {
             setIsAccessoriesPageOpen(true);
-            setActiveProjectId(null);
+          } else if (link === 'services') {
+            setIsServicesPageOpen(true);
+          } else if (link === 'about') {
+            setIsAboutPageOpen(true);
+          } else if (link === 'projects') {
+            setIsProjectsPageOpen(true);
+          } else if (link === 'contact') {
+            setIsContactPageOpen(true);
+          } else if (link === 'home') {
+            // Returns to home, already reset
           } else if (link.startsWith('#')) {
-            setIsAccessoriesPageOpen(false);
-            setActiveProjectId(null);
-            
             // Allow DOM to update before scrolling
             setTimeout(() => {
               const element = document.querySelector(link);
@@ -160,11 +185,22 @@ function App() {
   };
 
   const handleOpenCaseStudy = (id: string) => {
-    navigateWithTransition(() => setActiveProjectId(id));
+    navigateWithTransition(() => {
+      resetAllPages();
+      setActiveProjectId(id);
+    });
   };
 
   const handleCloseCaseStudy = () => {
-    navigateWithTransition(() => setActiveProjectId(null));
+    navigateWithTransition(() => {
+      resetAllPages();
+    });
+  };
+
+  const handleBackToHome = () => {
+    navigateWithTransition(() => {
+      resetAllPages();
+    });
   };
 
   return (
@@ -184,15 +220,18 @@ function App() {
         onItemClick={handleMenuItemClick}
       />
 
-      {isAccessoriesPageOpen ? (
-        <AccessoriesPage 
-          onBack={() => navigateWithTransition(() => setIsAccessoriesPageOpen(false))} 
-        />
+      {isServicesPageOpen ? (
+        <ServicesPage onBack={handleBackToHome} />
+      ) : isAboutPageOpen ? (
+        <AboutPage onBack={handleBackToHome} />
+      ) : isProjectsPageOpen ? (
+        <ProjectsPage onBack={handleBackToHome} onOpenCaseStudy={handleOpenCaseStudy} />
+      ) : isContactPageOpen ? (
+        <ContactPage onBack={handleBackToHome} />
+      ) : isAccessoriesPageOpen ? (
+        <AccessoriesPage onBack={handleBackToHome} />
       ) : activeProjectId ? (
-        <CaseStudyPage 
-          projectId={activeProjectId} 
-          onBack={handleCloseCaseStudy} 
-        />
+        <CaseStudyPage projectId={activeProjectId} onBack={handleBackToHome} />
       ) : (
         <div className={isLoading ? "h-screen overflow-hidden" : ""}>
           <Navbar onOpenMenu={handleOpenMenu} />

@@ -40,7 +40,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   useEffect(() => {
     // Total duration of the preloader (7 seconds so each title stays readable)
     const duration = 7000;
-    const interval = 30; // update frequency
+    const interval = 66; // ~15fps updates - imperceptible difference vs 30fps for a counter
     const steps = duration / interval;
     let step = 0;
 

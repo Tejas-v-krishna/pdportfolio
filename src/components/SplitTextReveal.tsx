@@ -6,7 +6,8 @@ interface SplitTextRevealProps {
   className?: string;
   as?: ElementType;
   direction?: 'bottom' | 'top' | 'random';
-  mode?: 'slide' | 'blur' | 'fade' | 'slide-blur';
+  mode?: 'slide' | 'blur' | 'fade' | 'slide-blur' | 'skew';
+  skew?: boolean;
   stagger?: number;
   delay?: number;
   randomize?: boolean;
@@ -15,12 +16,16 @@ interface SplitTextRevealProps {
   enabled?: boolean;
 }
 
+// Shared animate target — same object reference on every render
+const ANIMATE_TARGET = { y: '0%', opacity: 1, filter: 'blur(0px)', skewY: 0 };
+
 export default function SplitTextReveal({
   text,
   className = '',
   as: Component = 'span',
   direction = 'bottom',
   mode = 'slide',
+  skew = false,
   stagger,
   delay = 0,
   randomize = false,
@@ -73,6 +78,13 @@ export default function SplitTextReveal({
     return 'blur(0px)';
   };
 
+  const getInitialSkewY = () => {
+    if (skew || mode === 'skew') {
+      return direction === 'top' ? -6 : 6;
+    }
+    return 0;
+  };
+
   const isAnimate = enabled && (triggerOnScroll ? isInView : true);
 
   let unitCounter = 0;
@@ -86,40 +98,40 @@ export default function SplitTextReveal({
             const itemDelay = delay + (delayMap[currentIdx] || 0);
             const initialY = getInitialY(currentIdx);
             const initialFilter = getInitialFilter();
+            const initialSkew = getInitialSkewY();
 
             return (
-              <span key={wordIdx} className="inline-block overflow-hidden py-1 mr-[0.28em] last:mr-0">
+              <span key={wordIdx} className="inline-block overflow-hidden py-[0.18em] -my-[0.18em] px-[0.08em] -mx-[0.08em] mr-[0.28em] last:mr-0">
                 <motion.span
                   initial={{
                     y: initialY,
-                    opacity: 0,
+                    opacity: mode === 'fade' ? 0 : 1,
                     filter: initialFilter,
+                    skewY: initialSkew,
                   }}
                   animate={
                     isAnimate
-                      ? {
-                          y: '0%',
-                          opacity: 1,
-                          filter: 'blur(0px)',
-                        }
-                      : {}
+                      ? ANIMATE_TARGET
+                      : { y: initialY }
                   }
                   transition={{
-                    duration: mode.includes('blur') ? 0.75 : 0.6,
+                    duration: 0.6,
                     ease: [0.16, 1, 0.3, 1],
                     delay: itemDelay,
                   }}
-                  className="inline-block"
+                  className="inline-block origin-bottom-left"
                 >
                   {word}
                 </motion.span>
               </span>
             );
           } else {
-            // splitBy === 'chars'
+            // splitBy === 'chars' (Splits every text into individual letter elements like reference)
             const chars = word.split('');
+            const initialSkew = getInitialSkewY();
+
             return (
-              <span key={wordIdx} className="inline-flex overflow-hidden py-1 mr-[0.28em] last:mr-0">
+              <span key={wordIdx} className="inline-flex overflow-hidden py-[0.06em] -my-[0.06em] px-[0.03em] -mx-[0.03em] mr-[0.25em] last:mr-0 leading-none">
                 {chars.map((char, charIdx) => {
                   const currentIdx = unitCounter++;
                   const itemDelay = delay + (delayMap[currentIdx] || 0);
@@ -129,26 +141,23 @@ export default function SplitTextReveal({
                   return (
                     <motion.span
                       key={charIdx}
+                      className="gsap_split_letter inline-block relative origin-bottom-left"
                       initial={{
                         y: initialY,
-                        opacity: 0,
+                        opacity: mode === 'fade' ? 0 : 1,
                         filter: initialFilter,
+                        skewY: initialSkew,
                       }}
                       animate={
                         isAnimate
-                          ? {
-                              y: '0%',
-                              opacity: 1,
-                              filter: 'blur(0px)',
-                            }
-                          : {}
+                          ? ANIMATE_TARGET
+                          : { y: initialY }
                       }
                       transition={{
-                        duration: mode.includes('blur') ? 0.75 : 0.6,
+                        duration: 0.6,
                         ease: [0.16, 1, 0.3, 1],
                         delay: itemDelay,
                       }}
-                      className="inline-block"
                     >
                       {char}
                     </motion.span>

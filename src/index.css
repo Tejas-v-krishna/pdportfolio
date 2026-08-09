@@ -18,12 +18,62 @@
 
 @layer base {
   :root {
-    --font-sans: 'Neue Regrade', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-heading: 'Neue Kaine', var(--font-sans);
-    --font-display: 'Neue Kaine', sans-serif;
-    --font-mono: 'Neue Regrade', 'JetBrains Mono', monospace;
-    --font-tech: 'Neue Regrade', 'Space Grotesk', sans-serif;
+    --font-sans: 'Rosarivo', cursive;
+    --font-heading: 'Caudex', serif;
+    --font-display: 'Caudex', serif;
+    --font-mono: 'Rosarivo', cursive;
+    --font-tech: 'Rosarivo', cursive;
+    --font-secondary: 'Rosarivo', cursive;
+    font-size: clamp(12px, 0.9vw + 7px, 16px);
   }
+
+.rosarivo-regular {
+  font-family: "Rosarivo", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.rosarivo-regular-italic {
+  font-family: "Rosarivo", cursive;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.sorts-mill-goudy-regular {
+  font-family: "Sorts Mill Goudy", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.sorts-mill-goudy-regular-italic {
+  font-family: "Sorts Mill Goudy", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.caudex-regular {
+  font-family: "Caudex", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.caudex-bold {
+  font-family: "Caudex", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.caudex-regular-italic {
+  font-family: "Caudex", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.caudex-bold-italic {
+  font-family: "Caudex", serif;
+  font-weight: 700;
+  font-style: italic;
+}
   
   ::selection {
     background-color: #ffffff !important;
@@ -52,7 +102,7 @@
 
   body {
     font-family: var(--font-sans);
-    font-size: 1.05rem; /* ~17px base size */
+    font-size: 1rem;
     background-color: #09090b; /* obsidian */
     color: #f4f4f5; /* ivory */
     cursor: none; /* For custom cursor */
@@ -160,9 +210,8 @@
   left: 0;
   pointer-events: none;
   z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 0.2s, height 0.2s, background-color 0.2s;
   mix-blend-mode: difference;
+  transition: width 0.15s ease, height 0.15s ease, opacity 0.15s ease;
 }
 
 .custom-cursor-ring {
@@ -175,13 +224,14 @@
   left: 0;
   pointer-events: none;
   z-index: 9998;
-  transform: translate(-50%, -50%);
   transition: width 0.3s, height 0.3s, border-color 0.3s;
 }
 
 /* Hover states for cursor */
 body.hovering-link .custom-cursor-dot {
-  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0.4;
+  width: 4px;
+  height: 4px;
 }
 
 body.hovering-link .custom-cursor-ring {
@@ -204,6 +254,16 @@ body.hovering-link .custom-cursor-ring {
 /* Utilities */
 .mix-blend-difference {
   mix-blend-mode: difference;
+}
+
+/* Navigation Menu Hover Animations (CSS-based for GPU efficiency) */
+@keyframes menuMagneticIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu-hover-text-in {
+  animation: menuMagneticIn 0.3s cubic-bezier(0.33, 1, 0.68, 1) both;
 }
 
 /* Custom Scrollbar */
@@ -342,13 +402,8 @@ body.hovering-link .custom-cursor-ring {
   word-spacing: -0.02em;
 }
 
-
-
-
-.reveal-text div,
-.reveal-text span,
-.reveal-text .word {
-  will-change: transform, opacity;
+/* Marquee: use contain to prevent layout thrash */
+.animate-marquee,
+.animate-marquee-reverse {
+  contain: layout style;
 }
-
-

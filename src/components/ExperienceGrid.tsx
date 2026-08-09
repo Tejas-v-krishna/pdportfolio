@@ -34,9 +34,10 @@ export default function ExperienceGrid() {
               text="Experience"
               as="h2"
               direction="bottom"
-              mode="blur"
+              mode="slide"
               splitBy="chars"
-              randomize={true}
+              stagger={0.025}
+              randomize={false}
               className="font-heading text-4xl uppercase font-bold tracking-tighter mb-8"
             />
             <div className="flex flex-wrap gap-2">
@@ -58,10 +59,11 @@ export default function ExperienceGrid() {
                   <h3 className="font-display text-2xl">
                     <SplitTextReveal 
                       text={exp.company}
-                      direction="top"
-                      mode="blur"
+                      direction="bottom"
+                      mode="slide"
                       splitBy="chars"
-                      randomize={true}
+                      stagger={0.025}
+                      randomize={false}
                     />
                   </h3>
                   <div className="font-mono text-[10px] text-zinc-400 uppercase">[ {exp.role} ]</div>

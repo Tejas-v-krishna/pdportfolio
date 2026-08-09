@@ -1,52 +1,105 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
 export default function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+    let mouseX = -100;
+    let mouseY = -100;
+    let ringX = -100;
+    let ringY = -100;
+    let rafId: number;
+    let isRunning = true;
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    const EPSILON = 0.05; // Skip write if ring moved less than this
+
+    const startRAF = () => {
+      if (!isRunning) {
+        isRunning = true;
+        rafId = requestAnimationFrame(updatePosition);
+      }
     };
 
-    window.addEventListener('mousemove', updateMousePosition);
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      // Immediately update dot position (no lerp needed)
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+      }
+      // Restart RAF if it went idle
+      startRAF();
+      // Reset idle timer - stop RAF after 2s of no movement
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        isRunning = false;
+        cancelAnimationFrame(rafId);
+      }, 2000);
+    };
 
-    // Handle interactive elements hover states
-    const interactiveElements = document.querySelectorAll('a, button, [role="button"], input, select, textarea, .interactive');
-    
-    interactiveElements.forEach((el) => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('hovering-link'));
-      el.addEventListener('mouseleave', () => document.body.classList.remove('hovering-link'));
-    });
+    const updatePosition = () => {
+      if (!isRunning) return;
+
+      // Smooth lerp for ring
+      const dx = mouseX - ringX;
+      const dy = mouseY - ringY;
+      ringX += dx * 0.18;
+      ringY += dy * 0.18;
+
+      // Only write to DOM if ring actually moved meaningfully
+      if (Math.abs(dx) > EPSILON || Math.abs(dy) > EPSILON) {
+        if (ringRef.current) {
+          ringRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+        }
+      }
+
+      rafId = requestAnimationFrame(updatePosition);
+    };
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    rafId = requestAnimationFrame(updatePosition);
+
+    // Use event delegation on document body for hover states (avoids
+    // querying all interactive elements at mount time and re-querying
+    // when new elements are added later e.g. menu items)
+    const onEnter = (e: MouseEvent) => {
+      const target = e.target as Element;
+      if (target.closest('a, button, [role="button"], input, select, textarea, .interactive')) {
+        document.body.classList.add('hovering-link');
+      }
+    };
+    const onLeave = (e: MouseEvent) => {
+      const target = e.target as Element;
+      if (target.closest('a, button, [role="button"], input, select, textarea, .interactive')) {
+        document.body.classList.remove('hovering-link');
+      }
+    };
+
+    document.addEventListener('mouseover', onEnter, { passive: true });
+    document.addEventListener('mouseout', onLeave, { passive: true });
 
     return () => {
-      window.removeEventListener('mousemove', updateMousePosition);
-      interactiveElements.forEach((el) => {
-        el.removeEventListener('mouseenter', () => document.body.classList.add('hovering-link'));
-        el.removeEventListener('mouseleave', () => document.body.classList.remove('hovering-link'));
-      });
+      isRunning = false;
+      window.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseover', onEnter);
+      document.removeEventListener('mouseout', onLeave);
+      cancelAnimationFrame(rafId);
+      if (idleTimer) clearTimeout(idleTimer);
     };
   }, []);
 
-  // Use simple transform for performance
   return (
     <>
       <div 
-        className="custom-cursor-dot"
-        style={{ left: `${mousePosition.x}px`, top: `${mousePosition.y}px` }}
+        ref={dotRef}
+        className="custom-cursor-dot fixed top-0 left-0 pointer-events-none z-[99999]"
+        style={{ willChange: 'transform' }}
       />
-      <motion.div 
-        className="custom-cursor-ring"
-        animate={{
-          left: mousePosition.x,
-          top: mousePosition.y
-        }}
-        transition={{
-          type: "spring",
-          damping: 30,
-          stiffness: 200,
-          mass: 0.5
-        }}
+      <div 
+        ref={ringRef}
+        className="custom-cursor-ring fixed top-0 left-0 pointer-events-none z-[99998]"
+        style={{ willChange: 'transform' }}
       />
     </>
   );

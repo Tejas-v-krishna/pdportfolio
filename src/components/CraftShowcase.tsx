@@ -16,9 +16,10 @@ export default function CraftShowcase() {
               text="Proof of Craft"
               as="h2"
               direction="bottom"
-              mode="blur"
+              mode="slide"
               splitBy="chars"
-              randomize={true}
+              stagger={0.025}
+              randomize={false}
               className="font-heading text-4xl md:text-5xl uppercase font-bold tracking-tighter"
             />
           </div>
@@ -26,10 +27,10 @@ export default function CraftShowcase() {
             <p className="text-zinc-400 font-light text-sm">
               <SplitTextReveal 
                 text="I don't just push pixels in Figma. I build functional, interactive systems that bridge the gap between design and engineering."
-                direction="top"
-                mode="fade"
+                direction="bottom"
+                mode="slide"
                 splitBy="words"
-                randomize={true}
+                randomize={false}
               />
             </p>
           </div>

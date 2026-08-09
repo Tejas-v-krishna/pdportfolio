@@ -1,29 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import StaggerText from './StaggerText';
 import SplitTextReveal from './SplitTextReveal';
+import { useIST } from '../hooks/useIST';
 
 export default function Footer() {
-  const [time, setTime] = useState<string>('');
+  const time = useIST();
   const [copied, setCopied] = useState<boolean>(false);
   const email = "hello@tejasvkrishna.com";
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'Asia/Kolkata',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true,
-      });
-      setTime(formatter.format(now));
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleCopy = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -33,7 +16,7 @@ export default function Footer() {
   };
 
   return (
-    <footer id="contact" className="w-full bg-[#050505] text-white pt-10 pb-6 px-8 flex flex-col justify-between min-h-screen relative overflow-hidden select-none border-t border-[#1f1f22]">
+    <footer id="contact" className="w-full bg-[#050505] text-white pt-10 pb-6 px-4 md:px-8 flex flex-col justify-between min-h-screen relative overflow-hidden select-none border-t border-[#1f1f22]">
       
       {/* =========================================================
           ROW 1: TOP HEADER BAR (Logo, Equalizer Bars, Nav Links)
@@ -42,7 +25,7 @@ export default function Footer() {
         
         {/* Left: Brand Name */}
         <div className="font-sans text-base md:text-lg font-medium tracking-tight text-white">
-          Tejas V Krishna
+          <SplitTextReveal text="Tejas V Krishna" direction="bottom" mode="slide" splitBy="words" randomize={false} />
         </div>
 
         {/* Center: Equalizer / Audio Waveform Bars */}
@@ -85,9 +68,10 @@ export default function Footer() {
             text="UI/UX Designer + Product Builder"
             as="h2"
             direction="bottom"
-            mode="blur"
+            mode="slide"
             splitBy="chars"
-            randomize={true}
+            stagger={0.02}
+            randomize={false}
             className="font-sans font-normal text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.02] tracking-tighter text-white"
           />
         </div>
@@ -154,7 +138,7 @@ export default function Footer() {
         {/* Left: Clock & Location */}
         <div className="font-mono text-[10px] md:text-xs tracking-wider text-zinc-400 uppercase leading-relaxed">
           <div>{time || '01:28:15 PM'}</div>
-          <div>BENGALURU, IN</div>
+          <div>KERALA, IN</div>
         </div>
 
         {/* Center: Terms & Privacy */}
