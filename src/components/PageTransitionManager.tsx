@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 
 export interface PageTransitionRef {
