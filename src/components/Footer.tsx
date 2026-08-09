@@ -82,10 +82,10 @@ export default function Footer() {
           {/* Column 1: MENU */}
           <div className="flex flex-col gap-3 font-sans text-xs md:text-sm text-zinc-300">
             <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-1">[ MENU ]</span>
-            <a href="#hero" className="hover:text-white transition-colors w-fit interactive"><StaggerText text="Home" /></a>
-            <a href="#work" className="hover:text-white transition-colors w-fit interactive"><StaggerText text="Work" /></a>
-            <a href="#philosophy" className="hover:text-white transition-colors w-fit interactive"><StaggerText text="About" /></a>
-            <a href="#contact" className="hover:text-white transition-colors w-fit interactive"><StaggerText text="Contact" /></a>
+            <a href="#hero" className="hover:text-white transition-colors w-fit interactive group"><StaggerText text="Home" /></a>
+            <a href="#work" className="hover:text-white transition-colors w-fit interactive group"><StaggerText text="Work" /></a>
+            <a href="#philosophy" className="hover:text-white transition-colors w-fit interactive group"><StaggerText text="About" /></a>
+            <a href="#contact" className="hover:text-white transition-colors w-fit interactive group"><StaggerText text="Contact" /></a>
           </div>
 
           {/* Column 2: GET IN TOUCH */}
@@ -104,7 +104,7 @@ export default function Footer() {
                 </span>
               )}
             </a>
-            <a href="tel:+919876543210" className="hover:text-white transition-colors w-fit interactive">
+            <a href="tel:+919876543210" className="hover:text-white transition-colors w-fit interactive group">
               <StaggerText text="+91 98765 43210" />
             </a>
           </div>
@@ -112,15 +112,15 @@ export default function Footer() {
           {/* Column 3: SOCIALS */}
           <div className="flex flex-col gap-3 font-sans text-xs md:text-sm text-zinc-300">
             <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-1">[ SOCIALS ]</span>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors w-fit flex items-center justify-between gap-4 interactive">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors w-fit flex items-center justify-between gap-4 interactive group">
               <StaggerText text="Instagram" />
               <span className="font-mono text-[10px]">↗</span>
             </a>
-            <a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors w-fit flex items-center justify-between gap-4 interactive">
+            <a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors w-fit flex items-center justify-between gap-4 interactive group">
               <StaggerText text="Dribbble" />
               <span className="font-mono text-[10px]">↗</span>
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors w-fit flex items-center justify-between gap-4 interactive">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors w-fit flex items-center justify-between gap-4 interactive group">
               <StaggerText text="LinkedIn" />
               <span className="font-mono text-[10px]">↗</span>
             </a>
