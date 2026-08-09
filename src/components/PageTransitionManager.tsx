@@ -12,15 +12,13 @@ const PageTransitionManager = forwardRef<PageTransitionRef>((_props, ref) => {
   const logoOverlayRef = useRef<HTMLDivElement>(null);
   const blocksRef = useRef<HTMLDivElement[]>([]);
   const isTransitioning = useRef(false);
-  const [layoutMode, setLayoutMode] = useState<'vertical' | 'horizontal'>('vertical');
-
-  const createBlocks = (color = '#09090b') => {
+  const createBlocks = (color = '#09090b', mode: 'vertical' | 'horizontal') => {
     if (!overlayRef.current) return;
+    overlayRef.current.className = `transition-overlay ${mode}-mode`;
     overlayRef.current.innerHTML = '';
     blocksRef.current = [];
     
-    const isVertical = layoutMode === 'vertical';
-    const numBlocks = isVertical ? 20 : 10;
+    const numBlocks = 20;
     
     for (let i = 0; i < numBlocks; i++) {
       const block = document.createElement('div');
@@ -52,8 +50,7 @@ const PageTransitionManager = forwardRef<PageTransitionRef>((_props, ref) => {
       if (isTransitioning.current || !overlayRef.current) return;
       isTransitioning.current = true;
 
-      setLayoutMode('vertical');
-      createBlocks('#f4f4f0');
+      createBlocks('#f4f4f0', 'vertical');
 
       const blocks = blocksRef.current;
       gsap.killTweensOf(blocks);
@@ -93,8 +90,7 @@ const PageTransitionManager = forwardRef<PageTransitionRef>((_props, ref) => {
       if (isTransitioning.current || !overlayRef.current) return;
       isTransitioning.current = true;
 
-      setLayoutMode('vertical');
-      createBlocks('#09090b'); // Obsidian black blocks to cover white menu
+      createBlocks('#09090b', 'vertical'); // Obsidian black blocks to cover white menu
 
       const blocks = blocksRef.current;
       gsap.killTweensOf(blocks);
@@ -133,8 +129,7 @@ const PageTransitionManager = forwardRef<PageTransitionRef>((_props, ref) => {
       if (isTransitioning.current || !overlayRef.current || !logoOverlayRef.current) return;
       isTransitioning.current = true;
 
-      setLayoutMode('horizontal');
-      createBlocks('#09090b');
+      createBlocks('#09090b', 'horizontal');
 
       const blocks = blocksRef.current;
       gsap.killTweensOf(blocks);
@@ -187,10 +182,7 @@ const PageTransitionManager = forwardRef<PageTransitionRef>((_props, ref) => {
 
   return (
     <>
-      <div 
-        ref={overlayRef} 
-        className={`transition-overlay ${layoutMode === 'vertical' ? 'vertical-mode' : 'horizontal-mode'}`} 
-      />
+      <div ref={overlayRef} className="transition-overlay vertical-mode" />
       
       <div ref={logoOverlayRef} className="logo-overlay">
         <div className="logo-container">
