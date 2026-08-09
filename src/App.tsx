@@ -3,6 +3,7 @@ import Lenis from 'lenis';
 import { AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Analytics } from '@vercel/analytics/react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -198,6 +199,7 @@ function App() {
 
   return (
     <>
+      <Analytics />
       <CookieConsent />
       <CustomCursor />
       <PageTransitionManager ref={transitionRef} />
