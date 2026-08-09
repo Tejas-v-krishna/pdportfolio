@@ -207,7 +207,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
                     href={item.link}
                     className="inline-block font-heading font-black text-[min(10vw,14vh)] md:text-[min(8.5vw,15vh)] leading-[0.82] uppercase tracking-[-0.05em] text-[#18181b]"
                   >
-                    <StaggerText text={item.label} staggerStep={35} />
+                    {item.label}
                   </a>
                 </div>
 
@@ -229,7 +229,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
                   <motion.div
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                    className="absolute inset-0 z-10 flex items-center overflow-hidden"
+                    className="absolute -top-[0.25em] -bottom-[0.25em] left-0 right-0 z-10 flex items-center overflow-hidden"
                   >
                     {/* 8 Horizontal Venetian Slicing Bars */}
                     <div className="absolute inset-0 flex flex-col pointer-events-none z-0">
