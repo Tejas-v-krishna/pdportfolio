@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import SelectedWork from './SelectedWork';
-import CraftShowcase from './CraftShowcase';
 
 interface ProjectsPageProps {
   onBack: () => void;
@@ -44,8 +43,6 @@ export default function ProjectsPage({ onBack, onOpenCaseStudy }: ProjectsPagePr
         {/* Selected Work (interactive scroll list) */}
         <SelectedWork onOpenCaseStudy={onOpenCaseStudy} />
         
-        {/* Craft Showcase */}
-        <CraftShowcase />
       </main>
     </motion.div>
   );

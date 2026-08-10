@@ -17,15 +17,12 @@ export default function Navbar({ onOpenMenu }: NavbarProps) {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-center gap-3 cursor-pointer group"
         >
-          {/* Custom SVG Icon */}
-          <div className="w-10 h-10 md:w-12 md:h-12 text-white flex-shrink-0 -mt-1">
-            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <path d="M10 30 C 5 20, 20 10, 35 15 C 30 35, 10 35, 10 30" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <span className="font-heading text-[1.8rem] md:text-[2.4rem] leading-none pb-1 font-normal tracking-tight text-white group-hover:opacity-80 transition-opacity">
-            tejjxuu
-          </span>
+          {/* Main Logo Image */}
+          <img 
+            src="/logo.png" 
+            alt="Logo" 
+            className="h-10 md:h-12 object-contain"
+          />
         </motion.div>
 
         {/* 2. Right Section: Menu Button */}

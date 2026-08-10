@@ -12,8 +12,9 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import PhilosophyScroll from './components/PhilosophyScroll';
 import SelectedWork from './components/SelectedWork';
-import CraftShowcase from './components/CraftShowcase';
+import StickyServicesScroll from './components/StickyServicesScroll';
 import ExperienceGrid from './components/ExperienceGrid';
+import ClientReviewsSection from './components/ClientReviewsSection';
 import Footer from './components/Footer';
 import CustomCursor from './components/CustomCursor';
 import PageTransitionManager, { type PageTransitionRef } from './components/PageTransitionManager';
@@ -233,8 +234,9 @@ function App() {
             <Hero isPreloaded={isPreloaded} />
             <PhilosophyScroll />
             <SelectedWork onOpenCaseStudy={handleOpenCaseStudy} />
-            <CraftShowcase />
+            <StickyServicesScroll onContactClick={() => { resetAllPages(); setIsContactPageOpen(true); }} />
             <ExperienceGrid />
+            <ClientReviewsSection />
           </main>
           
           <Footer />
@@ -244,5 +246,7 @@ function App() {
     </>
   );
 }
+
+
 
 export default App;

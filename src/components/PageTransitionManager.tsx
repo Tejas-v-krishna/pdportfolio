@@ -154,20 +154,27 @@ const PageTransitionManager = forwardRef<PageTransitionRef>((_props, ref) => {
       // Call cover callback
       tl.add(() => {
         if (onCovered) onCovered();
-        gsap.set(logoOverlayRef.current, { display: 'flex', opacity: 1 });
+        gsap.set(logoOverlayRef.current, { display: 'flex', opacity: 0 });
       });
 
-      // Draw Logo animation
-      tl.fromTo("#tvk-logo-path", 
-        { strokeDasharray: "1000", strokeDashoffset: "1000" },
-        { strokeDashoffset: "0", duration: 1.5, ease: "power2.out" }
-      );
+      // Fade in Logo
+      tl.to(logoOverlayRef.current, {
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.out"
+      });
+
+      // Hold Logo
+      tl.to(logoOverlayRef.current, {
+        opacity: 1,
+        duration: 0.5
+      });
 
       // Fade out logo
       tl.to(logoOverlayRef.current, {
         opacity: 0,
         duration: 0.3
-      }, "+=0.2");
+      });
 
       // Scale blocks right
       tl.set(blocks, { transformOrigin: "right" });
@@ -186,16 +193,7 @@ const PageTransitionManager = forwardRef<PageTransitionRef>((_props, ref) => {
       
       <div ref={logoOverlayRef} className="logo-overlay">
         <div className="logo-container">
-          <svg width="125" height="125" viewBox="0 0 125 125" fill="none">
-            <path
-              id="tvk-logo-path"
-              stroke="#ffffff"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M30 40h65M62.5 40v45"
-            />
-          </svg>
+          <img src="/logo.png" alt="Transition Logo" className="w-24 h-24 object-contain" />
         </div>
       </div>
     </>
