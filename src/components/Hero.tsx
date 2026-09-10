@@ -231,20 +231,23 @@ export default function Hero({ isPreloaded = true }: HeroProps) {
           <div 
             ref={previewRef}
             className="w-[75%] aspect-[1.4/1] bg-zinc-900 rounded-xl overflow-hidden border border-white/10 relative shadow-2xl group"
-            aria-label="Project Preview Image"
+            aria-label="OnDecide Project Preview Image"
           >
-            <img 
-              ref={imageRef}
-              src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1600"
-              alt="Project Preview" 
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-              className="w-full h-full object-cover pointer-events-none select-none transition-all duration-500 group-hover:scale-105"
-            />
+            <picture>
+              <source srcSet="/ondecide_thumbnail.webp" type="image/webp" />
+              <img 
+                ref={imageRef}
+                src="/ondecide_thumbnail.png"
+                alt="OnDecide Project Preview" 
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+                className="w-full h-full object-cover pointer-events-none select-none transition-all duration-500 group-hover:scale-105"
+              />
+            </picture>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
             <span className="absolute bottom-3 left-4 text-white/70 font-tech text-[10px] tracking-widest uppercase pointer-events-none">
-              [ Project Preview Image ]
+              [ OnDecide — FinTech SaaS ]
             </span>
           </div>
         </div>
@@ -300,9 +303,22 @@ export default function Hero({ isPreloaded = true }: HeroProps) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 1.5 }}
-          className="w-full aspect-[4/3] bg-zinc-900 rounded-lg overflow-hidden border border-white/5 flex items-center justify-center text-zinc-700 font-tech text-[10px] tracking-widest uppercase mt-2 mb-12"
+          className="w-full aspect-[1.4/1] bg-zinc-900 rounded-xl overflow-hidden border border-white/10 relative shadow-xl mt-2 mb-12"
         >
-          [ Project Preview Image ]
+          <picture>
+            <source srcSet="/ondecide_thumbnail.webp" type="image/webp" />
+            <img 
+              src="/ondecide_thumbnail.png"
+              alt="OnDecide Project Preview" 
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover pointer-events-none select-none"
+            />
+          </picture>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          <span className="absolute bottom-3 left-4 text-white/70 font-tech text-[10px] tracking-widest uppercase pointer-events-none">
+            [ OnDecide — FinTech SaaS ]
+          </span>
         </motion.div>
       </div>
 
