@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, MotionValue, type Variants } from 'framer-motion';
 import SplitTextReveal from './SplitTextReveal';
 
 export interface ServiceItem {
@@ -216,7 +216,7 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
   const p2 = descSentences.slice(1).join(' ') || item.subtitle;
 
   // Animation variants
-  const contentVariants = {
+  const contentVariants: Variants = {
     hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1, 
@@ -228,7 +228,7 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
     }
   };
 
-  const imageVariants = {
+  const imageVariants: Variants = {
     hidden: { scale: 1.15, opacity: 0 },
     visible: {
       scale: 1,
