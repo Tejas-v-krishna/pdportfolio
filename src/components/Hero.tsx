@@ -82,7 +82,7 @@ export default function Hero({ isPreloaded = true }: HeroProps) {
       
       {/* Interactive Draggable Sticker floating near Hero CTA */}
       <DraggableSticker 
-        src="/stickers/3.png" 
+        src="/stickers/3.webp" 
         initialRotate={14} 
         className="bottom-6 left-[45%] md:left-[48%] w-28 h-28 md:w-36 md:h-36" 
         delay={2.5}

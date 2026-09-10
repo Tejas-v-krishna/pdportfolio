@@ -13,19 +13,19 @@ const titles = [
 ];
 
 const stickers = [
-  { id: 1, src: "/stickers/1.png", top: "6%", left: "4%", rotate: -18, scale: 1.1 },
-  { id: 2, src: "/stickers/2.png", top: "2%", left: "25%", rotate: 16, scale: 0.95 },
-  { id: 3, src: "/stickers/3.png", top: "0%", left: "46%", rotate: -22, scale: 1.2 },
-  { id: 4, src: "/stickers/4.png", top: "8%", left: "68%", rotate: 14, scale: 0.95 },
-  { id: 5, src: "/stickers/5.png", top: "4%", left: "85%", rotate: -16, scale: 1.1 },
+  { id: 1, src: "/stickers/1.webp", top: "6%", left: "4%", rotate: -18, scale: 1.1 },
+  { id: 2, src: "/stickers/2.webp", top: "2%", left: "25%", rotate: 16, scale: 0.95 },
+  { id: 3, src: "/stickers/3.webp", top: "0%", left: "46%", rotate: -22, scale: 1.2 },
+  { id: 4, src: "/stickers/4.webp", top: "8%", left: "68%", rotate: 14, scale: 0.95 },
+  { id: 5, src: "/stickers/5.webp", top: "4%", left: "85%", rotate: -16, scale: 1.1 },
   
-  { id: 6, src: "/stickers/6.png", top: "52%", left: "6%", rotate: -12, scale: 1.2 },
-  { id: 7, src: "/stickers/7.png", top: "32%", left: "20%", rotate: 10, scale: 1.0 },
-  { id: 8, src: "/stickers/8.png", top: "44%", left: "42%", rotate: -8, scale: 1.25 },
-  { id: 9, src: "/stickers/9.png", top: "30%", left: "60%", rotate: 22, scale: 1.1 },
-  { id: 10, src: "/stickers/10.png", top: "48%", left: "78%", rotate: -15, scale: 1.15 },
+  { id: 6, src: "/stickers/6.webp", top: "52%", left: "6%", rotate: -12, scale: 1.2 },
+  { id: 7, src: "/stickers/7.webp", top: "32%", left: "20%", rotate: 10, scale: 1.0 },
+  { id: 8, src: "/stickers/8.webp", top: "44%", left: "42%", rotate: -8, scale: 1.25 },
+  { id: 9, src: "/stickers/9.webp", top: "30%", left: "60%", rotate: 22, scale: 1.1 },
+  { id: 10, src: "/stickers/10.webp", top: "48%", left: "78%", rotate: -15, scale: 1.15 },
   
-  { id: 11, src: "/stickers/11.png", top: "74%", left: "42%", rotate: 8, scale: 1.05 },
+  { id: 11, src: "/stickers/11.webp", top: "74%", left: "42%", rotate: 8, scale: 1.05 },
 ];
 
 interface PreloaderProps {
@@ -222,6 +222,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
               <img 
                 src={sticker.src} 
                 alt={`Sticker ${sticker.id}`} 
+                loading="eager"
+                decoding="async"
                 className="w-full h-full object-contain pointer-events-none select-none drop-shadow-[0_16px_28px_rgba(0,0,0,0.85)] transition-shadow duration-300 group-hover:drop-shadow-[0_26px_36px_rgba(0,0,0,0.95)]"
               />
             </motion.div>

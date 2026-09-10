@@ -2,13 +2,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRef, useState } from 'react';
 
 const stickerPool = [
-  '/stickers/3.png',
-  '/stickers/1.png',
-  '/stickers/7.png',
-  '/stickers/10.png',
-  '/stickers/5.png',
-  '/stickers/8.png',
-  '/stickers/11.png',
+  '/stickers/3.webp',
+  '/stickers/1.webp',
+  '/stickers/7.webp',
+  '/stickers/10.webp',
+  '/stickers/5.webp',
+  '/stickers/8.webp',
+  '/stickers/11.webp',
 ];
 
 interface Particle {
@@ -29,7 +29,7 @@ interface DraggableStickerProps {
 }
 
 export default function DraggableSticker({
-  src = '/stickers/3.png',
+  src = '/stickers/3.webp',
   alt = 'Interactive Sticker',
   initialRotate = 12,
   className = '',
