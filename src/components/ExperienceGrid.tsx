@@ -5,18 +5,21 @@ export default function ExperienceGrid() {
     {
       company: "BlurFathom",
       role: "Founder & Product Designer",
+      location: "Remote",
       period: "Jan 2026 — Present",
       description: "Directing product strategy, design systems, and digital architectures from the ground up. Crafting bespoke user experiences and brand identities with an uncompromising focus on clarity, performance, and craft."
     },
     {
-      company: "Trams Gurugram",
+      company: "Trams",
       role: "UX Researcher Intern",
+      location: "Gurugram",
       period: "Apr 2026 — Jul 2026",
       description: "Conducted qualitative user interviews, contextual inquiries, and usability benchmarking during an intensive 3-month tenure. Synthesized behavioral data to uncover friction points and optimize core product journeys."
     },
     {
-      company: "Fiverr Freelance",
+      company: "Fiverr",
       role: "Music Producer & Sound Designer",
+      location: "Freelance",
       period: "7+ Years — Present",
       description: "Delivering bespoke music production, sound engineering, and creative audio direction for over 7 years to clients worldwide. Channeling a refined sensitivity to rhythm, pacing, and sensory feedback into tactile digital interactions."
     }
@@ -66,7 +69,15 @@ export default function ExperienceGrid() {
                       randomize={false}
                     />
                   </h3>
-                  <div className="font-mono text-[10px] text-zinc-400 uppercase">[ {exp.role} ]</div>
+                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[10px] uppercase tracking-wider">
+                    <span className="text-zinc-300">[ {exp.role} ]</span>
+                    {exp.location && (
+                      <>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-zinc-400">{exp.location}</span>
+                      </>
+                    )}
+                  </div>
                   <p className="text-zinc-400 font-light text-sm mt-2">{exp.description}</p>
                 </div>
               </div>
