@@ -202,17 +202,17 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
             >
               {/* Number & Massive Label */}
               <div className="flex items-baseline justify-between w-full">
-                <div className="py-1">
+                <div className="py-2 overflow-visible">
                   <a
                     href={item.link}
-                    className="inline-block font-heading font-black text-[min(10vw,14vh)] md:text-[min(8.5vw,15vh)] leading-[0.82] uppercase tracking-[-0.05em] text-[#18181b]"
+                    className="inline-block font-heading font-black text-[min(10vw,14vh)] md:text-[min(8.5vw,15vh)] leading-[0.92] uppercase tracking-[-0.04em] text-[#18181b] py-1"
                   >
                     {item.label}
                   </a>
                 </div>
 
-                <div className="overflow-hidden leading-none shrink-0 mb-2">
-                  <div className="menu-item-num font-mono text-base md:text-2xl text-zinc-500 font-semibold leading-none">
+                <div className="overflow-hidden py-1 -my-1 shrink-0 mb-2">
+                  <div className="menu-item-num font-mono text-base md:text-2xl text-zinc-500 font-semibold leading-normal">
                     [{item.num}]
                   </div>
                 </div>

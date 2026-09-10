@@ -20,8 +20,8 @@ export default function PhilosophyScroll() {
       splitText.words.forEach((word) => {
         word.style.display = 'inline-block';
         word.style.willChange = 'transform, opacity';
-        word.style.padding = '0.15em 0.06em';
-        word.style.margin = '-0.15em 0.19em -0.15em 0';
+        word.style.padding = '0.3em 0.15em';
+        word.style.margin = '-0.3em 0.25em -0.3em 0';
         word.style.transformOrigin = 'top left';
       });
     }
@@ -68,7 +68,7 @@ export default function PhilosophyScroll() {
       <div className="w-full flex justify-start">
         <p 
           ref={textRef} 
-          className="reveal-text font-sans font-normal text-white leading-[1.2] text-[clamp(1.2rem,2.2vw,2.2rem)] tracking-[-0.04em] max-w-[1050px] text-left select-none m-0"
+          className="reveal-text font-sans font-normal text-white leading-[1.35] text-[clamp(1.2rem,2.2vw,2.2rem)] tracking-[-0.03em] max-w-[1050px] text-left select-none m-0 py-2 overflow-visible"
         >
           Tejas is a UI/UX designer and builder focused on digital products that solve real problems. His approach is built around clarity, systems, and thoughtful design decisions. He creates interfaces that are functional, considered, and visually precise. Every project starts with understanding the problem, then shapes itself through intentional design and clean execution.
         </p>

@@ -49,7 +49,7 @@ export default function AboutPage({ onBack }: AboutPageProps) {
             <span>ABOUT ME</span>
           </div>
 
-          <h1 className="font-heading text-6xl sm:text-7xl md:text-9xl uppercase font-bold tracking-tighter mb-8 leading-[0.9]">
+          <h1 className="font-heading text-6xl sm:text-7xl md:text-9xl uppercase font-bold tracking-tighter mb-8 leading-[0.98] py-2 overflow-visible">
             <SplitTextReveal text="DESIGNER & BUILDER" as="span" direction="top" mode="blur" />
           </h1>
           

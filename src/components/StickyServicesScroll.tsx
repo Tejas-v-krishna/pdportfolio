@@ -265,7 +265,7 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
           
           {/* Top Section: Title & Number */}
           <div className="flex-1 flex justify-between items-start px-6 md:px-12 w-full">
-            <div className={`font-sans text-[10vw] lg:text-[7.5vw] font-medium leading-[0.85] tracking-tighter whitespace-pre-line ${item.textColor}`}>
+            <div className={`font-sans text-[10vw] lg:text-[7.5vw] font-medium leading-[0.98] tracking-tighter whitespace-pre-line py-2 ${item.textColor}`}>
               <SplitTextReveal 
                 text={item.title}
                 direction="bottom"
@@ -275,7 +275,7 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
                 triggerOnScroll={true}
               />
             </div>
-            <div className={`font-sans text-[10vw] lg:text-[7.5vw] font-medium leading-[0.8] tracking-tighter opacity-30 ${item.textColor}`}>
+            <div className={`font-sans text-[10vw] lg:text-[7.5vw] font-medium leading-[0.9] tracking-tighter opacity-30 py-2 ${item.textColor}`}>
               <SplitTextReveal 
                 text={item.num}
                 direction="bottom"
@@ -358,20 +358,20 @@ export default function StickyServicesScroll({ onContactClick }: StickyServicesS
         
         {/* TOP CENTER: Massive Text */}
         <div className="absolute top-[12%] left-[10%] md:top-[15%] md:left-[25%] flex flex-col z-10">
-          <h2 className="font-sans font-medium text-[clamp(4rem,9vw,9rem)] leading-[0.85] tracking-[-0.05em] text-white">
+          <h2 className="font-sans font-medium text-[clamp(4rem,9vw,9rem)] leading-[0.96] tracking-[-0.05em] text-white py-1">
             Core
           </h2>
-          <h2 className="font-sans font-medium text-[clamp(4rem,9vw,9rem)] leading-[0.85] tracking-[-0.05em] text-white md:ml-[5vw]">
+          <h2 className="font-sans font-medium text-[clamp(4rem,9vw,9rem)] leading-[0.96] tracking-[-0.05em] text-white md:ml-[5vw] py-1">
             services
           </h2>
         </div>
 
         {/* BOTTOM LEFT: Massive Text */}
         <div className="absolute bottom-[10%] left-[5%] md:bottom-[15%] md:left-[8%] flex flex-col z-10">
-          <h2 className="font-sans font-medium text-[clamp(2rem,4.5vw,4.5rem)] leading-[0.85] tracking-[-0.03em] text-white">
+          <h2 className="font-sans font-medium text-[clamp(2rem,4.5vw,4.5rem)] leading-[0.96] tracking-[-0.03em] text-white py-1">
             Yeah, I can
           </h2>
-          <h2 className="font-sans font-medium text-[clamp(2rem,4.5vw,4.5rem)] leading-[0.85] tracking-[-0.03em] text-white ml-[10vw]">
+          <h2 className="font-sans font-medium text-[clamp(2rem,4.5vw,4.5rem)] leading-[0.96] tracking-[-0.03em] text-white ml-[10vw] py-1">
             do all this.
           </h2>
         </div>

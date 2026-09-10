@@ -90,8 +90,8 @@ export default function SplitTextReveal({
   let unitCounter = 0;
 
   return (
-    <Component className={`inline-block ${className}`}>
-      <span ref={ref} className="inline-flex flex-wrap items-baseline">
+    <Component className={`inline-block overflow-visible py-[0.1em] -my-[0.1em] ${className}`}>
+      <span ref={ref} className="inline-flex flex-wrap items-baseline py-[0.15em] -my-[0.15em]">
         {words.map((word, wordIdx) => {
           if (splitBy === 'words') {
             const currentIdx = unitCounter++;
@@ -101,7 +101,7 @@ export default function SplitTextReveal({
             const initialSkew = getInitialSkewY();
 
             return (
-              <span key={wordIdx} className="inline-block overflow-hidden py-[0.18em] -my-[0.18em] px-[0.08em] -mx-[0.08em] mr-[0.28em] last:mr-0">
+              <span key={wordIdx} className="inline-block overflow-hidden py-[0.35em] -my-[0.35em] px-[0.15em] -mx-[0.15em] mr-[0.3em] last:mr-0 leading-normal">
                 <motion.span
                   initial={{
                     y: initialY,
@@ -119,7 +119,7 @@ export default function SplitTextReveal({
                     ease: [0.16, 1, 0.3, 1],
                     delay: itemDelay,
                   }}
-                  className="inline-block origin-bottom-left"
+                  className="inline-block origin-bottom-left px-[0.02em]"
                 >
                   {word}
                 </motion.span>
@@ -131,7 +131,7 @@ export default function SplitTextReveal({
             const initialSkew = getInitialSkewY();
 
             return (
-              <span key={wordIdx} className="inline-flex overflow-hidden py-[0.06em] -my-[0.06em] px-[0.03em] -mx-[0.03em] mr-[0.25em] last:mr-0 leading-none">
+              <span key={wordIdx} className="inline-flex overflow-hidden py-[0.35em] -my-[0.35em] px-[0.12em] -mx-[0.12em] mr-[0.28em] last:mr-0 leading-tight">
                 {chars.map((char, charIdx) => {
                   const currentIdx = unitCounter++;
                   const itemDelay = delay + (delayMap[currentIdx] || 0);
@@ -141,7 +141,7 @@ export default function SplitTextReveal({
                   return (
                     <motion.span
                       key={charIdx}
-                      className="gsap_split_letter inline-block relative origin-bottom-left"
+                      className="gsap_split_letter inline-block relative origin-bottom-left px-[0.02em]"
                       initial={{
                         y: initialY,
                         opacity: mode === 'fade' ? 0 : 1,

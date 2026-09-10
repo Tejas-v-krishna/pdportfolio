@@ -72,7 +72,7 @@ export default function Footer() {
             splitBy="chars"
             stagger={0.02}
             randomize={false}
-            className="font-sans font-normal text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.02] tracking-tighter text-white"
+            className="font-sans font-normal text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tighter text-white py-2 overflow-visible"
           />
         </div>
 

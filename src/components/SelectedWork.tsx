@@ -174,7 +174,7 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
-                  className="font-sans font-medium text-[3.5rem] leading-[0.9] tracking-[-0.04em] text-white"
+                  className="font-sans font-medium text-[3.5rem] leading-[1.05] tracking-[-0.03em] text-white py-2"
                 >
                   {activeProject.title}
                 </motion.h2>
@@ -218,7 +218,7 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
 
                       {/* The Massive Title */}
                       <h2 
-                        className={`font-sans font-medium md:text-6xl lg:text-[5.5vw] leading-[1] tracking-tight transition-colors duration-500
+                        className={`font-sans font-medium md:text-6xl lg:text-[5.5vw] leading-[1.05] tracking-tight transition-colors duration-500 py-2
                           ${isActive ? 'text-white' : 'text-[#333333] group-hover:text-[#555555]'}`}
                       >
                         {project.title}

@@ -174,7 +174,7 @@ export default function Hero({ isPreloaded = true }: HeroProps) {
         {/* Left: Massive Hero Text & CTA (col-span-7) */}
         <div className="col-span-1 md:col-span-7 flex flex-col justify-between h-full gap-8 md:gap-0">
           {/* STEP 1: Main Hero Text (Animates First) */}
-          <div className="font-sans font-medium text-[clamp(2rem,3.8vw,4.2rem)] leading-[0.92] tracking-[-0.04em] text-white flex flex-col">
+          <div className="font-sans font-medium text-[clamp(2rem,3.8vw,4.2rem)] leading-[1] tracking-[-0.03em] text-white flex flex-col py-1 overflow-visible">
             <SplitTextReveal 
               text="Making things that actually"
               as="h1"

@@ -217,7 +217,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       <div className="w-full px-6 pb-8 md:px-12 md:pb-12 relative z-10">
         <div className="flex justify-between items-end mb-4 font-display text-xl sm:text-2xl md:text-4xl font-semibold uppercase text-white overflow-hidden">
           
-          <div className="relative w-full h-10 sm:h-12 md:h-16 flex items-end overflow-hidden">
+          <div className="relative w-full h-12 sm:h-16 md:h-20 flex items-end overflow-hidden pb-1">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentTitleIndex}
@@ -225,13 +225,13 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="absolute left-0 bottom-0 flex overflow-hidden py-0.5"
+                className="absolute left-0 bottom-0 flex overflow-hidden py-2"
               >
                 {titles[currentTitleIndex].split('').map((char, index) => (
-                  <span key={index} className="inline-block overflow-hidden">
+                  <span key={index} className="inline-block overflow-hidden py-[0.35em] -my-[0.35em] px-[0.12em] -mx-[0.12em]">
                     <motion.span 
                       variants={charVariants}
-                      className="inline-block text-xl sm:text-2xl md:text-4xl font-semibold text-white tracking-tight"
+                      className="inline-block text-xl sm:text-2xl md:text-4xl font-semibold text-white tracking-tight px-[0.02em]"
                       style={{ whiteSpace: char === ' ' ? 'pre' : 'normal' }}
                     >
                       {char}
