@@ -176,23 +176,6 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       initial={{ y: 0 }}
       exit={{ y: "-100%", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
     >
-      {/* Growing Background Vertical Lines */}
-      <div className="absolute inset-0 pointer-events-none grid grid-cols-6 md:grid-cols-8 px-6 md:px-12 z-0">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="relative h-full w-full border-r border-white/[0.02] first:border-l first:border-white/[0.02]">
-            <motion.div 
-              className="absolute bottom-0 right-0 w-px bg-white/[0.06] h-full origin-bottom"
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{ 
-                duration: 4, 
-                ease: [0.16, 1, 0.3, 1] as const, 
-                delay: i * 0.12 
-              }}
-            />
-          </div>
-        ))}
-      </div>
 
       {/* Interactive Sticker Cloud Scatter Stage (Inertia Velocity Effect) */}
       <div 
