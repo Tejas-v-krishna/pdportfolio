@@ -1,34 +1,33 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Urbanist', sans-serif;
-  --font-heading: 'Urbanist', sans-serif;
-  --font-display: 'Urbanist', sans-serif;
-  --font-mono: 'Urbanist', sans-serif;
-  --font-tech: 'Urbanist', sans-serif;
-  --font-secondary: 'Urbanist', sans-serif;
-  --font-serif: 'Urbanist', sans-serif;
+  --font-sans: 'Questrial', sans-serif;
+  --font-heading: 'Questrial', sans-serif;
+  --font-display: 'Questrial', sans-serif;
+  --font-mono: 'Questrial', sans-serif;
+  --font-tech: 'Questrial', sans-serif;
+  --font-secondary: 'Questrial', sans-serif;
+  --font-serif: 'Questrial', sans-serif;
 }
 
 @layer base {
   :root {
-    --font-sans: 'Urbanist', sans-serif;
-    --font-heading: 'Urbanist', sans-serif;
-    --font-display: 'Urbanist', sans-serif;
-    --font-mono: 'Urbanist', sans-serif;
-    --font-tech: 'Urbanist', sans-serif;
-    --font-secondary: 'Urbanist', sans-serif;
+    --font-sans: 'Questrial', sans-serif;
+    --font-heading: 'Questrial', sans-serif;
+    --font-display: 'Questrial', sans-serif;
+    --font-mono: 'Questrial', sans-serif;
+    --font-tech: 'Questrial', sans-serif;
+    --font-secondary: 'Questrial', sans-serif;
     font-size: clamp(12px, 0.9vw + 7px, 16px);
   }
 
   * {
-    font-family: 'Urbanist', sans-serif;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif;
   }
 
-  .urbanist {
-    font-family: "Urbanist", sans-serif;
-    font-optical-sizing: auto;
+  .questrial-regular {
+    font-family: "Questrial", sans-serif;
+    font-weight: 400;
     font-style: normal;
   }
   
@@ -58,8 +57,7 @@
   }
 
   body {
-    font-family: 'Urbanist', sans-serif;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif;
     font-size: 1rem;
     background-color: #09090b; /* obsidian */
     color: #f4f4f5; /* ivory */
@@ -67,38 +65,31 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Urbanist', sans-serif;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif;
   }
 
   a, button, [role="button"], input, select, textarea {
     cursor: none;
-    font-family: 'Urbanist', sans-serif;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif;
   }
 }
 
 @layer utilities {
   .font-display {
-    font-family: 'Urbanist', sans-serif !important;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif !important;
   }
   .font-heading {
-    font-family: 'Urbanist', sans-serif !important;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif !important;
   }
   .font-sans {
-    font-family: 'Urbanist', sans-serif !important;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif !important;
   }
   .font-tech {
-    font-family: 'Urbanist', sans-serif !important;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif !important;
     font-size: 1.06em;
   }
   .font-mono {
-    font-family: 'Urbanist', sans-serif !important;
-    font-optical-sizing: auto;
+    font-family: 'Questrial', sans-serif !important;
     font-size: 1.06em;
   }
   .text-shadow-sm {
