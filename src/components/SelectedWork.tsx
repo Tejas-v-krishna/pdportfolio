@@ -47,26 +47,8 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
       <div className="sticky top-0 h-[100dvh] w-full flex items-center max-w-[1920px] mx-auto px-6 md:px-12 overflow-hidden py-10 lg:py-24">
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-24 w-full h-full lg:h-auto justify-center">
           
-          {/* LEFT SIDE: Image and Meta */}
+          {/* LEFT SIDE: Project Details & Meta */}
           <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1 h-auto">
-            {/* Image Container with AnimatePresence for crossfade */}
-            <div className="relative w-full aspect-video lg:aspect-[4/3] rounded-xl overflow-hidden bg-zinc-900 mb-6 lg:mb-12 border border-white/5 shrink-0">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={activeProject.id}
-                  src={activeProject.image}
-                  alt={activeProject.title}
-                  loading="lazy"
-                  decoding="async"
-                  initial={{ opacity: 0, scale: 1.05 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              </AnimatePresence>
-            </div>
-            
             {/* Meta Table */}
             <div className="flex flex-col border-t border-[#333333] text-sm font-sans tracking-wide">
               
