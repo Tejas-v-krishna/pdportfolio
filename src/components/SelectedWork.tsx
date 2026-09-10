@@ -43,17 +43,17 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
   }, [handleUpdate]);
 
   return (
-    <section id="work" ref={containerRef} className="bg-[#050505] text-white relative" style={{ height: `${projects.length * 100}vh` }}>
+    <section id="work" ref={containerRef} className="bg-[#09090b] text-white relative border-t border-white/10" style={{ height: `${projects.length * 100}vh` }}>
       <div className="sticky top-0 h-[100dvh] w-full flex items-center max-w-[1920px] mx-auto px-6 md:px-12 overflow-hidden py-10 lg:py-24">
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-24 w-full h-full lg:h-auto justify-center">
           
           {/* LEFT SIDE: Project Details & Meta */}
           <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1 h-auto">
             {/* Meta Table */}
-            <div className="flex flex-col border-t border-[#333333] text-sm font-sans tracking-wide">
+            <div className="flex flex-col border-t border-white/10 text-sm font-sans tracking-wide">
               
               {/* Overview */}
-              <div className="flex flex-col md:grid md:grid-cols-12 py-4 md:py-5 border-b border-[#333333] gap-2 md:gap-0">
+              <div className="flex flex-col md:grid md:grid-cols-12 py-4 md:py-5 border-b border-white/10 gap-2 md:gap-0">
                 <div className="md:col-span-3 text-zinc-500 text-xs md:text-sm uppercase tracking-wider md:normal-case md:tracking-normal">Overview</div>
                 <div className="md:col-span-9 text-zinc-300 leading-relaxed md:pr-8">
                   <AnimatePresence mode="wait">
@@ -71,7 +71,7 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
               </div>
 
               {/* Tags */}
-              <div className="flex flex-col md:grid md:grid-cols-12 py-4 md:py-5 border-b border-[#333333] gap-2 md:gap-0">
+              <div className="flex flex-col md:grid md:grid-cols-12 py-4 md:py-5 border-b border-white/10 gap-2 md:gap-0">
                 <div className="md:col-span-3 text-zinc-500 text-xs md:text-sm uppercase tracking-wider md:normal-case md:tracking-normal">Tags</div>
                 <div className="md:col-span-9 text-zinc-300 flex flex-wrap md:flex-col gap-x-3 md:gap-x-0 gap-y-1">
                   <AnimatePresence mode="wait">
@@ -91,7 +91,7 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
               </div>
 
               {/* Industry */}
-              <div className="flex flex-col md:grid md:grid-cols-12 py-4 md:py-5 border-b border-[#333333] gap-2 md:gap-0">
+              <div className="flex flex-col md:grid md:grid-cols-12 py-4 md:py-5 border-b border-white/10 gap-2 md:gap-0">
                 <div className="md:col-span-3 text-zinc-500 text-xs md:text-sm uppercase tracking-wider md:normal-case md:tracking-normal">Industry</div>
                 <div className="md:col-span-9 text-zinc-300">
                   <AnimatePresence mode="wait">
@@ -109,7 +109,7 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
               </div>
 
               {/* Client */}
-              <div className="flex flex-col md:grid md:grid-cols-12 py-4 md:py-5 border-b border-[#333333] gap-2 md:gap-0">
+              <div className="flex flex-col md:grid md:grid-cols-12 py-4 md:py-5 border-b border-white/10 gap-2 md:gap-0">
                 <div className="md:col-span-3 text-zinc-500 text-xs md:text-sm uppercase tracking-wider md:normal-case md:tracking-normal">Client</div>
                 <div className="md:col-span-9 text-zinc-300">
                   <AnimatePresence mode="wait">
@@ -128,7 +128,7 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
               
               {/* Explore Action */}
               <div 
-                className="flex flex-col md:grid md:grid-cols-12 py-6 md:py-8 border-b border-[#333333] cursor-pointer group hover:bg-white/5 transition-colors"
+                className="flex flex-col md:grid md:grid-cols-12 py-6 md:py-8 border-b border-white/10 cursor-pointer group hover:bg-white/5 transition-colors"
                 onClick={() => onOpenCaseStudy(activeProject.id)}
               >
                 <div className="md:col-span-12 flex justify-between items-center text-white w-full">
@@ -201,7 +201,7 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
                       {/* The Massive Title */}
                       <h2 
                         className={`font-sans font-medium md:text-6xl lg:text-[5.5vw] leading-[1.05] tracking-tight transition-colors duration-500 py-2
-                          ${isActive ? 'text-white' : 'text-[#333333] group-hover:text-[#555555]'}`}
+                          ${isActive ? 'text-white' : 'text-zinc-600 group-hover:text-zinc-400'}`}
                       >
                         {project.title}
                       </h2>
@@ -218,3 +218,4 @@ export default function SelectedWork({ onOpenCaseStudy }: SelectedWorkProps) {
     </section>
   );
 }
+

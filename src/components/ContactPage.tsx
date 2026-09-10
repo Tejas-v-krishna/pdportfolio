@@ -17,10 +17,10 @@ export default function ContactPage({ onBack }: ContactPageProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500 selection:text-white"
+      className="min-h-screen bg-[#09090b] text-white selection:bg-white selection:text-black"
     >
-      {/* Sticky Floating Header Navigation */}
-      <header className="fixed top-0 left-0 w-full z-40 bg-[#050505]/80 backdrop-blur-xl border-b border-[#323232]/30 px-4 md:px-8 py-4">
+      {/* Sticky Floating Header Navigation — unified */}
+      <header className="sticky top-0 left-0 w-full z-40 bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
         <div className="w-full flex justify-between items-center">
           
           <button 
@@ -38,9 +38,10 @@ export default function ContactPage({ onBack }: ContactPageProps) {
       </header>
 
       {/* Main Content Wrapper */}
-      <main className="w-full pt-20">
+      <main className="w-full">
         <Footer />
       </main>
     </motion.div>
   );
 }
+

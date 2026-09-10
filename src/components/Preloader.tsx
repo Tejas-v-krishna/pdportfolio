@@ -38,8 +38,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const mediaContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Total duration of the preloader (7 seconds so each title stays readable)
-    const duration = 7000;
+    // Shortened from 7s — 3.2s keeps titles readable without punishing return visits
+    const duration = 3200;
     const interval = 66; // ~15fps updates - imperceptible difference vs 30fps for a counter
     const steps = duration / interval;
     let step = 0;
@@ -175,6 +175,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       className="fixed inset-0 z-[9999] bg-[#09090b] flex flex-col justify-between overflow-hidden"
       initial={{ y: 0 }}
       exit={{ y: "-100%", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
+      onClick={onComplete}
+      title="Click to skip"
     >
 
       {/* Interactive Sticker Cloud Scatter Stage (Inertia Velocity Effect) */}
@@ -195,7 +197,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 opacity: { duration: 0.5, delay: i * 0.04 },
                 scale: { type: "spring", stiffness: 260, damping: 20, delay: i * 0.04 }
               }}
-              className="media absolute group flex items-center justify-center cursor-pointer w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 hover:z-30"
+              className="media absolute group flex items-center justify-center cursor-pointer w-20 h-20 sm:w-28 sm:h-28 md:w-40 md:h-40 lg:w-44 lg:h-44 hover:z-30"
               style={{
                 top: sticker.top,
                 left: sticker.left,
@@ -261,3 +263,4 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     </motion.div>
   );
 }
+

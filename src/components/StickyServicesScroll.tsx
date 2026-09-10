@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, MotionValue, type Variants } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionTemplate, MotionValue, type Variants } from 'framer-motion';
 import SplitTextReveal from './SplitTextReveal';
 
 export interface ServiceItem {
@@ -150,7 +150,7 @@ const SERVICES_DATA: ServiceItem[] = [
     badgeBg: 'bg-zinc-700/80',
     badgeText: 'text-zinc-100',
     accentColor: '#f4f4f5',
-    image: '/services/service_uiux.jpg',
+    image: '/accessories-bg.png',
     metrics: [
       { label: '3D ENVIRONMENTS', val: 'BLENDER / THREE.JS' },
       { label: 'EDITORIAL FORMAT', val: 'LARGE FORM PRINT' },
@@ -209,6 +209,7 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
     [startCover, endCover],
     [1, isLast ? 1 : 0.4]
   );
+  const dim = useMotionTemplate`brightness(${brightness})`;
 
   // Split description into two paragraphs for the layout
   const descSentences = item.description.split('.').filter(Boolean).map(s => s.trim() + '.');
@@ -248,7 +249,7 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
           skewY: isLast ? 0 : skewY,
           scale: isLast ? 1 : scale,
           y: isLast ? 0 : translateY,
-          filter: isLast ? 'brightness(1)' : `brightness(${brightness.get()})`,
+          filter: isLast ? 'brightness(1)' : dim,
           backgroundColor: item.bgHex,
           transformOrigin: 'top center',
           transformStyle: 'preserve-3d',
@@ -264,8 +265,8 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
         >
           
           {/* Top Section: Title & Number */}
-          <div className="flex-1 flex justify-between items-start px-6 md:px-12 w-full">
-            <div className={`font-sans text-[10vw] lg:text-[7.5vw] font-medium leading-[0.98] tracking-tighter whitespace-pre-line py-2 ${item.textColor}`}>
+          <div className="flex-1 flex justify-between items-start px-6 md:px-12 w-full min-h-0">
+            <div className={`font-sans text-[9vw] sm:text-[8vw] lg:text-[6.5vw] font-medium leading-[0.98] tracking-tighter whitespace-pre-line py-2 ${item.textColor}`}>
               <SplitTextReveal 
                 text={item.title}
                 direction="bottom"
@@ -275,7 +276,7 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
                 triggerOnScroll={true}
               />
             </div>
-            <div className={`font-sans text-[10vw] lg:text-[7.5vw] font-medium leading-[0.9] tracking-tighter opacity-30 py-2 ${item.textColor}`}>
+            <div className={`font-sans text-[9vw] sm:text-[8vw] lg:text-[6.5vw] font-medium leading-[0.9] tracking-tighter opacity-30 py-2 ${item.textColor}`}>
               <SplitTextReveal 
                 text={item.num}
                 direction="bottom"
@@ -320,11 +321,13 @@ function ServiceCard({ item, index, total, containerProgress, onContactClick }: 
             </div>
 
             {/* Image Column */}
-            <div className="w-full lg:w-[35%] h-[40vh] lg:h-full relative overflow-hidden bg-black/10">
+            <div className="w-full lg:w-[35%] h-[28vh] sm:h-[32vh] lg:h-full relative overflow-hidden bg-black/10 shrink-0">
               <motion.img 
                 variants={imageVariants}
                 src={item.image} 
                 alt={item.title.replace('\n', ' ')}
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 w-full h-full object-cover object-left-top origin-center"
               />
             </div>
@@ -419,3 +422,4 @@ export default function StickyServicesScroll({ onContactClick }: StickyServicesS
     </div>
   );
 }
+

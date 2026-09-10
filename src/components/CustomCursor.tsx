@@ -5,6 +5,13 @@ export default function CustomCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Skip entirely on touch or reduced-motion — native cursor is the correct design there
+    if (
+      window.matchMedia('(hover: none)').matches ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return;
+    }
     let mouseX = -100;
     let mouseY = -100;
     let ringX = -100;
@@ -104,3 +111,4 @@ export default function CustomCursor() {
     </>
   );
 }
+

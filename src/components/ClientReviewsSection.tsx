@@ -67,7 +67,7 @@ const REVIEWS: ReviewItem[] = [
 
 export default function ClientReviewsSection() {
   return (
-    <section id="reviews" className="py-24 border-t hairline-border bg-[#09090b] text-white">
+    <section id="reviews" className="py-24 border-t border-white/10 bg-[#09090b] text-white">
       <div className="max-w-[1920px] mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
           
@@ -100,7 +100,7 @@ export default function ClientReviewsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.35 }}
-                className="grid grid-cols-1 md:grid-cols-12 gap-4 py-8 border-b hairline-border first:border-t lg:first:border-t-0 last:border-b-0 hover:bg-white/[0.02] transition-colors -mx-6 px-6 cursor-pointer interactive group"
+                className="grid grid-cols-1 md:grid-cols-12 gap-4 py-8 border-b border-white/10 first:border-t lg:first:border-t-0 last:border-b-0 hover:bg-white/[0.02] transition-colors -mx-6 px-6 cursor-pointer interactive group"
               >
                 {/* Left sub-column: Number, Location, Year, Category badge */}
                 <div className="md:col-span-3 flex flex-col gap-1">
@@ -111,7 +111,7 @@ export default function ClientReviewsSection() {
                     [ {rev.projectYear} ]
                   </div>
                   <div className="mt-2">
-                    <span className="inline-block px-2.5 py-0.5 border hairline-border rounded-full font-tech text-[10px] uppercase tracking-wider text-zinc-400 group-hover:border-zinc-500 transition-colors">
+                    <span className="inline-block px-2.5 py-0.5 border border-white/10 rounded-full font-tech text-[10px] uppercase tracking-wider text-zinc-400 group-hover:border-zinc-500 transition-colors">
                       {rev.categoryLabel}
                     </span>
                   </div>
@@ -154,3 +154,4 @@ export default function ClientReviewsSection() {
     </section>
   );
 }
+

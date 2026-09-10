@@ -63,7 +63,7 @@ export default function PhilosophyScroll() {
     <section 
       id="philosophy"
       ref={sectionRef} 
-      className="relative w-full bg-[#0b0b0b] py-20 md:py-28 px-8 md:px-12 border-t border-b border-[#1f1f22]"
+      className="relative w-full bg-[#09090b] py-20 md:py-28 px-6 md:px-12 border-t border-b border-white/10"
     >
       <div className="w-full flex justify-start">
         <p 
@@ -76,5 +76,6 @@ export default function PhilosophyScroll() {
     </section>
   );
 }
+
 
 

@@ -26,8 +26,8 @@ export default function ExperienceGrid() {
   ];
 
   return (
-    <section className="py-24 border-t hairline-border">
-      <div className="max-w-[1920px] mx-auto px-6">
+    <section className="py-24 border-t border-white/10 bg-[#09090b]">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-12">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
           
@@ -45,7 +45,7 @@ export default function ExperienceGrid() {
             />
             <div className="flex flex-wrap gap-2">
               {['Design Systems', 'User Research', 'Prototyping', 'Sound Design', 'Frontend UI', 'Figma', 'React', 'Motion'].map((skill) => (
-                <div key={skill} className="px-3 py-1 border hairline-border rounded-full font-tech text-[10px] uppercase tracking-widest text-zinc-400">
+                <div key={skill} className="px-3 py-1 border border-white/10 rounded-full font-tech text-[10px] uppercase tracking-widest text-zinc-400">
                   {skill}
                 </div>
               ))}
@@ -54,7 +54,7 @@ export default function ExperienceGrid() {
 
           <div className="lg:col-span-8 flex flex-col gap-0">
             {experiences.map((exp, i) => (
-              <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-4 py-8 border-b hairline-border last:border-b-0 hover:bg-white/[0.02] transition-colors -mx-6 px-6 cursor-pointer interactive group">
+              <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-4 py-8 border-b border-white/10 last:border-b-0 hover:bg-white/[0.02] transition-colors -mx-6 px-6 cursor-pointer interactive group">
                 <div className="md:col-span-3">
                   <div className="font-tech text-xs tracking-widest uppercase text-zinc-500 group-hover:text-white transition-colors">{exp.period}</div>
                 </div>
@@ -90,3 +90,4 @@ export default function ExperienceGrid() {
     </section>
   );
 }
+

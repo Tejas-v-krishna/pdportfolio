@@ -21,7 +21,7 @@ export default function Footer() {
   return (
     <footer 
       id="contact" 
-      className="w-full bg-[#09090b] text-white min-h-[92vh] flex flex-col justify-between pt-16 md:pt-24 pb-4 md:pb-6 px-6 md:px-12 relative overflow-hidden select-none border-t hairline-border"
+      className="w-full bg-[#09090b] text-white min-h-[92vh] flex flex-col justify-between pt-16 md:pt-24 pb-4 md:pb-6 px-6 md:px-12 relative overflow-hidden select-none border-t border-white/10"
     >
       {/* =========================================================
           TOP SECTION: Hook & CTA (Left) + Nav & Socials (Right)
@@ -157,3 +157,4 @@ export default function Footer() {
     </footer>
   );
 }
+

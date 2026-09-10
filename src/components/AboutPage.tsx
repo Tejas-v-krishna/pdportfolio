@@ -18,10 +18,10 @@ export default function AboutPage({ onBack }: AboutPageProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-[#09090b] text-white selection:bg-indigo-500 selection:text-white"
+      className="min-h-screen bg-[#09090b] text-white selection:bg-white selection:text-black"
     >
-      {/* Sticky Floating Header Navigation */}
-      <header className="sticky top-0 z-40 bg-[#09090b]/80 backdrop-blur-xl border-b border-[#323232]/30 px-4 md:px-12 py-4">
+      {/* Sticky Floating Header Navigation — unified */}
+      <header className="sticky top-0 z-40 bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
         <div className="max-w-[1600px] mx-auto flex justify-between items-center">
           
           <button 
@@ -42,7 +42,7 @@ export default function AboutPage({ onBack }: AboutPageProps) {
       <main className="w-full pb-24">
         
         {/* Section 01: Hero Header */}
-        <section className="max-w-[1600px] mx-auto px-4 md:px-12 pt-24 pb-16">
+        <section className="max-w-[1600px] mx-auto px-6 md:px-12 pt-24 pb-16">
           <div className="flex items-center gap-3 font-mono text-xs text-zinc-400 uppercase tracking-widest mb-6">
             <span className="px-3 py-1 rounded-full bg-white/10 border border-white/20">PROFILE</span>
             <span>•</span>
@@ -67,3 +67,4 @@ export default function AboutPage({ onBack }: AboutPageProps) {
     </motion.div>
   );
 }
+

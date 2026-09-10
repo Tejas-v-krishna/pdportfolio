@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import StaggerText from './StaggerText';
 
 interface NavbarProps {
@@ -6,9 +7,21 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onOpenMenu }: NavbarProps) {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <nav style={{ viewTransitionName: "navbar" as any }} className="w-full bg-[#09090b] pt-10 pb-6 shrink-0">
-      <div className="w-full px-4 md:px-8 flex justify-between items-center">
+    <nav
+      style={{ viewTransitionName: "navbar" as any }}
+      className={`w-full sticky top-0 z-40 pt-6 pb-5 shrink-0 transition-all duration-300 ${scrolled ? 'bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10' : 'bg-[#09090b] border-b border-transparent'}`}
+    >
+      <div className="w-full max-w-[1600px] mx-auto px-6 md:px-12 flex justify-between items-center">
         
         {/* 1. Left Section: Logo */}
         <motion.div 
@@ -20,8 +33,8 @@ export default function Navbar({ onOpenMenu }: NavbarProps) {
           {/* Main Logo Image */}
           <img 
             src="/logo.png" 
-            alt="Logo" 
-            className="h-10 md:h-12 object-contain"
+            alt="Tejas V Krishna — home"
+            className="h-9 md:h-10 object-contain"
           />
         </motion.div>
 
@@ -44,3 +57,4 @@ export default function Navbar({ onOpenMenu }: NavbarProps) {
     </nav>
   );
 }
+

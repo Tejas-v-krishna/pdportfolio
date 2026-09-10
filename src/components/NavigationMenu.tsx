@@ -13,27 +13,24 @@ interface NavigationMenuProps {
 
 export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick }: NavigationMenuProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  // Use a ref for magneticX to drive the motion value without causing React re-renders on every mousemove
-  const magneticXRef = useRef(0);
-  const magneticMotionRef = useRef<HTMLDivElement>(null);
   const time = useISTDate();
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const normalizedX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    magneticXRef.current = normalizedX * 140;
-    // Directly write to DOM — no React state update needed
-    if (magneticMotionRef.current) {
-      magneticMotionRef.current.style.transform = `translateX(${magneticXRef.current}px)`;
+    // Per-item magnetic target — fixes shared-ref bug where only one row moved
+    const target = e.currentTarget.querySelector('[data-magnetic]') as HTMLElement | null;
+    if (target) {
+      target.style.transform = `translateX(${normalizedX * 140}px)`;
     }
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     setHoveredIndex(null);
-    magneticXRef.current = 0;
-    if (magneticMotionRef.current) {
-      magneticMotionRef.current.style.transform = `translateX(0px)`;
+    const target = e.currentTarget.querySelector('[data-magnetic]') as HTMLElement | null;
+    if (target) {
+      target.style.transform = `translateX(0px)`;
     }
   };
 
@@ -200,15 +197,19 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
               onMouseLeave={handleMouseLeave}
               onClick={() => handleItemClick(item.link)}
             >
-              {/* Number & Massive Label */}
+              {/* Number & Massive Label — chars split so GSAP .menu-char stagger actually has targets */}
               <div className="flex items-baseline justify-between w-full">
-                <div className="py-2 overflow-visible">
-                  <a
-                    href={item.link}
+                <div className="py-2 overflow-hidden">
+                  <span
                     className="inline-block font-heading font-black text-[min(10vw,14vh)] md:text-[min(8.5vw,15vh)] leading-[0.92] uppercase tracking-[-0.04em] text-[#18181b] py-1"
+                    aria-label={item.label}
                   >
-                    {item.label}
-                  </a>
+                    {item.label.split('').map((ch, ci) => (
+                      <span key={ci} className="menu-char inline-block will-change-transform">
+                        {ch}
+                      </span>
+                    ))}
+                  </span>
                 </div>
 
                 <div className="overflow-hidden py-1 -my-1 shrink-0 mb-2">
@@ -251,7 +252,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
 
                     {/* Outer Magnetic Wrapper - driven by direct DOM ref, not React state */}
                     <div 
-                      ref={magneticMotionRef}
+                      data-magnetic
                       style={{ 
                         opacity: 0,
                         transition: 'opacity 0.25s ease 0.08s',
@@ -295,7 +296,7 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
               Driven by clarity, performance, and detail. Simple, fast, intentional product systems.
             </p>
             <div className="menu-fade-item font-mono text-[10px] text-zinc-400">
-              ©{new Date().getFullYear()} tejjxuu
+              ©{new Date().getFullYear()} tejasvkrishna
             </div>
           </div>
 
@@ -305,20 +306,20 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
             <a href="mailto:hello@tejasvkrishna.com" className="group font-mono text-xs text-[#18181b] w-fit">
               <StaggerText text="hello@tejasvkrishna.com" />
             </a>
-            <div className="text-zinc-500 font-mono text-[10px]">Bengaluru, India</div>
+            <div className="text-zinc-500 font-mono text-[10px]">Kerala, India — Worldwide</div>
           </div>
 
           {/* Cell 3: Networks */}
           <div className="p-4 md:p-8 flex flex-col justify-between gap-4 border-b md:border-b-0 md:border-r border-[#323232]/15">
             <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">[ 03 / NETWORKS ]</div>
             <div className="menu-fade-item flex flex-col gap-1 text-[#18181b] font-mono text-xs">
-              <a href="#" className="group hover:text-black w-fit">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="group hover:text-black w-fit">
                 <StaggerText text="INSTAGRAM ↗" />
               </a>
-              <a href="#" className="group hover:text-black w-fit">
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="group hover:text-black w-fit">
                 <StaggerText text="LINKEDIN ↗" />
               </a>
-              <a href="#" className="group hover:text-black w-fit">
+              <a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" className="group hover:text-black w-fit">
                 <StaggerText text="DRIBBBLE ↗" />
               </a>
             </div>
@@ -341,3 +342,4 @@ export default function NavigationMenu({ isMounted, isOpen, onClose, onItemClick
     </div>
   );
 }
+

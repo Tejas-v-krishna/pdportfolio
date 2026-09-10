@@ -18,10 +18,10 @@ export default function ProjectsPage({ onBack, onOpenCaseStudy }: ProjectsPagePr
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500 selection:text-white"
+      className="min-h-screen bg-[#09090b] text-white selection:bg-white selection:text-black"
     >
-      {/* Sticky Floating Header Navigation */}
-      <header className="sticky top-0 z-[100] bg-[#050505]/80 backdrop-blur-xl border-b border-[#323232]/30 px-4 md:px-12 py-4">
+      {/* Sticky Floating Header Navigation — unified */}
+      <header className="sticky top-0 z-40 bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
         <div className="max-w-[1600px] mx-auto flex justify-between items-center">
           
           <button 
@@ -47,3 +47,4 @@ export default function ProjectsPage({ onBack, onOpenCaseStudy }: ProjectsPagePr
     </motion.div>
   );
 }
+

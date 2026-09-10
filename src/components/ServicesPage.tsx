@@ -4,9 +4,10 @@ import StickyServicesScroll from './StickyServicesScroll';
 
 interface ServicesPageProps {
   onBack: () => void;
+  onContact?: () => void;
 }
 
-export default function ServicesPage({ onBack }: ServicesPageProps) {
+export default function ServicesPage({ onBack, onContact }: ServicesPageProps) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -17,10 +18,10 @@ export default function ServicesPage({ onBack }: ServicesPageProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-[#09090b] text-white selection:bg-indigo-500 selection:text-white"
+      className="min-h-screen bg-[#09090b] text-white selection:bg-white selection:text-black"
     >
-      {/* Floating Header Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#09090b]/80 backdrop-blur-xl border-b hairline-border px-4 md:px-12 py-4">
+      {/* Floating Header Navigation — unified sticky style */}
+      <header className="sticky top-0 z-40 bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4">
         <div className="max-w-[1600px] mx-auto flex justify-between items-center">
           
           <button 
@@ -38,10 +39,11 @@ export default function ServicesPage({ onBack }: ServicesPageProps) {
       </header>
 
       {/* Main Content Wrapper */}
-      <main className="pt-12">
-        <StickyServicesScroll onContactClick={onBack} />
+      <main>
+        <StickyServicesScroll onContactClick={onContact ?? onBack} />
       </main>
     </motion.div>
   );
 }
+
 

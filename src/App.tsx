@@ -188,6 +188,22 @@ function App() {
     navigateWithTransition(() => {
       resetAllPages();
       setActiveProjectId(id);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    });
+  };
+
+  const handleOpenNextProject = (id: string) => {
+    navigateWithTransition(() => {
+      setActiveProjectId(id);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    });
+  };
+
+  const handleOpenContact = () => {
+    navigateWithTransition(() => {
+      resetAllPages();
+      setIsContactPageOpen(true);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
     });
   };
 
@@ -215,7 +231,7 @@ function App() {
       />
 
       {isServicesPageOpen ? (
-        <ServicesPage onBack={handleBackToHome} />
+        <ServicesPage onBack={handleBackToHome} onContact={handleOpenContact} />
       ) : isAboutPageOpen ? (
         <AboutPage onBack={handleBackToHome} />
       ) : isProjectsPageOpen ? (
@@ -225,7 +241,7 @@ function App() {
       ) : isAccessoriesPageOpen ? (
         <AccessoriesPage onBack={handleBackToHome} />
       ) : activeProjectId ? (
-        <CaseStudyPage projectId={activeProjectId} onBack={handleBackToHome} />
+        <CaseStudyPage projectId={activeProjectId} onBack={handleBackToHome} onOpenNext={handleOpenNextProject} />
       ) : (
         <div className={isLoading ? "h-screen overflow-hidden" : ""}>
           <Navbar onOpenMenu={handleOpenMenu} />
@@ -234,7 +250,7 @@ function App() {
             <Hero isPreloaded={isPreloaded} />
             <PhilosophyScroll />
             <SelectedWork onOpenCaseStudy={handleOpenCaseStudy} />
-            <StickyServicesScroll onContactClick={() => { resetAllPages(); setIsContactPageOpen(true); }} />
+            <StickyServicesScroll onContactClick={handleOpenContact} />
             <ExperienceGrid />
             <ClientReviewsSection />
           </main>

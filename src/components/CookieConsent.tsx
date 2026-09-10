@@ -45,17 +45,11 @@ export default function CookieConsent() {
 
           {/* High-Readability Body Text */}
           <p className="text-zinc-200 text-sm md:text-base leading-relaxed mb-7 font-sans">
-            By clicking <strong className="text-white font-semibold">"Accept"</strong>, you agree to storing cookies on your device to enhance site navigation, analyze site usage, and assist in our marketing efforts. View our <a href="#" className="text-white hover:text-zinc-300 underline font-medium transition-colors">Privacy Policy</a> for details.
+            This site uses only essential local storage (your cookie choice) — no tracking, no marketing cookies. Contact me at hello@tejasvkrishna.com for any privacy questions.
           </p>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap items-center justify-between gap-4 font-sans pt-2 border-t border-white/10">
-            <button 
-              onClick={() => {}} 
-              className="text-sm text-zinc-400 hover:text-white underline underline-offset-4 transition-colors cursor-pointer interactive"
-            >
-              Preferences
-            </button>
+          <div className="flex flex-wrap items-center justify-end gap-4 font-sans pt-2 border-t border-white/10">
 
             <div className="flex items-center gap-3">
               <button 
@@ -77,3 +71,4 @@ export default function CookieConsent() {
     </AnimatePresence>
   );
 }
+
