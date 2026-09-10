@@ -1,63 +1,37 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Hedvig Letters Serif', serif;
+  --font-heading: 'Hedvig Letters Serif', serif;
+  --font-display: 'Hedvig Letters Serif', serif;
+  --font-mono: 'Hedvig Letters Serif', serif;
+  --font-tech: 'Hedvig Letters Serif', serif;
+  --font-secondary: 'Hedvig Letters Serif', serif;
+  --font-serif: 'Hedvig Letters Serif', serif;
+}
+
 @layer base {
   :root {
-    --font-sans: 'Rosarivo', cursive;
-    --font-heading: 'Caudex', serif;
-    --font-display: 'Caudex', serif;
-    --font-mono: 'Rosarivo', cursive;
-    --font-tech: 'Rosarivo', cursive;
-    --font-secondary: 'Rosarivo', cursive;
+    --font-sans: 'Hedvig Letters Serif', serif;
+    --font-heading: 'Hedvig Letters Serif', serif;
+    --font-display: 'Hedvig Letters Serif', serif;
+    --font-mono: 'Hedvig Letters Serif', serif;
+    --font-tech: 'Hedvig Letters Serif', serif;
+    --font-secondary: 'Hedvig Letters Serif', serif;
     font-size: clamp(12px, 0.9vw + 7px, 16px);
   }
 
-.rosarivo-regular {
-  font-family: "Rosarivo", cursive;
-  font-weight: 400;
-  font-style: normal;
-}
+  * {
+    font-family: 'Hedvig Letters Serif', serif;
+    font-optical-sizing: auto;
+  }
 
-.rosarivo-regular-italic {
-  font-family: "Rosarivo", cursive;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.sorts-mill-goudy-regular {
-  font-family: "Sorts Mill Goudy", serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.sorts-mill-goudy-regular-italic {
-  font-family: "Sorts Mill Goudy", serif;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.caudex-regular {
-  font-family: "Caudex", serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.caudex-bold {
-  font-family: "Caudex", serif;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.caudex-regular-italic {
-  font-family: "Caudex", serif;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.caudex-bold-italic {
-  font-family: "Caudex", serif;
-  font-weight: 700;
-  font-style: italic;
-}
+  .hedvig-letters-serif {
+    font-family: "Hedvig Letters Serif", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  }
   
   ::selection {
     background-color: #ffffff !important;
@@ -85,7 +59,8 @@
   }
 
   body {
-    font-family: var(--font-sans);
+    font-family: 'Hedvig Letters Serif', serif;
+    font-optical-sizing: auto;
     font-size: 1rem;
     background-color: #09090b; /* obsidian */
     color: #f4f4f5; /* ivory */
@@ -93,25 +68,39 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
+    font-family: 'Hedvig Letters Serif', serif;
+    font-optical-sizing: auto;
   }
 
   a, button, [role="button"], input, select, textarea {
     cursor: none;
+    font-family: 'Hedvig Letters Serif', serif;
+    font-optical-sizing: auto;
   }
 }
 
 @layer utilities {
   .font-display {
-    font-family: var(--font-display);
+    font-family: 'Hedvig Letters Serif', serif !important;
+    font-optical-sizing: auto;
     font-weight: 600; /* Semi-bold for large texts */
   }
+  .font-heading {
+    font-family: 'Hedvig Letters Serif', serif !important;
+    font-optical-sizing: auto;
+  }
+  .font-sans {
+    font-family: 'Hedvig Letters Serif', serif !important;
+    font-optical-sizing: auto;
+  }
   .font-tech {
-    font-family: var(--font-tech);
+    font-family: 'Hedvig Letters Serif', serif !important;
+    font-optical-sizing: auto;
     font-size: 1.06em;
   }
   .font-mono {
-    font-family: var(--font-mono);
+    font-family: 'Hedvig Letters Serif', serif !important;
+    font-optical-sizing: auto;
     font-size: 1.06em;
   }
   .text-shadow-sm {
