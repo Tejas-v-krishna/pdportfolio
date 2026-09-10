@@ -3,22 +3,22 @@ import SplitTextReveal from './SplitTextReveal';
 export default function ExperienceGrid() {
   const experiences = [
     {
-      company: "Stripe",
-      role: "Lead Product Designer",
-      period: "2022 — Present",
-      description: "Leading the core billing design team. Created a new declarative workflow for recurring payments that reduced user drop-off by 24%."
+      company: "BlurFathom",
+      role: "Founder & Product Designer",
+      period: "Jan 2026 — Present",
+      description: "Directing product strategy, design systems, and digital architectures from the ground up. Crafting bespoke user experiences and brand identities with an uncompromising focus on clarity, performance, and craft."
     },
     {
-      company: "Linear",
-      role: "Senior UX Designer",
-      period: "2020 — 2022",
-      description: "Architected the keyboard-first navigation paradigm and built the command menu interface used by thousands of developers daily."
+      company: "Trams Gurugram",
+      role: "UX Researcher Intern",
+      period: "Apr 2026 — Jul 2026",
+      description: "Conducted qualitative user interviews, contextual inquiries, and usability benchmarking during an intensive 3-month tenure. Synthesized behavioral data to uncover friction points and optimize core product journeys."
     },
     {
-      company: "Vercel",
-      role: "Product Designer",
-      period: "2018 — 2020",
-      description: "Designed the deployment dashboard and unified the design system across marketing and product."
+      company: "Fiverr Freelance",
+      role: "Music Producer & Sound Designer",
+      period: "7+ Years — Present",
+      description: "Delivering bespoke music production, sound engineering, and creative audio direction for over 7 years to clients worldwide. Channeling a refined sensitivity to rhythm, pacing, and sensory feedback into tactile digital interactions."
     }
   ];
 
@@ -41,7 +41,7 @@ export default function ExperienceGrid() {
               className="font-heading text-4xl uppercase font-bold tracking-tighter mb-8"
             />
             <div className="flex flex-wrap gap-2">
-              {['Design Systems', 'Prototyping', 'User Research', 'Frontend UI', 'Figma', 'React', 'Motion'].map((skill) => (
+              {['Design Systems', 'User Research', 'Prototyping', 'Sound Design', 'Frontend UI', 'Figma', 'React', 'Motion'].map((skill) => (
                 <div key={skill} className="px-3 py-1 border hairline-border rounded-full font-tech text-[10px] uppercase tracking-widest text-zinc-400">
                   {skill}
                 </div>
