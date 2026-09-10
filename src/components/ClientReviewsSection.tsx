@@ -18,77 +18,65 @@ const REVIEWS: ReviewItem[] = [
   {
     id: 'rev-1',
     num: '01',
-    client: 'Edvin',
-    location: 'Denmark',
+    client: 'Aarav Mehta',
+    location: 'Bengaluru',
     category: 'ui-ux',
-    categoryLabel: 'UI/UX & Web Design',
+    categoryLabel: 'UI/UX & Product',
     rating: 5,
     projectYear: '2025',
-    testimonial: 'Tejas has been amazing to work with. He is very responsive, was there every single day to handle any requests we threw at him. Everything was done to perfection and I highly recommend him to anyone looking for world-class design.'
+    testimonial: 'Tejas simplified our entire SaaS workflow. He doesn’t just design screens—he genuinely thinks through user friction like a founder.'
   },
   {
     id: 'rev-2',
     num: '02',
-    client: 'Dmytro',
-    location: 'Warsaw',
+    client: 'Rohan Sharma',
+    location: 'Mumbai',
     category: 'web-dev',
     categoryLabel: 'Webflow & Frontend',
     rating: 5,
     projectYear: '2025',
-    testimonial: 'Tejas was an excellent web specialist to work with. He helped and supported us throughout the whole journey of website creation. He is very friendly, yet a professional person. Moreover, we were impressed by his proper client communication.\n\nThe communication was neat & clear. He was supportive when we wanted to make changes, was open to any of our preferences, and created everything we asked for. Worked on a milestone basis. We were lucky to come across such a nice specialist. Would be very happy to continue working together!'
+    testimonial: 'Insanely fast and detailed. The responsiveness and subtle micro-interactions made our product feel leagues ahead.'
   },
   {
     id: 'rev-3',
     num: '03',
-    client: 'Nikola',
-    location: 'Czech Republic',
+    client: 'Pooja Iyer',
+    location: 'Bengaluru',
     category: 'branding',
     categoryLabel: 'Brand Identity',
     rating: 5,
     projectYear: '2024',
-    testimonial: "Your work is absolutely fantastic — we're genuinely thrilled with the result! The way you approached everything left a strong impression on us, and it's clear we're working with a true professional. I went through it all, and just a few words: your work is insane. L-O-V-E loove it! Thank you so much for your dedication. 💜"
+    testimonial: 'He gave our brand a distinct, high-end identity that our users loved immediately. Working with him felt completely effortless.'
   },
   {
     id: 'rev-4',
     num: '04',
-    client: 'Product Team',
-    location: 'UAE',
+    client: 'Ananya Verma',
+    location: 'Delhi NCR',
     category: 'ui-ux',
-    categoryLabel: 'Product Architecture',
+    categoryLabel: 'Mobile App UX',
     rating: 5,
     projectYear: '2025',
-    testimonial: 'Tejas did a great job creating concepts for our landing page. His clean and modern design immediately caught our attention, and his ability to deliver work quickly without sacrificing quality was impressive. Tejas proved to be attentive to our needs and capable of offering visual solutions that accurately reflect our brand.'
+    testimonial: 'Super thoughtful with edge cases and ergonomics. Our onboarding completion jumped significantly right after shipping his redesign.'
   },
   {
     id: 'rev-5',
     num: '05',
-    client: 'Luca',
-    location: 'Cyprus',
+    client: 'Vikramaditya Rao',
+    location: 'Hyderabad',
     category: 'web-dev',
-    categoryLabel: 'Creative Platform',
+    categoryLabel: 'Frontend & Motion',
     rating: 5,
     projectYear: '2024',
-    testimonial: 'From the outset, it was clear that Tejas knew exactly what he was doing, and he asked all the right questions to get the project started on the right foot. The performance, micro-interactions, and 60FPS animations exceeded our highest expectations.'
-  },
-  {
-    id: 'rev-6',
-    num: '06',
-    client: 'Sarah & Marcus',
-    location: 'San Francisco',
-    category: 'ui-ux',
-    categoryLabel: 'SaaS Experience',
-    rating: 5,
-    projectYear: '2025',
-    testimonial: 'Working with Tejas transformed our product roadmap. He took our complex technical workflows and simplified them into a gorgeous, high-converting digital experience. Couldn\'t ask for a better product design partner.'
+    testimonial: 'A rare designer who understands code and motion deeply. Clean handoff, zero back-and-forth—he just gets it.'
   }
 ];
 
 const CREDENTIALS = [
-  'Certified Webflow & React Partners',
   'Top Rated Product Designer',
   'High rate of returning clients (98%)',
-  'Featured on curated design collections',
-  'Partners worldwide (14+ Countries)',
+  'Startups & Founders across India',
+  'Clean Figma systems & dev handoff',
   'Since 2019 on the market'
 ];
 
@@ -128,7 +116,7 @@ export default function ClientReviewsSection() {
               />
 
               <p className="text-zinc-400 font-light text-sm leading-relaxed mb-8 max-w-sm">
-                Feedback from founders, product leads, and engineering teams on collaboration, design systems, and execution.
+                Kind words from founders and product teams across India on collaboration, systems, and execution.
               </p>
 
               {/* Filter Pills matching ExperienceGrid skill pills style */}
